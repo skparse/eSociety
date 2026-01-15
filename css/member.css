@@ -1,0 +1,723 @@
+/* ===================================
+   Member Portal Styles
+   =================================== */
+
+/* Member Layout */
+.member-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Member Header */
+.member-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.member-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.member-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--gray-900);
+}
+
+.member-logo-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    background: var(--primary);
+    color: var(--white);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.125rem;
+}
+
+.member-logo-text {
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+/* Member Navigation */
+.member-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.member-nav-link {
+    padding: 0.5rem 1rem;
+    color: var(--gray-600);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    border-radius: var(--radius);
+    transition: all 0.15s;
+}
+
+.member-nav-link:hover {
+    color: var(--primary);
+    background: var(--gray-50);
+    text-decoration: none;
+}
+
+.member-nav-link.active {
+    color: var(--primary);
+    background: rgba(37, 99, 235, 0.1);
+}
+
+/* Member User Menu */
+.member-user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.member-user-info {
+    text-align: right;
+}
+
+.member-user-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--gray-800);
+}
+
+.member-user-flat {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+.member-user-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    background: var(--primary);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.member-logout-btn {
+    padding: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--gray-500);
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: all 0.15s;
+}
+
+.member-logout-btn:hover {
+    color: var(--danger);
+    background: rgba(220, 38, 38, 0.1);
+}
+
+/* Mobile Navigation */
+.member-mobile-nav {
+    display: none;
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0.5rem 1rem;
+    overflow-x: auto;
+}
+
+.mobile-nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: var(--gray-600);
+    cursor: pointer;
+}
+
+/* Member Content */
+.member-content {
+    flex: 1;
+    padding: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Member Dashboard */
+.member-dashboard {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
+}
+
+/* Outstanding Amount Card */
+.outstanding-card {
+    grid-column: span 12;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.outstanding-card-content h3 {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.outstanding-amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+}
+
+.outstanding-status {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    margin-top: 0.5rem;
+}
+
+.outstanding-card-action .btn {
+    background: var(--white);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.outstanding-card-action .btn:hover {
+    background: var(--gray-100);
+}
+
+/* Member Stats */
+.member-stats {
+    grid-column: span 12;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.member-stat {
+    background: var(--white);
+    padding: 1.25rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.member-stat-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.member-stat-icon.bills {
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--primary);
+}
+
+.member-stat-icon.payments {
+    background: rgba(22, 163, 74, 0.1);
+    color: var(--success);
+}
+
+.member-stat-icon.pending {
+    background: rgba(202, 138, 4, 0.1);
+    color: var(--warning);
+}
+
+.member-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-900);
+}
+
+.member-stat-label {
+    font-size: 0.8125rem;
+    color: var(--gray-500);
+}
+
+/* Recent Bills Widget */
+.member-recent {
+    grid-column: span 8;
+}
+
+.member-info {
+    grid-column: span 4;
+}
+
+/* Bill Card */
+.bill-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.bill-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.bill-card-title {
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.bill-list {
+    list-style: none;
+}
+
+.bill-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--gray-100);
+    transition: background 0.15s;
+}
+
+.bill-list-item:last-child {
+    border-bottom: none;
+}
+
+.bill-list-item:hover {
+    background: var(--gray-50);
+}
+
+.bill-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.bill-month {
+    width: 3rem;
+    height: 3rem;
+    background: var(--gray-100);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+}
+
+.bill-month-name {
+    font-weight: 600;
+    color: var(--gray-700);
+    text-transform: uppercase;
+}
+
+.bill-month-year {
+    color: var(--gray-500);
+}
+
+.bill-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.bill-number {
+    font-weight: 500;
+    color: var(--gray-800);
+}
+
+.bill-date {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+.bill-amount-status {
+    text-align: right;
+}
+
+.bill-amount {
+    font-size: 1.125rem;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    color: var(--gray-900);
+}
+
+.bill-status {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.bill-status.paid {
+    color: var(--success);
+}
+
+.bill-status.pending {
+    color: var(--warning);
+}
+
+.bill-status.overdue {
+    color: var(--danger);
+}
+
+.bill-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: 1rem;
+}
+
+/* Member Info Card */
+.member-info-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+}
+
+.member-info-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.member-info-header h4 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.member-info-body {
+    padding: 1.25rem;
+}
+
+.member-info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed var(--gray-200);
+}
+
+.member-info-item:last-child {
+    border-bottom: none;
+}
+
+.member-info-label {
+    color: var(--gray-500);
+    font-size: 0.8125rem;
+}
+
+.member-info-value {
+    font-weight: 500;
+    color: var(--gray-800);
+}
+
+/* Bill Detail Page */
+.bill-detail-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.bill-document {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.bill-document-header {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+}
+
+.bill-society-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.bill-society-address {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.bill-title {
+    margin-top: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.2);
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+}
+
+.bill-document-body {
+    padding: 2rem;
+}
+
+.bill-meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.bill-meta-group h5 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--gray-500);
+    margin-bottom: 0.5rem;
+}
+
+.bill-meta-value {
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.bill-meta-subvalue {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+}
+
+/* Bill Line Items Table */
+.bill-items-table {
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+.bill-items-table th {
+    text-align: left;
+    padding: 0.75rem;
+    background: var(--gray-50);
+    font-weight: 600;
+    font-size: 0.8125rem;
+    color: var(--gray-700);
+    border-bottom: 2px solid var(--gray-200);
+}
+
+.bill-items-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.bill-items-table .amount-col {
+    text-align: right;
+    font-family: var(--font-mono);
+}
+
+.bill-items-table tfoot td {
+    font-weight: 600;
+    border-bottom: none;
+    background: var(--gray-50);
+}
+
+.bill-total-row td {
+    font-size: 1.125rem;
+    background: var(--primary) !important;
+    color: var(--white);
+}
+
+/* Bill Footer */
+.bill-document-footer {
+    padding: 1.5rem 2rem;
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-200);
+}
+
+.bill-payment-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.bill-payment-method h5 {
+    font-size: 0.8125rem;
+    color: var(--gray-600);
+    margin-bottom: 0.25rem;
+}
+
+.bill-payment-method p {
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.bill-note {
+    font-size: 0.8125rem;
+    color: var(--gray-500);
+    font-style: italic;
+}
+
+/* Payment History */
+.payment-history-list {
+    list-style: none;
+}
+
+.payment-history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.payment-history-item:last-child {
+    border-bottom: none;
+}
+
+.payment-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.payment-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: rgba(22, 163, 74, 0.1);
+    color: var(--success);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payment-details {
+    flex: 1;
+}
+
+.payment-receipt {
+    font-weight: 500;
+    color: var(--gray-800);
+}
+
+.payment-mode {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+.payment-amount-date {
+    text-align: right;
+}
+
+.payment-amount {
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    color: var(--success);
+}
+
+.payment-date {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+/* Responsive Member */
+@media (max-width: 992px) {
+    .member-recent {
+        grid-column: span 12;
+    }
+
+    .member-info {
+        grid-column: span 12;
+    }
+}
+
+@media (max-width: 768px) {
+    .member-header-inner {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .member-nav {
+        display: none;
+    }
+
+    .mobile-nav-toggle {
+        display: block;
+    }
+
+    .member-mobile-nav {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .member-mobile-nav .member-nav-link {
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .member-user-info {
+        display: none;
+    }
+
+    .outstanding-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .outstanding-amount {
+        font-size: 2rem;
+    }
+
+    .bill-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .bill-list-item {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .bill-actions {
+        width: 100%;
+        margin-left: 0;
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 480px) {
+    .member-content {
+        padding: 1rem;
+    }
+
+    .member-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .bill-document-header {
+        padding: 1.5rem;
+    }
+
+    .bill-document-body {
+        padding: 1rem;
+    }
+
+    .bill-payment-info {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Data - Society Maintenance</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                    </div>
+                    <div class="sidebar-logo-text">
+                        Society Maintenance
+                        <span>Admin Panel</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <div class="nav-item">
+                        <a href="dashboard.html" class="nav-link">
+                            <span class="nav-link-icon">📊</span>
+                            <span class="nav-link-text">Dashboard</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <div class="nav-item">
+                        <a href="flats.html" class="nav-link">
+                            <span class="nav-link-icon">🏠</span>
+                            <span class="nav-link-text">Flats</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="members.html" class="nav-link">
+                            <span class="nav-link-icon">👥</span>
+                            <span class="nav-link-text">Members</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Billing</div>
+                    <div class="nav-item">
+                        <a href="billing.html" class="nav-link">
+                            <span class="nav-link-icon">📄</span>
+                            <span class="nav-link-text">Bills</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="payments.html" class="nav-link">
+                            <span class="nav-link-icon">💰</span>
+                            <span class="nav-link-text">Payments</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Settings</div>
+                    <div class="nav-item">
+                        <a href="master-data.html" class="nav-link active">
+                            <span class="nav-link-icon">⚙️</span>
+                            <span class="nav-link-text">Master Data</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="reports.html" class="nav-link">
+                            <span class="nav-link-icon">📈</span>
+                            <span class="nav-link-text">Reports</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="sidebar-user">
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-avatar" id="user-avatar">A</div>
+                    <div>
+                        <div class="sidebar-user-name" id="user-name">Admin</div>
+                        <div class="sidebar-user-role">Administrator</div>
+                    </div>
+                </div>
+                <button class="sidebar-logout" onclick="handleLogout()">
+                    <span>🚪</span>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                    <h1 class="top-bar-title">Master Data</h1>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Actions Bar -->
+                <div class="card mb-4">
+                    <div class="card-body d-flex justify-content-between align-items-center" style="padding: 1rem;">
+                        <div>
+                            <strong>Master Data Actions</strong>
+                            <span class="text-muted ml-2" style="font-size: 0.875rem;">Export or reset your master data</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="exportAllToCSV()">
+                                Export to CSV
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="resetToDefaults()">
+                                Reset to Defaults
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="master-data-tabs">
+                    <button class="master-data-tab active" data-tab="settings">Society Settings</button>
+                    <button class="master-data-tab" data-tab="buildings">Buildings</button>
+                    <button class="master-data-tab" data-tab="flatTypes">Flat Types</button>
+                    <button class="master-data-tab" data-tab="chargeTypes">Charge Types</button>
+                </div>
+
+                <!-- Society Settings Tab -->
+                <div class="card tab-content active" id="tab-settings">
+                    <div class="card-header">
+                        <h4>Society Settings</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="settings-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label required">Society Name</label>
+                                    <input type="text" class="form-control" name="societyName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Registration No.</label>
+                                    <input type="text" class="form-control" name="registrationNo">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" name="address" rows="2"></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" name="phone">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="email">
+                                </div>
+                            </div>
+                            <div class="divider"></div>
+                            <h5 class="mb-3">Billing Settings</h5>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Billing Day of Month</label>
+                                    <input type="number" class="form-control" name="billingDay" min="1" max="28" value="1">
+                                    <div class="form-text">Day of month when bills are generated</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Due Days</label>
+                                    <input type="number" class="form-control" name="dueDays" min="1" max="60" value="15">
+                                    <div class="form-text">Days after bill generation for due date</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Late Fee %</label>
+                                    <input type="number" class="form-control" name="lateFeePercent" min="0" max="100" step="0.5" value="2">
+                                    <div class="form-text">Monthly late fee percentage</div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">Save Settings</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Buildings Tab -->
+                <div class="card tab-content" id="tab-buildings">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4>Buildings / Wings</h4>
+                        <button class="btn btn-primary btn-sm" onclick="openBuildingModal()">+ Add Building</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Total Floors</th>
+                                        <th>Address</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="buildings-table-body">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">No buildings added yet</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flat Types Tab -->
+                <div class="card tab-content" id="tab-flatTypes">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4>Flat Types</h4>
+                        <button class="btn btn-primary btn-sm" onclick="openFlatTypeModal()">+ Add Flat Type</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Default Area (sq.ft)</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="flatTypes-table-body">
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">No flat types added yet</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charge Types Tab -->
+                <div class="card tab-content" id="tab-chargeTypes">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4>Charge Types</h4>
+                        <button class="btn btn-primary btn-sm" onclick="openChargeTypeModal()">+ Add Charge Type</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Calculation Type</th>
+                                        <th>Default Amount</th>
+                                        <th>Monthly</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="chargeTypes-table-body">
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">No charge types added yet</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Building Modal -->
+    <div class="modal-backdrop" id="building-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h5 id="building-modal-title">Add Building</h5>
+                <button class="modal-close" onclick="closeModal('building-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="building-form">
+                    <input type="hidden" name="id">
+                    <div class="form-group">
+                        <label class="form-label required">Building Name</label>
+                        <input type="text" class="form-control" name="name" required placeholder="e.g., Building A, Wing B">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Total Floors</label>
+                        <input type="number" class="form-control" name="totalFloors" min="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" name="address" rows="2"></textarea>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="isActive" id="building-active" checked>
+                        <label class="form-check-label" for="building-active">Active</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('building-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveBuilding()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flat Type Modal -->
+    <div class="modal-backdrop" id="flatType-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h5 id="flatType-modal-title">Add Flat Type</h5>
+                <button class="modal-close" onclick="closeModal('flatType-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="flatType-form">
+                    <input type="hidden" name="id">
+                    <div class="form-group">
+                        <label class="form-label required">Flat Type Name</label>
+                        <input type="text" class="form-control" name="name" required placeholder="e.g., 1 BHK, 2 BHK, Shop">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Default Area (sq.ft)</label>
+                        <input type="number" class="form-control" name="defaultArea" min="1" value="500">
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="isActive" id="flatType-active" checked>
+                        <label class="form-check-label" for="flatType-active">Active</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('flatType-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveFlatType()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charge Type Modal -->
+    <div class="modal-backdrop" id="chargeType-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h5 id="chargeType-modal-title">Add Charge Type</h5>
+                <button class="modal-close" onclick="closeModal('chargeType-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="chargeType-form">
+                    <input type="hidden" name="id">
+                    <div class="form-group">
+                        <label class="form-label required">Charge Name</label>
+                        <input type="text" class="form-control" name="name" required placeholder="e.g., Maintenance, Parking">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Calculation Type</label>
+                        <select class="form-select" name="calculationType" required onchange="updateCalculationType(this.value)">
+                            <option value="per_sqft">Per Square Foot</option>
+                            <option value="fixed">Fixed Amount</option>
+                            <option value="per_vehicle">Per Vehicle</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="vehicle-type-group" style="display: none;">
+                        <label class="form-label required">Vehicle Type</label>
+                        <select class="form-select" name="vehicleType">
+                            <option value="2wheeler">2-Wheeler</option>
+                            <option value="4wheeler">4-Wheeler</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" id="amount-label">Rate per sq.ft (₹)</label>
+                        <input type="number" class="form-control" name="defaultAmount" min="0" step="0.5" value="0">
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="isMonthly" id="chargeType-monthly" checked>
+                        <label class="form-check-label" for="chargeType-monthly">Monthly Recurring</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="isActive" id="chargeType-active" checked>
+                        <label class="form-check-label" for="chargeType-active">Active</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('chargeType-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveChargeType()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner spinner-lg"></div>
+        <div class="loading-message">Loading...</div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin/master-data.js"></script>
+</body>
+</html>

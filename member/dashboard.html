@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Society Maintenance</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/member.css">
+</head>
+<body>
+    <div class="member-layout">
+        <!-- Header -->
+        <header class="member-header">
+            <div class="member-header-inner">
+                <a href="dashboard.html" class="member-logo">
+                    <div class="member-logo-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                    </div>
+                    <span class="member-logo-text">Society Maintenance</span>
+                </a>
+
+                <nav class="member-nav">
+                    <a href="dashboard.html" class="member-nav-link active">Dashboard</a>
+                    <a href="bills.html" class="member-nav-link">My Bills</a>
+                    <a href="payments.html" class="member-nav-link">Payments</a>
+                </nav>
+
+                <button class="mobile-nav-toggle" onclick="toggleMobileNav()">☰</button>
+
+                <div class="member-user">
+                    <div class="member-user-info">
+                        <div class="member-user-name" id="user-name">Member</div>
+                        <div class="member-user-flat" id="user-flat">Flat -</div>
+                    </div>
+                    <div class="member-user-avatar" id="user-avatar">M</div>
+                    <button class="member-logout-btn" onclick="handleLogout()" title="Logout">🚪</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Mobile Navigation -->
+        <nav class="member-mobile-nav">
+            <a href="dashboard.html" class="member-nav-link active">Dashboard</a>
+            <a href="bills.html" class="member-nav-link">My Bills</a>
+            <a href="payments.html" class="member-nav-link">Payments</a>
+        </nav>
+
+        <!-- Content -->
+        <div class="member-content">
+            <div class="member-dashboard">
+                <!-- Outstanding Card -->
+                <div class="outstanding-card">
+                    <div class="outstanding-card-content">
+                        <h3>Your Current Outstanding</h3>
+                        <div class="outstanding-amount" id="outstanding-amount">₹ 0</div>
+                        <div class="outstanding-status" id="outstanding-status">All dues cleared</div>
+                    </div>
+                    <div class="outstanding-card-action" id="pay-btn-container" style="display: none;">
+                        <a href="bills.html" class="btn btn-lg">View Bills</a>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="member-stats">
+                    <div class="member-stat">
+                        <div class="member-stat-icon bills">📄</div>
+                        <div>
+                            <div class="member-stat-value" id="stat-total-bills">0</div>
+                            <div class="member-stat-label">Total Bills</div>
+                        </div>
+                    </div>
+                    <div class="member-stat">
+                        <div class="member-stat-icon pending">⏳</div>
+                        <div>
+                            <div class="member-stat-value" id="stat-pending-bills">0</div>
+                            <div class="member-stat-label">Pending Bills</div>
+                        </div>
+                    </div>
+                    <div class="member-stat">
+                        <div class="member-stat-icon payments">💰</div>
+                        <div>
+                            <div class="member-stat-value" id="stat-total-paid">₹ 0</div>
+                            <div class="member-stat-label">Total Paid</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Bills -->
+                <div class="member-recent">
+                    <div class="bill-card">
+                        <div class="bill-card-header">
+                            <span class="bill-card-title">Recent Bills</span>
+                            <a href="bills.html" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <ul class="bill-list" id="recent-bills">
+                            <li class="empty-state" style="padding: 2rem;">
+                                <p class="text-muted text-center">Loading...</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Flat Info -->
+                <div class="member-info">
+                    <div class="member-info-card">
+                        <div class="member-info-header">
+                            <h4>Flat Information</h4>
+                        </div>
+                        <div class="member-info-body" id="flat-info">
+                            <div class="text-center text-muted">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner spinner-lg"></div>
+        <div class="loading-message">Loading...</div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/member/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            await initMemberPortal();
+            await loadDashboard();
+        });
+
+        async function loadDashboard() {
+            if (!memberFlat) {
+                document.getElementById('outstanding-amount').textContent = 'No flat linked';
+                document.getElementById('outstanding-status').textContent = 'Please contact admin';
+                return;
+            }
+
+            // Calculate outstanding
+            const outstanding = memberBills.reduce((sum, b) => {
+                return sum + (b.grandTotal - (b.paidAmount || 0));
+            }, 0);
+
+            document.getElementById('outstanding-amount').textContent = Utils.formatCurrency(outstanding);
+
+            if (outstanding > 0) {
+                document.getElementById('outstanding-status').textContent = 'Payment due';
+                document.getElementById('pay-btn-container').style.display = 'block';
+            } else {
+                document.getElementById('outstanding-status').textContent = 'All dues cleared!';
+            }
+
+            // Stats
+            document.getElementById('stat-total-bills').textContent = memberBills.length;
+            document.getElementById('stat-pending-bills').textContent = memberBills.filter(b => b.status !== 'paid').length;
+
+            const totalPaid = memberPayments.reduce((sum, p) => sum + p.amount, 0);
+            document.getElementById('stat-total-paid').textContent = Utils.formatCurrency(totalPaid);
+
+            // Recent bills
+            renderRecentBills();
+
+            // Flat info
+            renderFlatInfo();
+        }
+
+        function renderRecentBills() {
+            const container = document.getElementById('recent-bills');
+            const recentBills = Utils.sortBy(memberBills, 'generatedAt', 'desc').slice(0, 5);
+
+            if (recentBills.length === 0) {
+                container.innerHTML = `
+                    <li class="empty-state" style="padding: 2rem;">
+                        <p class="text-muted text-center">No bills found</p>
+                    </li>
+                `;
+                return;
+            }
+
+            container.innerHTML = recentBills.map(bill => {
+                const balance = bill.grandTotal - (bill.paidAmount || 0);
+                return `
+                    <li class="bill-list-item">
+                        <div class="bill-info">
+                            <div class="bill-month">
+                                <span class="bill-month-name">${Utils.getMonthName(bill.month, true)}</span>
+                                <span class="bill-month-year">${bill.year}</span>
+                            </div>
+                            <div class="bill-details">
+                                <span class="bill-number">${bill.billNo}</span>
+                                <span class="bill-date">Due: ${Utils.formatDate(bill.dueDate)}</span>
+                            </div>
+                        </div>
+                        <div class="bill-amount-status">
+                            <span class="bill-amount">${Utils.formatCurrency(bill.grandTotal)}</span>
+                            <span class="bill-status ${bill.status}">${balance > 0 ? 'Due: ' + Utils.formatCurrency(balance) : 'Paid'}</span>
+                        </div>
+                        <div class="bill-actions">
+                            <a href="bills.html?id=${bill.id}" class="btn btn-sm btn-outline-primary">View</a>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        function renderFlatInfo() {
+            const container = document.getElementById('flat-info');
+
+            if (!memberFlat) {
+                container.innerHTML = '<div class="text-center text-muted">No flat linked to your account</div>';
+                return;
+            }
+
+            const building = masterData.buildings?.find(b => b.id === memberFlat.buildingId);
+            const flatType = masterData.flatTypes?.find(t => t.id === memberFlat.flatTypeId);
+
+            container.innerHTML = `
+                <div class="member-info-item">
+                    <span class="member-info-label">Flat No.</span>
+                    <span class="member-info-value">${Utils.escapeHtml(memberFlat.flatNo)}</span>
+                </div>
+                <div class="member-info-item">
+                    <span class="member-info-label">Building</span>
+                    <span class="member-info-value">${building ? Utils.escapeHtml(building.name) : '-'}</span>
+                </div>
+                <div class="member-info-item">
+                    <span class="member-info-label">Type</span>
+                    <span class="member-info-value">${flatType ? Utils.escapeHtml(flatType.name) : '-'}</span>
+                </div>
+                <div class="member-info-item">
+                    <span class="member-info-label">Area</span>
+                    <span class="member-info-value">${memberFlat.area ? Utils.formatNumber(memberFlat.area) + ' sq.ft' : '-'}</span>
+                </div>
+                <div class="member-info-item">
+                    <span class="member-info-label">Owner</span>
+                    <span class="member-info-value">${Utils.escapeHtml(memberFlat.ownerName || '-')}</span>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

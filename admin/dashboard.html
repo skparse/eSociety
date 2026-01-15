@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Society Maintenance</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                    </div>
+                    <div class="sidebar-logo-text">
+                        Society Maintenance
+                        <span>Admin Panel</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <div class="nav-item">
+                        <a href="dashboard.html" class="nav-link active">
+                            <span class="nav-link-icon">📊</span>
+                            <span class="nav-link-text">Dashboard</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <div class="nav-item">
+                        <a href="flats.html" class="nav-link">
+                            <span class="nav-link-icon">🏠</span>
+                            <span class="nav-link-text">Flats</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="members.html" class="nav-link">
+                            <span class="nav-link-icon">👥</span>
+                            <span class="nav-link-text">Members</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Billing</div>
+                    <div class="nav-item">
+                        <a href="billing.html" class="nav-link">
+                            <span class="nav-link-icon">📄</span>
+                            <span class="nav-link-text">Bills</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="payments.html" class="nav-link">
+                            <span class="nav-link-icon">💰</span>
+                            <span class="nav-link-text">Payments</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Settings</div>
+                    <div class="nav-item">
+                        <a href="master-data.html" class="nav-link">
+                            <span class="nav-link-icon">⚙️</span>
+                            <span class="nav-link-text">Master Data</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="reports.html" class="nav-link">
+                            <span class="nav-link-icon">📈</span>
+                            <span class="nav-link-text">Reports</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="sidebar-user">
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-avatar" id="user-avatar">A</div>
+                    <div>
+                        <div class="sidebar-user-name" id="user-name">Admin</div>
+                        <div class="sidebar-user-role">Administrator</div>
+                    </div>
+                </div>
+                <button class="sidebar-logout" onclick="handleLogout()">
+                    <span>🚪</span>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                    <h1 class="top-bar-title">Dashboard</h1>
+                </div>
+                <div class="top-bar-right">
+                    <span class="top-bar-date" id="current-date"></span>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Stats Grid -->
+                <div class="stats-grid" id="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-icon primary">🏠</div>
+                        <div class="stat-card-value" id="stat-flats">0</div>
+                        <div class="stat-card-label">Total Flats</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon success">👥</div>
+                        <div class="stat-card-value" id="stat-members">0</div>
+                        <div class="stat-card-label">Active Members</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon warning">📄</div>
+                        <div class="stat-card-value" id="stat-pending-bills">0</div>
+                        <div class="stat-card-label">Pending Bills</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon danger">💰</div>
+                        <div class="stat-card-value" id="stat-outstanding">₹ 0</div>
+                        <div class="stat-card-label">Total Outstanding</div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <!-- Quick Actions -->
+                    <div class="widget widget-half">
+                        <div class="widget-header">
+                            <h4 class="widget-title">Quick Actions</h4>
+                        </div>
+                        <div class="widget-body">
+                            <div class="quick-actions">
+                                <a href="billing.html?action=generate" class="quick-action">
+                                    <span class="quick-action-icon">📄</span>
+                                    <span class="quick-action-text">Generate Bills</span>
+                                </a>
+                                <a href="payments.html?action=add" class="quick-action">
+                                    <span class="quick-action-icon">💳</span>
+                                    <span class="quick-action-text">Record Payment</span>
+                                </a>
+                                <a href="flats.html?action=add" class="quick-action">
+                                    <span class="quick-action-icon">➕</span>
+                                    <span class="quick-action-text">Add Flat</span>
+                                </a>
+                                <a href="members.html?action=add" class="quick-action">
+                                    <span class="quick-action-icon">👤</span>
+                                    <span class="quick-action-text">Add Member</span>
+                                </a>
+                                <a href="reports.html" class="quick-action">
+                                    <span class="quick-action-icon">📊</span>
+                                    <span class="quick-action-text">View Reports</span>
+                                </a>
+                                <a href="master-data.html" class="quick-action">
+                                    <span class="quick-action-icon">⚙️</span>
+                                    <span class="quick-action-text">Settings</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Outstanding Summary -->
+                    <div class="widget widget-half">
+                        <div class="widget-header">
+                            <h4 class="widget-title">Outstanding Summary</h4>
+                        </div>
+                        <div class="widget-body">
+                            <div class="outstanding-summary">
+                                <div class="outstanding-item">
+                                    <div class="outstanding-value total" id="summary-total">₹ 0</div>
+                                    <div class="outstanding-label">Total Outstanding</div>
+                                </div>
+                                <div class="outstanding-item">
+                                    <div class="outstanding-value current" id="summary-current">₹ 0</div>
+                                    <div class="outstanding-label">Current Month</div>
+                                </div>
+                                <div class="outstanding-item">
+                                    <div class="outstanding-value overdue" id="summary-overdue">₹ 0</div>
+                                    <div class="outstanding-label">Overdue</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Payments -->
+                    <div class="widget widget-half">
+                        <div class="widget-header">
+                            <h4 class="widget-title">Recent Payments</h4>
+                            <a href="payments.html" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div class="widget-body">
+                            <ul class="activity-list" id="recent-payments">
+                                <li class="empty-state">
+                                    <p class="text-muted">No recent payments</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Recent Bills -->
+                    <div class="widget widget-half">
+                        <div class="widget-header">
+                            <h4 class="widget-title">Recent Bills</h4>
+                            <a href="billing.html" class="btn btn-sm btn-outline-primary">View All</a>
+                        </div>
+                        <div class="widget-body">
+                            <ul class="activity-list" id="recent-bills">
+                                <li class="empty-state">
+                                    <p class="text-muted">No recent bills</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner spinner-lg"></div>
+        <div class="loading-message">Loading...</div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin/dashboard.js"></script>
+</body>
+</html>

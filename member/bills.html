@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bills - Society Maintenance</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/member.css">
+    <link rel="stylesheet" href="../css/print.css">
+</head>
+<body>
+    <div class="member-layout">
+        <!-- Header -->
+        <header class="member-header">
+            <div class="member-header-inner">
+                <a href="dashboard.html" class="member-logo">
+                    <div class="member-logo-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                    </div>
+                    <span class="member-logo-text">Society Maintenance</span>
+                </a>
+
+                <nav class="member-nav">
+                    <a href="dashboard.html" class="member-nav-link">Dashboard</a>
+                    <a href="bills.html" class="member-nav-link active">My Bills</a>
+                    <a href="payments.html" class="member-nav-link">Payments</a>
+                </nav>
+
+                <button class="mobile-nav-toggle" onclick="toggleMobileNav()">☰</button>
+
+                <div class="member-user">
+                    <div class="member-user-info">
+                        <div class="member-user-name" id="user-name">Member</div>
+                        <div class="member-user-flat" id="user-flat">Flat -</div>
+                    </div>
+                    <div class="member-user-avatar" id="user-avatar">M</div>
+                    <button class="member-logout-btn" onclick="handleLogout()" title="Logout">🚪</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Mobile Navigation -->
+        <nav class="member-mobile-nav">
+            <a href="dashboard.html" class="member-nav-link">Dashboard</a>
+            <a href="bills.html" class="member-nav-link active">My Bills</a>
+            <a href="payments.html" class="member-nav-link">Payments</a>
+        </nav>
+
+        <!-- Content -->
+        <div class="member-content">
+            <!-- Bill List View -->
+            <div id="bills-list-view">
+                <div class="page-header">
+                    <h2>My Bills</h2>
+                </div>
+
+                <!-- Filter -->
+                <div class="filter-bar mb-4">
+                    <div class="form-group">
+                        <select class="form-select" id="filter-year" onchange="filterBills()">
+                            <option value="">All Years</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-select" id="filter-status" onchange="filterBills()">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="partial">Partial</option>
+                            <option value="paid">Paid</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bill-card">
+                    <ul class="bill-list" id="bills-list">
+                        <li class="empty-state" style="padding: 2rem;">
+                            <p class="text-muted text-center">Loading...</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bill Detail View -->
+            <div id="bill-detail-view" class="d-none">
+                <div class="page-header">
+                    <div>
+                        <button class="btn btn-outline-secondary btn-sm mb-2" onclick="showBillsList()">← Back to Bills</button>
+                        <h2>Bill Details</h2>
+                    </div>
+                    <div class="page-header-actions no-print">
+                        <button class="btn btn-primary" onclick="printBill()">Print Bill</button>
+                    </div>
+                </div>
+
+                <div class="bill-detail-container">
+                    <div class="bill-document" id="printable-bill">
+                        <!-- Bill content will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner spinner-lg"></div>
+        <div class="loading-message">Loading...</div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/member/main.js"></script>
+    <script>
+        let filteredBills = [];
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            await initMemberPortal();
+            setupYearFilter();
+            filterBills();
+
+            // Check for bill ID in URL
+            const params = Utils.getUrlParams();
+            if (params.id) {
+                showBillDetail(params.id);
+            }
+        });
+
+        function setupYearFilter() {
+            const years = [...new Set(memberBills.map(b => b.year))].sort((a, b) => b - a);
+            const select = document.getElementById('filter-year');
+            select.innerHTML = '<option value="">All Years</option>' +
+                years.map(y => `<option value="${y}">${y}</option>`).join('');
+        }
+
+        function filterBills() {
+            const yearFilter = document.getElementById('filter-year').value;
+            const statusFilter = document.getElementById('filter-status').value;
+
+            filteredBills = memberBills.filter(bill => {
+                const matchesYear = !yearFilter || bill.year === parseInt(yearFilter);
+                const matchesStatus = !statusFilter || bill.status === statusFilter;
+                return matchesYear && matchesStatus;
+            });
+
+            filteredBills.sort((a, b) => {
+                if (a.year !== b.year) return b.year - a.year;
+                return b.month - a.month;
+            });
+
+            renderBillsList();
+        }
+
+        function renderBillsList() {
+            const container = document.getElementById('bills-list');
+
+            if (filteredBills.length === 0) {
+                container.innerHTML = `
+                    <li class="empty-state" style="padding: 2rem;">
+                        <p class="text-muted text-center">${memberBills.length === 0 ? 'No bills found' : 'No bills match your filter'}</p>
+                    </li>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredBills.map(bill => {
+                const balance = bill.grandTotal - (bill.paidAmount || 0);
+                const isOverdue = bill.status !== 'paid' && Utils.isOverdue(bill.dueDate);
+
+                return `
+                    <li class="bill-list-item" onclick="showBillDetail('${bill.id}')" style="cursor: pointer;">
+                        <div class="bill-info">
+                            <div class="bill-month">
+                                <span class="bill-month-name">${Utils.getMonthName(bill.month, true)}</span>
+                                <span class="bill-month-year">${bill.year}</span>
+                            </div>
+                            <div class="bill-details">
+                                <span class="bill-number">${bill.billNo}</span>
+                                <span class="bill-date">
+                                    Due: ${Utils.formatDate(bill.dueDate)}
+                                    ${isOverdue ? '<span class="badge badge-danger ml-1">Overdue</span>' : ''}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="bill-amount-status">
+                            <span class="bill-amount">${Utils.formatCurrency(bill.grandTotal)}</span>
+                            <span class="bill-status ${bill.status}">
+                                ${bill.status === 'paid' ? 'Paid' : 'Due: ' + Utils.formatCurrency(balance)}
+                            </span>
+                        </div>
+                        <div class="bill-actions">
+                            <button class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); showBillDetail('${bill.id}')">View</button>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        function showBillDetail(billId) {
+            const bill = memberBills.find(b => b.id === billId);
+            if (!bill) return;
+
+            document.getElementById('bills-list-view').classList.add('d-none');
+            document.getElementById('bill-detail-view').classList.remove('d-none');
+
+            renderBillDetail(bill);
+        }
+
+        function showBillsList() {
+            document.getElementById('bill-detail-view').classList.add('d-none');
+            document.getElementById('bills-list-view').classList.remove('d-none');
+
+            // Update URL
+            window.history.pushState({}, '', 'bills.html');
+        }
+
+        function renderBillDetail(bill) {
+            const building = masterData.buildings?.find(b => b.id === memberFlat?.buildingId);
+            const balance = bill.grandTotal - (bill.paidAmount || 0);
+
+            document.getElementById('printable-bill').innerHTML = `
+                <div class="bill-document-header">
+                    <div class="bill-society-name">${Utils.escapeHtml(settings.societyName || 'Society Name')}</div>
+                    <div class="bill-society-address">${Utils.escapeHtml(settings.address || '')}</div>
+                    <div class="bill-title">MAINTENANCE BILL</div>
+                </div>
+
+                <div class="bill-document-body">
+                    <div class="bill-meta">
+                        <div class="bill-meta-group">
+                            <h5>Bill Details</h5>
+                            <div class="bill-meta-value">${bill.billNo}</div>
+                            <div class="bill-meta-subvalue">Date: ${Utils.formatDate(bill.generatedAt)}</div>
+                            <div class="bill-meta-subvalue">Due: ${Utils.formatDate(bill.dueDate)}</div>
+                        </div>
+                        <div class="bill-meta-group">
+                            <h5>Billed To</h5>
+                            <div class="bill-meta-value">${memberFlat ? Utils.escapeHtml(memberFlat.flatNo) : '-'}</div>
+                            <div class="bill-meta-subvalue">${memberFlat ? Utils.escapeHtml(memberFlat.ownerName) : ''}</div>
+                            <div class="bill-meta-subvalue">${building ? Utils.escapeHtml(building.name) : ''}</div>
+                        </div>
+                    </div>
+
+                    <table class="bill-items-table">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th class="amount-col">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${bill.lineItems.map(item => `
+                                <tr>
+                                    <td>${Utils.escapeHtml(item.description)}</td>
+                                    <td class="amount-col">${Utils.formatCurrency(item.amount)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>Current Month Total</td>
+                                <td class="amount-col">${Utils.formatCurrency(bill.totalAmount)}</td>
+                            </tr>
+                            ${bill.previousDue > 0 ? `
+                                <tr>
+                                    <td>Previous Due</td>
+                                    <td class="amount-col">${Utils.formatCurrency(bill.previousDue)}</td>
+                                </tr>
+                            ` : ''}
+                            <tr class="bill-total-row">
+                                <td>Grand Total</td>
+                                <td class="amount-col">${Utils.formatCurrency(bill.grandTotal)}</td>
+                            </tr>
+                            ${bill.paidAmount > 0 ? `
+                                <tr>
+                                    <td>Amount Paid</td>
+                                    <td class="amount-col" style="color: var(--success);">${Utils.formatCurrency(bill.paidAmount)}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Balance Due</strong></td>
+                                    <td class="amount-col" style="color: var(--danger);"><strong>${Utils.formatCurrency(balance)}</strong></td>
+                                </tr>
+                            ` : ''}
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="bill-document-footer">
+                    <div class="bill-payment-info">
+                        <div class="bill-payment-method">
+                            <h5>Payment Methods</h5>
+                            <p>Cash, Cheque, UPI, Bank Transfer</p>
+                        </div>
+                        <div class="bill-payment-method">
+                            <h5>Contact</h5>
+                            <p>${settings.phone || settings.email || 'Contact society office'}</p>
+                        </div>
+                    </div>
+                    <p class="bill-note">Please pay before the due date to avoid late fee charges.</p>
+                </div>
+            `;
+        }
+
+        function printBill() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

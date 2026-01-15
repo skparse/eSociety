@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments - Society Maintenance</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                    </div>
+                    <div class="sidebar-logo-text">
+                        Society Maintenance
+                        <span>Admin Panel</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <div class="nav-item">
+                        <a href="dashboard.html" class="nav-link">
+                            <span class="nav-link-icon">📊</span>
+                            <span class="nav-link-text">Dashboard</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <div class="nav-item">
+                        <a href="flats.html" class="nav-link">
+                            <span class="nav-link-icon">🏠</span>
+                            <span class="nav-link-text">Flats</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="members.html" class="nav-link">
+                            <span class="nav-link-icon">👥</span>
+                            <span class="nav-link-text">Members</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Billing</div>
+                    <div class="nav-item">
+                        <a href="billing.html" class="nav-link">
+                            <span class="nav-link-icon">📄</span>
+                            <span class="nav-link-text">Bills</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="payments.html" class="nav-link active">
+                            <span class="nav-link-icon">💰</span>
+                            <span class="nav-link-text">Payments</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Settings</div>
+                    <div class="nav-item">
+                        <a href="master-data.html" class="nav-link">
+                            <span class="nav-link-icon">⚙️</span>
+                            <span class="nav-link-text">Master Data</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="reports.html" class="nav-link">
+                            <span class="nav-link-icon">📈</span>
+                            <span class="nav-link-text">Reports</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="sidebar-user">
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-avatar" id="user-avatar">A</div>
+                    <div>
+                        <div class="sidebar-user-name" id="user-name">Admin</div>
+                        <div class="sidebar-user-role">Administrator</div>
+                    </div>
+                </div>
+                <button class="sidebar-logout" onclick="handleLogout()">
+                    <span>🚪</span>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                    <h1 class="top-bar-title">Payments</h1>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div>
+                        <h2>Payment History</h2>
+                        <p class="text-muted mb-0">Record and manage payments</p>
+                    </div>
+                    <div class="page-header-actions">
+                        <button class="btn btn-primary" onclick="openPaymentModal()">+ Record Payment</button>
+                    </div>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="form-group" style="min-width: 150px;">
+                        <input type="date" class="form-control" id="filter-from-date" onchange="filterPayments()">
+                    </div>
+                    <div class="form-group" style="min-width: 150px;">
+                        <input type="date" class="form-control" id="filter-to-date" onchange="filterPayments()">
+                    </div>
+                    <div class="form-group">
+                        <select class="form-select" id="filter-flat" onchange="filterPayments()">
+                            <option value="">All Flats</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-select" id="filter-mode" onchange="filterPayments()">
+                            <option value="">All Modes</option>
+                            <option value="cash">Cash</option>
+                            <option value="cheque">Cheque</option>
+                            <option value="upi">UPI</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="stats-grid mb-4">
+                    <div class="stat-card">
+                        <div class="stat-card-icon success">💰</div>
+                        <div class="stat-card-value" id="stat-total-collected">₹ 0</div>
+                        <div class="stat-card-label">Total Collected (Filtered)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon primary">📋</div>
+                        <div class="stat-card-value" id="stat-total-payments">0</div>
+                        <div class="stat-card-label">Total Payments</div>
+                    </div>
+                </div>
+
+                <!-- Payments Table -->
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Receipt No.</th>
+                                        <th>Date</th>
+                                        <th>Flat</th>
+                                        <th>Bill No.</th>
+                                        <th>Amount</th>
+                                        <th>Mode</th>
+                                        <th>Reference</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="payments-table-body">
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal-backdrop" id="payment-modal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h5>Record Payment</h5>
+                <button class="modal-close" onclick="closeModal('payment-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="payment-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required">Select Flat</label>
+                            <select class="form-select" name="flatId" id="payment-flat-select" required onchange="loadFlatBills()">
+                                <option value="">Select Flat</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Select Bill (Optional)</label>
+                            <select class="form-select" name="billId" id="payment-bill-select" onchange="updateBillInfo()">
+                                <option value="">Advance Payment / No Bill</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="bill-info" class="payment-bill-info mb-3 d-none">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Bill Amount:</span>
+                            <strong id="info-bill-amount">₹ 0</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Already Paid:</span>
+                            <strong id="info-paid-amount" class="text-success">₹ 0</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Balance Due:</span>
+                            <strong id="info-balance" class="text-danger">₹ 0</strong>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required">Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" class="form-control" name="amount" required min="1" step="0.01" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required">Payment Date</label>
+                            <input type="date" class="form-control" name="paymentDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required">Payment Mode</label>
+                            <select class="form-select" name="paymentMode" required>
+                                <option value="cash">Cash</option>
+                                <option value="cheque">Cheque</option>
+                                <option value="upi">UPI</option>
+                                <option value="bank_transfer">Bank Transfer</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Reference No.</label>
+                            <input type="text" class="form-control" name="referenceNo" placeholder="Cheque No., UTR, etc.">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Remarks</label>
+                        <textarea class="form-control" name="remarks" rows="2" placeholder="Any additional notes"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('payment-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="savePayment()">Save Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div class="modal-backdrop" id="receipt-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h5>Payment Receipt</h5>
+                <button class="modal-close" onclick="closeModal('receipt-modal')">×</button>
+            </div>
+            <div class="modal-body" id="receipt-content">
+                <!-- Receipt content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('receipt-modal')">Close</button>
+                <button class="btn btn-primary" onclick="printCurrentReceipt()">Print Receipt</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner spinner-lg"></div>
+        <div class="loading-message">Loading...</div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin/payments.js"></script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flats Management - Society Maintenance</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                    </div>
+                    <div class="sidebar-logo-text">
+                        Society Maintenance
+                        <span>Admin Panel</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <div class="nav-item">
+                        <a href="dashboard.html" class="nav-link">
+                            <span class="nav-link-icon">📊</span>
+                            <span class="nav-link-text">Dashboard</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <div class="nav-item">
+                        <a href="flats.html" class="nav-link active">
+                            <span class="nav-link-icon">🏠</span>
+                            <span class="nav-link-text">Flats</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="members.html" class="nav-link">
+                            <span class="nav-link-icon">👥</span>
+                            <span class="nav-link-text">Members</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Billing</div>
+                    <div class="nav-item">
+                        <a href="billing.html" class="nav-link">
+                            <span class="nav-link-icon">📄</span>
+                            <span class="nav-link-text">Bills</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="payments.html" class="nav-link">
+                            <span class="nav-link-icon">💰</span>
+                            <span class="nav-link-text">Payments</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Settings</div>
+                    <div class="nav-item">
+                        <a href="master-data.html" class="nav-link">
+                            <span class="nav-link-icon">⚙️</span>
+                            <span class="nav-link-text">Master Data</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="reports.html" class="nav-link">
+                            <span class="nav-link-icon">📈</span>
+                            <span class="nav-link-text">Reports</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="sidebar-user">
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-avatar" id="user-avatar">A</div>
+                    <div>
+                        <div class="sidebar-user-name" id="user-name">Admin</div>
+                        <div class="sidebar-user-role">Administrator</div>
+                    </div>
+                </div>
+                <button class="sidebar-logout" onclick="handleLogout()">
+                    <span>🚪</span>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                    <h1 class="top-bar-title">Flats Management</h1>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div>
+                        <h2>All Flats</h2>
+                        <p class="text-muted mb-0">Manage society flats and their details</p>
+                    </div>
+                    <div class="page-header-actions">
+                        <button class="btn btn-primary" onclick="openFlatModal()">+ Add Flat</button>
+                    </div>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="form-group" style="min-width: 200px;">
+                        <input type="text" class="form-control" id="search-input" placeholder="Search flats..." oninput="filterFlats()">
+                    </div>
+                    <div class="form-group">
+                        <select class="form-select" id="filter-building" onchange="filterFlats()">
+                            <option value="">All Buildings</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-select" id="filter-type" onchange="filterFlats()">
+                            <option value="">All Types</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Flats Table -->
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Flat No.</th>
+                                        <th>Building</th>
+                                        <th>Type</th>
+                                        <th>Area (sq.ft)</th>
+                                        <th>Owner</th>
+                                        <th>Phone</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="flats-table-body">
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Flat Modal -->
+    <div class="modal-backdrop" id="flat-modal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h5 id="flat-modal-title">Add Flat</h5>
+                <button class="modal-close" onclick="closeModal('flat-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="flat-form">
+                    <input type="hidden" name="id">
+
+                    <div class="form-section">
+                        <div class="form-section-title">Flat Details</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label required">Flat No.</label>
+                                <input type="text" class="form-control" name="flatNo" required placeholder="e.g., A-101, B-202">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">Building</label>
+                                <select class="form-select" name="buildingId" required id="flat-building-select">
+                                    <option value="">Select Building</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label required">Flat Type</label>
+                                <select class="form-select" name="flatTypeId" required id="flat-type-select" onchange="updateAreaFromType()">
+                                    <option value="">Select Type</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">Area (sq.ft)</label>
+                                <input type="number" class="form-control" name="area" required min="1" placeholder="e.g., 750">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Owner Details</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label required">Owner Name</label>
+                                <input type="text" class="form-control" name="ownerName" required placeholder="Full name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" name="ownerPhone" placeholder="10-digit number">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="ownerEmail" placeholder="email@example.com">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Vehicle & Parking Details</div>
+                        <p class="text-muted mb-3" style="font-size: 0.8125rem;">Enter number of vehicles parked inside society premises (parking charges apply only for vehicles parked inside)</p>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">2-Wheelers (Inside Parking)</label>
+                                <input type="number" class="form-control" name="twoWheelerCount" min="0" value="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">4-Wheelers (Inside Parking)</label>
+                                <input type="number" class="form-control" name="fourWheelerCount" min="0" value="0" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Status</div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="isOccupied" id="flat-occupied" checked>
+                            <label class="form-check-label" for="flat-occupied">Occupied</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="isActive" id="flat-active" checked>
+                            <label class="form-check-label" for="flat-active">Active</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('flat-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveFlat()">Save Flat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner spinner-lg"></div>
+        <div class="loading-message">Loading...</div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin/flats.js"></script>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members Management - Society Maintenance</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                    </div>
+                    <div class="sidebar-logo-text">
+                        Society Maintenance
+                        <span>Admin Panel</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <div class="nav-item">
+                        <a href="dashboard.html" class="nav-link">
+                            <span class="nav-link-icon">📊</span>
+                            <span class="nav-link-text">Dashboard</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <div class="nav-item">
+                        <a href="flats.html" class="nav-link">
+                            <span class="nav-link-icon">🏠</span>
+                            <span class="nav-link-text">Flats</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="members.html" class="nav-link active">
+                            <span class="nav-link-icon">👥</span>
+                            <span class="nav-link-text">Members</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Billing</div>
+                    <div class="nav-item">
+                        <a href="billing.html" class="nav-link">
+                            <span class="nav-link-icon">📄</span>
+                            <span class="nav-link-text">Bills</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="payments.html" class="nav-link">
+                            <span class="nav-link-icon">💰</span>
+                            <span class="nav-link-text">Payments</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Settings</div>
+                    <div class="nav-item">
+                        <a href="master-data.html" class="nav-link">
+                            <span class="nav-link-icon">⚙️</span>
+                            <span class="nav-link-text">Master Data</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="reports.html" class="nav-link">
+                            <span class="nav-link-icon">📈</span>
+                            <span class="nav-link-text">Reports</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="sidebar-user">
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-avatar" id="user-avatar">A</div>
+                    <div>
+                        <div class="sidebar-user-name" id="user-name">Admin</div>
+                        <div class="sidebar-user-role">Administrator</div>
+                    </div>
+                </div>
+                <button class="sidebar-logout" onclick="handleLogout()">
+                    <span>🚪</span>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                    <h1 class="top-bar-title">Members Management</h1>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div>
+                        <h2>All Members</h2>
+                        <p class="text-muted mb-0">Manage member accounts and access</p>
+                    </div>
+                    <div class="page-header-actions">
+                        <button class="btn btn-primary" onclick="openMemberModal()">+ Add Member</button>
+                    </div>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="form-group" style="min-width: 200px;">
+                        <input type="text" class="form-control" id="search-input" placeholder="Search members..." oninput="filterMembers()">
+                    </div>
+                    <div class="form-group">
+                        <select class="form-select" id="filter-role" onchange="filterMembers()">
+                            <option value="">All Roles</option>
+                            <option value="admin">Admin</option>
+                            <option value="member">Member</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-select" id="filter-status" onchange="filterMembers()">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Members Table -->
+                <div class="card">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Role</th>
+                                        <th>Linked Flat</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="members-table-body">
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Member Modal -->
+    <div class="modal-backdrop" id="member-modal">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h5 id="member-modal-title">Add Member</h5>
+                <button class="modal-close" onclick="closeModal('member-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="member-form">
+                    <input type="hidden" name="id">
+
+                    <div class="form-section">
+                        <div class="form-section-title">Account Details</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label required">Username</label>
+                                <input type="text" class="form-control" name="username" required placeholder="Login username">
+                            </div>
+                            <div class="form-group" id="password-group">
+                                <label class="form-label required">Password</label>
+                                <input type="password" class="form-control" name="password" placeholder="Password">
+                                <div class="form-text">Leave blank to keep existing password (when editing)</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label required">Role</label>
+                                <select class="form-select" name="role" required>
+                                    <option value="member">Member</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Linked Flat</label>
+                                <select class="form-select" name="flatId" id="member-flat-select">
+                                    <option value="">No flat linked</option>
+                                </select>
+                                <div class="form-text">Required for members to view their bills</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Personal Details</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label required">Full Name</label>
+                                <input type="text" class="form-control" name="name" required placeholder="Full name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" name="phone" placeholder="10-digit number">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" placeholder="email@example.com">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Status</div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="isActive" id="member-active" checked>
+                            <label class="form-check-label" for="member-active">Active</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('member-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveMember()">Save Member</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div class="modal-backdrop" id="reset-password-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h5>Reset Password</h5>
+                <button class="modal-close" onclick="closeModal('reset-password-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="reset-password-form">
+                    <input type="hidden" name="userId">
+                    <p id="reset-password-user-name" class="mb-3"></p>
+                    <div class="form-group">
+                        <label class="form-label required">New Password</label>
+                        <input type="password" class="form-control" name="newPassword" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Confirm Password</label>
+                        <input type="password" class="form-control" name="confirmPassword" required minlength="6">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('reset-password-modal')">Cancel</button>
+                <button class="btn btn-primary" onclick="resetPassword()">Reset Password</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner spinner-lg"></div>
+        <div class="loading-message">Loading...</div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin/members.js"></script>
+</body>
+</html>

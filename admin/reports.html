@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Society Maintenance</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                    </div>
+                    <div class="sidebar-logo-text">
+                        Society Maintenance
+                        <span>Admin Panel</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <div class="nav-item">
+                        <a href="dashboard.html" class="nav-link">
+                            <span class="nav-link-icon">📊</span>
+                            <span class="nav-link-text">Dashboard</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <div class="nav-item">
+                        <a href="flats.html" class="nav-link">
+                            <span class="nav-link-icon">🏠</span>
+                            <span class="nav-link-text">Flats</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="members.html" class="nav-link">
+                            <span class="nav-link-icon">👥</span>
+                            <span class="nav-link-text">Members</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Billing</div>
+                    <div class="nav-item">
+                        <a href="billing.html" class="nav-link">
+                            <span class="nav-link-icon">📄</span>
+                            <span class="nav-link-text">Bills</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="payments.html" class="nav-link">
+                            <span class="nav-link-icon">💰</span>
+                            <span class="nav-link-text">Payments</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Settings</div>
+                    <div class="nav-item">
+                        <a href="master-data.html" class="nav-link">
+                            <span class="nav-link-icon">⚙️</span>
+                            <span class="nav-link-text">Master Data</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="reports.html" class="nav-link active">
+                            <span class="nav-link-icon">📈</span>
+                            <span class="nav-link-text">Reports</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="sidebar-user">
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-avatar" id="user-avatar">A</div>
+                    <div>
+                        <div class="sidebar-user-name" id="user-name">Admin</div>
+                        <div class="sidebar-user-role">Administrator</div>
+                    </div>
+                </div>
+                <button class="sidebar-logout" onclick="handleLogout()">
+                    <span>🚪</span>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                    <h1 class="top-bar-title">Reports</h1>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Report Type Tabs -->
+                <div class="master-data-tabs mb-4">
+                    <button class="master-data-tab active" data-tab="outstanding">Outstanding Report</button>
+                    <button class="master-data-tab" data-tab="collection">Collection Report</button>
+                    <button class="master-data-tab" data-tab="ledger">Flat Ledger</button>
+                </div>
+
+                <!-- Outstanding Report -->
+                <div class="tab-content active" id="tab-outstanding">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4>Outstanding Report</h4>
+                            <button class="btn btn-outline-primary btn-sm" onclick="exportOutstandingReport()">Export CSV</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="report-summary" id="outstanding-summary">
+                                <!-- Summary will be loaded here -->
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table" id="outstanding-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Flat No.</th>
+                                            <th>Owner</th>
+                                            <th>Total Billed</th>
+                                            <th>Total Paid</th>
+                                            <th>Outstanding</th>
+                                            <th>Overdue</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="outstanding-table-body">
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted">Loading...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Collection Report -->
+                <div class="tab-content" id="tab-collection">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Collection Report</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="report-filters">
+                                <div class="form-group">
+                                    <label class="form-label">From Date</label>
+                                    <input type="date" class="form-control" id="collection-from-date" onchange="generateCollectionReport()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">To Date</label>
+                                    <input type="date" class="form-control" id="collection-to-date" onchange="generateCollectionReport()">
+                                </div>
+                                <div class="form-group d-flex align-items-end">
+                                    <button class="btn btn-outline-primary btn-sm" onclick="exportCollectionReport()">Export CSV</button>
+                                </div>
+                            </div>
+
+                            <div class="report-summary" id="collection-summary">
+                                <!-- Summary will be loaded here -->
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Receipt No.</th>
+                                            <th>Flat</th>
+                                            <th>Mode</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="collection-table-body">
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">Select date range to view report</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flat Ledger Report -->
+                <div class="tab-content" id="tab-ledger">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Flat Ledger</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="report-filters">
+                                <div class="form-group" style="min-width: 250px;">
+                                    <label class="form-label">Select Flat</label>
+                                    <select class="form-select" id="ledger-flat" onchange="generateLedgerReport()">
+                                        <option value="">Select a flat</option>
+                                    </select>
+                                </div>
+                                <div class="form-group d-flex align-items-end">
+                                    <button class="btn btn-outline-primary btn-sm" onclick="exportLedgerReport()">Export CSV</button>
+                                </div>
+                            </div>
+
+                            <div id="ledger-flat-info" class="payment-bill-info mb-3 d-none">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Owner Name:</span>
+                                    <strong id="ledger-owner">-</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Flat Area:</span>
+                                    <strong id="ledger-area">-</strong>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Current Outstanding:</span>
+                                    <strong id="ledger-outstanding" class="text-danger">₹ 0</strong>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Description</th>
+                                            <th>Debit (Bill)</th>
+                                            <th>Credit (Payment)</th>
+                                            <th>Balance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ledger-table-body">
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">Select a flat to view ledger</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner spinner-lg"></div>
+        <div class="loading-message">Loading...</div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin/reports.js"></script>
+</body>
+</html>
