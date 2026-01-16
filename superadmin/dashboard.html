@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Super Admin Dashboard - Society Maintenance</title>
     <link rel="stylesheet" href="../css/style.css">
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         .dashboard-container {
             max-width: 1200px;
@@ -153,16 +155,18 @@
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            align-items: center;
-            justify-content: center;
+            padding: 1rem;
+            box-sizing: border-box;
         }
 
         .modal.show {
             display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .modal-content {
@@ -172,6 +176,7 @@
             max-width: 500px;
             max-height: 90vh;
             overflow-y: auto;
+            margin: 0 auto;
         }
 
         .modal-header {
@@ -239,6 +244,36 @@
 
         .copy-credentials {
             margin-top: 0.5rem;
+        }
+
+        /* QR Code Styles */
+        .qr-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .qr-code-box {
+            padding: 1rem;
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            display: inline-block;
+        }
+
+        .qr-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
         }
     </style>
 </head>
@@ -343,11 +378,21 @@
                         <p><strong>Admin Username:</strong> admin</p>
                         <p><strong>Admin Password:</strong> <span id="created-password"></span></p>
                         <p><strong>Spreadsheet:</strong> <a id="created-spreadsheet" href="#" target="_blank">Open in Google Sheets</a></p>
-                        <hr style="margin: 1rem 0;">
-                        <p><strong>Member Login Link:</strong></p>
-                        <p style="word-break: break-all;"><a id="created-member-link" href="#" target="_blank"></a></p>
-                        <button type="button" class="btn btn-sm btn-secondary copy-credentials" onclick="copyMemberLink()">Copy Link</button>
-                        <small class="text-muted d-block" style="margin-top: 0.5rem;">Share this link with society members. They just need username & password to login.</small>
+
+                        <div class="qr-section">
+                            <p><strong>Member Login Link:</strong></p>
+                            <p style="word-break: break-all; font-size: 0.8rem;"><a id="created-member-link" href="#" target="_blank"></a></p>
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="copyMemberLink()">Copy Link</button>
+
+                            <div class="qr-container">
+                                <p><strong>QR Code for Members:</strong></p>
+                                <div class="qr-code-box" id="created-qr-code"></div>
+                                <div class="qr-actions">
+                                    <button type="button" class="btn btn-sm btn-primary" onclick="downloadQRCode('created-qr-code', 'created-code')">Download QR Code</button>
+                                </div>
+                                <small class="text-muted">Print this QR code for your notice board</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -391,8 +436,19 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Member Login Link</label>
-                    <p style="word-break: break-all;"><a id="view-member-link" href="#" target="_blank"></a></p>
+                    <p style="word-break: break-all; font-size: 0.8rem;"><a id="view-member-link" href="#" target="_blank"></a></p>
                     <button type="button" class="btn btn-sm btn-secondary" onclick="copyViewMemberLink()">Copy Link</button>
+                </div>
+
+                <div class="qr-section">
+                    <label class="form-label">QR Code for Members</label>
+                    <div class="qr-container">
+                        <div class="qr-code-box" id="view-qr-code"></div>
+                        <div class="qr-actions">
+                            <button type="button" class="btn btn-sm btn-primary" onclick="downloadQRCode('view-qr-code', 'view-code')">Download QR Code</button>
+                        </div>
+                        <small class="text-muted">Print this QR code for your notice board</small>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -587,6 +643,18 @@
                     document.getElementById('created-member-link').href = memberLink;
                     document.getElementById('created-member-link').textContent = memberLink;
 
+                    // Generate QR Code
+                    const qrContainer = document.getElementById('created-qr-code');
+                    qrContainer.innerHTML = ''; // Clear previous QR
+                    new QRCode(qrContainer, {
+                        text: memberLink,
+                        width: 180,
+                        height: 180,
+                        colorDark: '#000000',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+
                     successDiv.style.display = 'block';
                     btn.style.display = 'none';
 
@@ -625,6 +693,18 @@
             const memberLink = baseUrl + '/index.html?s=' + encodedCode;
             document.getElementById('view-member-link').href = memberLink;
             document.getElementById('view-member-link').textContent = memberLink;
+
+            // Generate QR Code for view modal
+            const qrContainer = document.getElementById('view-qr-code');
+            qrContainer.innerHTML = ''; // Clear previous QR
+            new QRCode(qrContainer, {
+                text: memberLink,
+                width: 180,
+                height: 180,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
 
             document.getElementById('view-modal').classList.add('show');
         }
@@ -709,6 +789,37 @@
                 document.body.removeChild(textarea);
                 Utils.showToast('Link copied to clipboard!', 'success');
             });
+        }
+
+        function downloadQRCode(qrContainerId, codeElementId) {
+            const qrContainer = document.getElementById(qrContainerId);
+            const codeElement = document.getElementById(codeElementId);
+            const societyCode = codeElement ? codeElement.textContent : 'society';
+
+            // QRCode.js creates either a canvas or img element
+            const canvas = qrContainer.querySelector('canvas');
+            const img = qrContainer.querySelector('img');
+
+            if (canvas) {
+                // If it's a canvas, convert to data URL and download
+                const dataUrl = canvas.toDataURL('image/png');
+                triggerDownload(dataUrl, societyCode);
+            } else if (img) {
+                // If it's an img, use its src
+                triggerDownload(img.src, societyCode);
+            } else {
+                Utils.showToast('QR code not found', 'error');
+            }
+        }
+
+        function triggerDownload(dataUrl, societyCode) {
+            const link = document.createElement('a');
+            link.download = 'QR-Code-' + societyCode + '.png';
+            link.href = dataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            Utils.showToast('QR code downloaded!', 'success');
         }
     </script>
 </body>
