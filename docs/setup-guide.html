@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Guide - Society Maintenance Billing</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        body {
+            background: var(--gray-50);
+        }
+
+        .docs-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .docs-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .docs-header h1 {
+            color: var(--gray-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .docs-header p {
+            color: var(--gray-500);
+        }
+
+        .docs-nav {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .docs-nav h3 {
+            margin: 0 0 1rem 0;
+            color: var(--gray-700);
+        }
+
+        .docs-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .docs-nav li {
+            margin: 0.5rem 0;
+        }
+
+        .docs-nav a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .docs-nav a:hover {
+            text-decoration: underline;
+        }
+
+        .docs-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .docs-section h2 {
+            color: var(--primary);
+            margin-top: 0;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .step {
+            display: flex;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--gray-800);
+        }
+
+        .step-content p {
+            margin: 0;
+            color: var(--gray-600);
+        }
+
+        .info-box {
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin: 1rem 0;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            color: #92400e;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin: 1rem 0;
+        }
+
+        .success-box {
+            background: #dcfce7;
+            border: 1px solid #86efac;
+            color: #166534;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin: 1rem 0;
+        }
+
+        .credentials-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .credentials-table th,
+        .credentials-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border: 1px solid var(--gray-200);
+        }
+
+        .credentials-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+        }
+
+        .screenshot-placeholder {
+            background: var(--gray-100);
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius);
+            padding: 3rem;
+            text-align: center;
+            color: var(--gray-500);
+            margin: 1rem 0;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            margin-bottom: 1rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background: var(--gray-100);
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .btn-link {
+            display: inline-block;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="docs-container">
+        <a href="../index.html" class="back-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Login
+        </a>
+
+        <div class="docs-header">
+            <h1>Setup Guide</h1>
+            <p>Complete guide to set up and manage Society Maintenance Billing System</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="docs-nav">
+            <h3>Contents</h3>
+            <ul>
+                <li><a href="#initial-setup">Part 1: Initial Setup (One-Time)</a></li>
+                <li><a href="#create-society">Part 2: Creating a New Society</a></li>
+                <li><a href="#share-access">Part 3: Sharing Access with Members</a></li>
+                <li><a href="#login-credentials">Login Credentials Reference</a></li>
+                <li><a href="#faq">Frequently Asked Questions</a></li>
+            </ul>
+        </div>
+
+        <!-- Part 1: Initial Setup -->
+        <div class="docs-section" id="initial-setup">
+            <h2>Part 1: Initial Setup (One-Time)</h2>
+            <p>This setup needs to be done only once by the system administrator.</p>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Create Google Apps Script</h4>
+                    <p>Go to <a href="https://script.google.com" target="_blank">script.google.com</a> and sign in with your Google account. Click "New Project" to create a new project.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Copy the Backend Code</h4>
+                    <p>Open the file <code>google-apps-script.js</code> from your project folder. Copy all the code and paste it into the Google Apps Script editor (replace any existing code).</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Deploy as Web App</h4>
+                    <p>Click <strong>Deploy</strong> → <strong>New deployment</strong>. Select "Web app" as the type. Set "Execute as" to <strong>Me</strong> and "Who has access" to <strong>Anyone</strong>. Click Deploy.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Authorize the App</h4>
+                    <p>Click "Authorize access" and allow the permissions. This lets the app create spreadsheets in your Google Drive.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h4>Copy the Web App URL</h4>
+                    <p>After deployment, you'll see a URL that looks like:<br>
+                    <code>https://script.google.com/macros/s/ABC...XYZ/exec</code><br>
+                    Copy this URL.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <h4>Configure the Application</h4>
+                    <p>Open the file <code>js/config.js</code> in a text editor. Find the line with <code>WEB_APP_URL</code> and paste your URL between the quotes. Save the file.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">7</div>
+                <div class="step-content">
+                    <h4>Upload to Web Hosting</h4>
+                    <p>Upload all the files to your web hosting (like GitHub Pages, Netlify, or any web server). Your system is now ready!</p>
+                </div>
+            </div>
+
+            <div class="success-box">
+                <strong>Setup Complete!</strong> You can now login as Super Admin and start creating societies.
+            </div>
+        </div>
+
+        <!-- Part 2: Create Society -->
+        <div class="docs-section" id="create-society">
+            <h2>Part 2: Creating a New Society</h2>
+            <p>Follow these steps to register a new society in the system.</p>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Login as Super Admin</h4>
+                    <p>Open the application and click on the <strong>"Super Admin"</strong> tab. Enter your Super Admin credentials and click Sign In.</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>Default Super Admin Credentials:</strong><br>
+                Username: <code>superadmin</code><br>
+                Password: <code>password</code><br>
+                <em>(Change this after first login for security)</em>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Open Super Admin Dashboard</h4>
+                    <p>After login, you'll see the Super Admin Dashboard showing all societies and statistics.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Click "Create Society"</h4>
+                    <p>Click the <strong>"+ Create Society"</strong> button in the top right corner of the Societies section.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Fill Society Details</h4>
+                    <p>Enter the following information:</p>
+                    <ul>
+                        <li><strong>Society Code:</strong> A unique short code (3-10 letters/numbers, e.g., "SUNSHINE", "ABC123")</li>
+                        <li><strong>Society Name:</strong> Full name of the society (e.g., "Sunshine Apartments")</li>
+                        <li><strong>Admin Password:</strong> Password for the society's admin account (default: admin123)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h4>Click "Create Society"</h4>
+                    <p>Click the button and wait for the system to create the society. This will automatically create a new Google Spreadsheet for storing the society's data.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <h4>Save the Credentials</h4>
+                    <p>After creation, you'll see:</p>
+                    <ul>
+                        <li>Society Code</li>
+                        <li>Admin Username & Password</li>
+                        <li>Link to the Google Spreadsheet</li>
+                        <li><strong>Member Login Link</strong> (important!)</li>
+                    </ul>
+                    <p>Copy and save these details securely.</p>
+                </div>
+            </div>
+
+            <div class="success-box">
+                <strong>Society Created!</strong> The society now has its own database and admin account. Share the Member Login Link with society members.
+            </div>
+        </div>
+
+        <!-- Part 3: Share Access -->
+        <div class="docs-section" id="share-access">
+            <h2>Part 3: Sharing Access with Members</h2>
+            <p>How to give society members access to the billing system.</p>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Get the Member Login Link</h4>
+                    <p>From the Super Admin Dashboard, click the <strong>view icon</strong> next to any society to see its details including the Member Login Link. Click <strong>"Copy Link"</strong> to copy it.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Share the Link</h4>
+                    <p>Share the Member Login Link with society members through:</p>
+                    <ul>
+                        <li>WhatsApp group</li>
+                        <li>Email</li>
+                        <li>SMS</li>
+                        <li>Notice board (print as QR code)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Provide Login Credentials</h4>
+                    <p>Members need their username and password to login. The society admin can create member accounts from the Admin Dashboard.</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>Tip:</strong> Create a QR code from the Member Login Link using free services like <a href="https://www.qr-code-generator.com/" target="_blank">qr-code-generator.com</a>. Print it on notice boards for easy access!
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Members Bookmark the Link</h4>
+                    <p>Ask members to bookmark the link for easy future access. They only need to enter their username and password - the society is automatically selected from the link.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Credentials -->
+        <div class="docs-section" id="login-credentials">
+            <h2>Login Credentials Reference</h2>
+
+            <table class="credentials-table">
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Username</th>
+                        <th>Default Password</th>
+                        <th>Access</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Super Admin</strong></td>
+                        <td>superadmin</td>
+                        <td>password</td>
+                        <td>Create/manage all societies</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Society Admin</strong></td>
+                        <td>admin</td>
+                        <td>admin123</td>
+                        <td>Manage one society (flats, bills, members)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Member</strong></td>
+                        <td>(created by admin)</td>
+                        <td>(set by admin)</td>
+                        <td>View own bills and payments</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="warning-box">
+                <strong>Security Reminder:</strong> Change all default passwords after first login!
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="docs-section" id="faq">
+            <h2>Frequently Asked Questions</h2>
+
+            <h4>Q: Where is the society data stored?</h4>
+            <p>Each society's data is stored in a separate Google Spreadsheet in the Super Admin's Google Drive. This ensures complete data isolation between societies.</p>
+
+            <h4>Q: Can I access the data directly in Google Sheets?</h4>
+            <p>Yes! From the Super Admin Dashboard, click the view icon for any society to get the link to its Google Spreadsheet.</p>
+
+            <h4>Q: What happens if I delete a society?</h4>
+            <p>Deleting a society only deactivates it - the data is preserved in Google Sheets. Members won't be able to login, but you can reactivate it later if needed.</p>
+
+            <h4>Q: How many societies can I create?</h4>
+            <p>There's no limit! Each society gets its own spreadsheet, so you can manage as many societies as needed.</p>
+
+            <h4>Q: Do members need to know the society code?</h4>
+            <p>No. When members use the Member Login Link, the society is automatically selected. They only need to enter their username and password.</p>
+
+            <h4>Q: Can I use this offline?</h4>
+            <p>No, an internet connection is required as the data is stored in Google Sheets.</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; color: var(--gray-500);">
+            <p>Need help? Contact your system administrator.</p>
+        </div>
+    </div>
+</body>
+</html>
