@@ -2,10 +2,123 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Master Data - Society Maintenance</title>
+    <link rel="manifest" href="../manifest.json">
+    <link rel="icon" type="image/svg+xml" href="../icons/icon.svg">
+    <link rel="apple-touch-icon" href="../icons/icon-192.png">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/admin.css">
+    <!-- Papa Parse for CSV parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <style>
+        .import-section {
+            background: var(--gray-50);
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.2s;
+        }
+        .import-section:hover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+        .import-section.dragover {
+            border-color: var(--primary);
+            background: #dbeafe;
+        }
+        .import-section h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--gray-700);
+        }
+        .import-section p {
+            margin: 0 0 1rem 0;
+            color: var(--gray-500);
+            font-size: 0.875rem;
+        }
+        .import-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+        .preview-container {
+            margin-top: 1.5rem;
+            display: none;
+        }
+        .preview-container.show {
+            display: block;
+        }
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .preview-stats {
+            display: flex;
+            gap: 1rem;
+        }
+        .preview-stat {
+            padding: 0.5rem 1rem;
+            background: var(--gray-100);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+        }
+        .preview-stat.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .preview-stat.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .preview-table {
+            max-height: 400px;
+            overflow: auto;
+        }
+        .preview-table table {
+            font-size: 0.8125rem;
+        }
+        .row-error {
+            background: #fee2e2 !important;
+        }
+        .row-error td {
+            color: #991b1b;
+        }
+        .template-info {
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+        .template-info strong {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+    </style>
 </head>
 <body>
     <div class="admin-layout">
@@ -20,7 +133,7 @@
                         </svg>
                     </div>
                     <div class="sidebar-logo-text">
-                        Society Maintenance
+                        <span id="society-name">Society Maintenance</span>
                         <span>Admin Panel</span>
                     </div>
                 </a>
@@ -140,6 +253,7 @@
                     <button class="master-data-tab" data-tab="buildings">Buildings</button>
                     <button class="master-data-tab" data-tab="flatTypes">Flat Types</button>
                     <button class="master-data-tab" data-tab="chargeTypes">Charge Types</button>
+                    <button class="master-data-tab" data-tab="import">Import Data</button>
                 </div>
 
                 <!-- Society Settings Tab -->
@@ -282,6 +396,137 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Import Data Tab -->
+                <div class="card tab-content" id="tab-import">
+                    <div class="card-header">
+                        <h4>Import Data from CSV</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="template-info">
+                            <strong>How to Import:</strong>
+                            1. Download the CSV template for Flats or Members<br>
+                            2. Fill in the data in Excel/Google Sheets (keep the header row)<br>
+                            3. Save as CSV file<br>
+                            4. Upload the file and preview the data<br>
+                            5. Click "Import" to add all records at once
+                        </div>
+
+                        <!-- Import Flats Section -->
+                        <div class="import-section" id="flats-import-section">
+                            <h4>Import Flats</h4>
+                            <p>Bulk import flat details including owner information and parking</p>
+                            <div class="import-actions">
+                                <button class="btn btn-outline-primary btn-sm" onclick="downloadTemplate('flats')">
+                                    Download Template
+                                </button>
+                                <div class="file-input-wrapper">
+                                    <button class="btn btn-primary btn-sm">Upload CSV File</button>
+                                    <input type="file" accept=".csv" onchange="handleFileUpload(event, 'flats')" id="flats-file-input">
+                                </div>
+                            </div>
+
+                            <!-- Flats Preview -->
+                            <div class="preview-container" id="flats-preview">
+                                <div class="preview-header">
+                                    <h5>Preview - Flats Data</h5>
+                                    <div class="preview-stats">
+                                        <span class="preview-stat success" id="flats-valid-count">0 valid</span>
+                                        <span class="preview-stat error" id="flats-error-count">0 errors</span>
+                                    </div>
+                                </div>
+                                <div class="preview-table">
+                                    <table class="table">
+                                        <thead id="flats-preview-header"></thead>
+                                        <tbody id="flats-preview-body"></tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-3 d-flex gap-2 justify-content-end">
+                                    <button class="btn btn-secondary" onclick="cancelImport('flats')">Cancel</button>
+                                    <button class="btn btn-primary" onclick="confirmImport('flats')" id="flats-import-btn">
+                                        Import Flats
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Import Members Section -->
+                        <div class="import-section" id="members-import-section">
+                            <h4>Import Members</h4>
+                            <p>Bulk import member accounts with login credentials</p>
+                            <div class="import-actions">
+                                <button class="btn btn-outline-primary btn-sm" onclick="downloadTemplate('members')">
+                                    Download Template
+                                </button>
+                                <div class="file-input-wrapper">
+                                    <button class="btn btn-primary btn-sm">Upload CSV File</button>
+                                    <input type="file" accept=".csv" onchange="handleFileUpload(event, 'members')" id="members-file-input">
+                                </div>
+                            </div>
+
+                            <!-- Members Preview -->
+                            <div class="preview-container" id="members-preview">
+                                <div class="preview-header">
+                                    <h5>Preview - Members Data</h5>
+                                    <div class="preview-stats">
+                                        <span class="preview-stat success" id="members-valid-count">0 valid</span>
+                                        <span class="preview-stat error" id="members-error-count">0 errors</span>
+                                    </div>
+                                </div>
+                                <div class="preview-table">
+                                    <table class="table">
+                                        <thead id="members-preview-header"></thead>
+                                        <tbody id="members-preview-body"></tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-3 d-flex gap-2 justify-content-end">
+                                    <button class="btn btn-secondary" onclick="cancelImport('members')">Cancel</button>
+                                    <button class="btn btn-primary" onclick="confirmImport('members')" id="members-import-btn">
+                                        Import Members
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Import Buildings Section -->
+                        <div class="import-section" id="buildings-import-section">
+                            <h4>Import Buildings</h4>
+                            <p>Bulk import buildings/wings with floor details</p>
+                            <div class="import-actions">
+                                <button class="btn btn-outline-primary btn-sm" onclick="downloadTemplate('buildings')">
+                                    Download Template
+                                </button>
+                                <div class="file-input-wrapper">
+                                    <button class="btn btn-primary btn-sm">Upload CSV File</button>
+                                    <input type="file" accept=".csv" onchange="handleFileUpload(event, 'buildings')" id="buildings-file-input">
+                                </div>
+                            </div>
+
+                            <!-- Buildings Preview -->
+                            <div class="preview-container" id="buildings-preview">
+                                <div class="preview-header">
+                                    <h5>Preview - Buildings Data</h5>
+                                    <div class="preview-stats">
+                                        <span class="preview-stat success" id="buildings-valid-count">0 valid</span>
+                                        <span class="preview-stat error" id="buildings-error-count">0 errors</span>
+                                    </div>
+                                </div>
+                                <div class="preview-table">
+                                    <table class="table">
+                                        <thead id="buildings-preview-header"></thead>
+                                        <tbody id="buildings-preview-body"></tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-3 d-flex gap-2 justify-content-end">
+                                    <button class="btn btn-secondary" onclick="cancelImport('buildings')">Cancel</button>
+                                    <button class="btn btn-primary" onclick="confirmImport('buildings')" id="buildings-import-btn">
+                                        Import Buildings
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -411,10 +656,64 @@
         <div class="loading-message">Loading...</div>
     </div>
 
+    <!-- Bottom Navigation for Mobile -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item">
+            <span class="bottom-nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </span>
+            <span class="bottom-nav-label">Home</span>
+        </a>
+        <a href="flats.html" class="bottom-nav-item">
+            <span class="bottom-nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+            </span>
+            <span class="bottom-nav-label">Flats</span>
+        </a>
+        <a href="billing.html" class="bottom-nav-item">
+            <span class="bottom-nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+            </span>
+            <span class="bottom-nav-label">Bills</span>
+        </a>
+        <a href="payments.html" class="bottom-nav-item">
+            <span class="bottom-nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+            </span>
+            <span class="bottom-nav-label">Payments</span>
+        </a>
+        <a href="#" class="bottom-nav-item" onclick="toggleSidebar(); return false;">
+            <span class="bottom-nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </span>
+            <span class="bottom-nav-label">More</span>
+        </a>
+    </nav>
+
     <script src="../js/config.js"></script>
     <script src="../js/utils.js"></script>
     <script src="../js/storage.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/admin/master-data.js"></script>
+    <script src="../js/mobile.js"></script>
 </body>
 </html>

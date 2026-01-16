@@ -12,8 +12,12 @@ class Auth {
 
     /**
      * Login user with society code, username and password
+     * @param {string} societyId - Society code
+     * @param {string} username - Username
+     * @param {string} password - Password
+     * @param {string} [knownSocietyName] - Optional pre-validated society name
      */
-    async login(societyId, username, password) {
+    async login(societyId, username, password, knownSocietyName = null) {
         try {
             // Set society context first
             setCurrentSociety(societyId.toUpperCase());
@@ -38,9 +42,16 @@ class Auth {
                 return { success: false, message: 'Invalid username or password' };
             }
 
-            // Get society name
-            const societyInfo = await storage.getSocietyInfo(societyId);
-            const societyName = societyInfo.success ? societyInfo.society.name : societyId;
+            // Use known society name or fetch it
+            let societyName = knownSocietyName;
+            if (!societyName) {
+                try {
+                    const societyInfo = await storage.getSocietyInfo(societyId);
+                    societyName = societyInfo.success ? societyInfo.society.name : societyId;
+                } catch (e) {
+                    societyName = societyId;
+                }
+            }
 
             // Update society with name
             setCurrentSociety(societyId.toUpperCase(), societyName);

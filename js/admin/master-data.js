@@ -22,6 +22,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('user-avatar').textContent = Utils.getInitials(user.name);
     }
 
+    // Display society name
+    const societyName = auth.getSocietyName();
+    if (societyName) {
+        document.getElementById('society-name').textContent = societyName;
+    }
+
     // Setup tab navigation
     setupTabs();
 
@@ -650,4 +656,448 @@ async function resetToDefaults() {
     } finally {
         Utils.hideLoading();
     }
+}
+
+// ==================== CSV Import Functions ====================
+
+// Store parsed data for import
+let importData = {
+    flats: { rows: [], validRows: [], errors: [] },
+    members: { rows: [], validRows: [], errors: [] },
+    buildings: { rows: [], validRows: [], errors: [] }
+};
+
+// CSV Templates
+const CSV_TEMPLATES = {
+    flats: {
+        headers: ['FlatNo', 'Building', 'FlatType', 'Area', 'OwnerName', 'OwnerPhone', 'OwnerEmail', 'TwoWheelers', 'FourWheelers', 'IsOccupied'],
+        sample: ['A-101', 'Building A', '2 BHK', '750', 'John Doe', '9876543210', 'john@email.com', '1', '1', 'Yes'],
+        required: ['FlatNo', 'Building', 'FlatType', 'OwnerName']
+    },
+    members: {
+        headers: ['Username', 'Password', 'Name', 'Email', 'Phone', 'Role', 'LinkedFlat'],
+        sample: ['john.doe', 'password123', 'John Doe', 'john@email.com', '9876543210', 'member', 'A-101'],
+        required: ['Username', 'Password', 'Name']
+    },
+    buildings: {
+        headers: ['Name', 'TotalFloors', 'Address'],
+        sample: ['Building A', '10', 'Near Main Gate'],
+        required: ['Name']
+    }
+};
+
+/**
+ * Download CSV template for import
+ */
+function downloadTemplate(type) {
+    const template = CSV_TEMPLATES[type];
+    if (!template) {
+        Utils.showToast('Invalid template type', 'error');
+        return;
+    }
+
+    // Create CSV content with headers and sample row
+    let csvContent = template.headers.join(',') + '\n';
+    csvContent += template.sample.join(',') + '\n';
+
+    // Add a few more sample rows for flats template
+    if (type === 'flats') {
+        csvContent += 'A-102,Building A,1 BHK,450,Jane Smith,9876543211,jane@email.com,0,1,Yes\n';
+        csvContent += 'B-101,Building B,3 BHK,1100,Bob Wilson,9876543212,bob@email.com,2,2,Yes\n';
+    } else if (type === 'members') {
+        csvContent += 'jane.smith,pass456,Jane Smith,jane@email.com,9876543211,member,A-102\n';
+        csvContent += 'bob.wilson,pass789,Bob Wilson,bob@email.com,9876543212,member,B-101\n';
+    } else if (type === 'buildings') {
+        csvContent += 'Building B,12,East Wing\n';
+        csvContent += 'Building C,8,West Wing\n';
+    }
+
+    downloadCSV(csvContent, `${type}_template.csv`);
+    Utils.showToast('Template downloaded! Fill in your data and upload.', 'success');
+}
+
+/**
+ * Handle CSV file upload
+ */
+function handleFileUpload(event, type) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.name.endsWith('.csv')) {
+        Utils.showToast('Please upload a CSV file', 'error');
+        event.target.value = '';
+        return;
+    }
+
+    Utils.showLoading('Parsing CSV file...');
+
+    // Parse CSV using Papa Parse
+    Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+            Utils.hideLoading();
+            processCSVData(results, type);
+            event.target.value = ''; // Reset file input
+        },
+        error: function(error) {
+            Utils.hideLoading();
+            Utils.showToast('Error parsing CSV: ' + error.message, 'error');
+            event.target.value = '';
+        }
+    });
+}
+
+/**
+ * Process parsed CSV data
+ */
+function processCSVData(results, type) {
+    const template = CSV_TEMPLATES[type];
+    const rows = results.data;
+
+    if (rows.length === 0) {
+        Utils.showToast('No data found in the CSV file', 'error');
+        return;
+    }
+
+    // Validate and process rows
+    const validRows = [];
+    const errors = [];
+
+    rows.forEach((row, index) => {
+        const validation = validateRow(row, type, index + 2); // +2 for header row and 1-based index
+
+        if (validation.isValid) {
+            validRows.push(validation.processedRow);
+        } else {
+            errors.push({
+                row: index + 2,
+                data: row,
+                errors: validation.errors
+            });
+        }
+    });
+
+    // Store for import
+    importData[type] = { rows, validRows, errors };
+
+    // Show preview
+    showImportPreview(type, rows, validRows, errors);
+}
+
+/**
+ * Validate a row based on type
+ */
+function validateRow(row, type, rowNum) {
+    const template = CSV_TEMPLATES[type];
+    const errors = [];
+    let processedRow = {};
+
+    // Check required fields
+    template.required.forEach(field => {
+        const value = row[field];
+        if (!value || value.trim() === '') {
+            errors.push(`${field} is required`);
+        }
+    });
+
+    // Type-specific validation
+    if (type === 'flats') {
+        processedRow = {
+            flatNo: (row.FlatNo || '').trim(),
+            buildingName: (row.Building || '').trim(),
+            flatTypeName: (row.FlatType || '').trim(),
+            area: parseInt(row.Area) || 500,
+            ownerName: (row.OwnerName || '').trim(),
+            ownerPhone: (row.OwnerPhone || '').trim(),
+            ownerEmail: (row.OwnerEmail || '').trim(),
+            twoWheelerCount: parseInt(row.TwoWheelers) || 0,
+            fourWheelerCount: parseInt(row.FourWheelers) || 0,
+            isOccupied: (row.IsOccupied || 'Yes').toLowerCase() !== 'no'
+        };
+
+        // Validate building exists
+        if (processedRow.buildingName) {
+            const building = masterData.buildings.find(b =>
+                b.name.toLowerCase() === processedRow.buildingName.toLowerCase()
+            );
+            if (building) {
+                processedRow.buildingId = building.id;
+            } else {
+                errors.push(`Building "${processedRow.buildingName}" not found. Please add it first.`);
+            }
+        }
+
+        // Validate flat type exists
+        if (processedRow.flatTypeName) {
+            const flatType = masterData.flatTypes.find(f =>
+                f.name.toLowerCase() === processedRow.flatTypeName.toLowerCase()
+            );
+            if (flatType) {
+                processedRow.flatTypeId = flatType.id;
+            } else {
+                errors.push(`Flat type "${processedRow.flatTypeName}" not found. Please add it first.`);
+            }
+        }
+
+        // Validate phone format
+        if (processedRow.ownerPhone && !/^\d{10}$/.test(processedRow.ownerPhone.replace(/\D/g, ''))) {
+            // Warning but not error - just clean it
+            processedRow.ownerPhone = processedRow.ownerPhone.replace(/\D/g, '');
+        }
+
+    } else if (type === 'members') {
+        processedRow = {
+            username: (row.Username || '').trim().toLowerCase(),
+            password: (row.Password || '').trim(),
+            name: (row.Name || '').trim(),
+            email: (row.Email || '').trim(),
+            phone: (row.Phone || '').trim(),
+            role: (row.Role || 'member').trim().toLowerCase(),
+            flatNo: (row.LinkedFlat || '').trim()
+        };
+
+        // Validate username
+        if (processedRow.username && processedRow.username.length < 3) {
+            errors.push('Username must be at least 3 characters');
+        }
+
+        // Validate password
+        if (processedRow.password && processedRow.password.length < 4) {
+            errors.push('Password must be at least 4 characters');
+        }
+
+        // Validate role
+        if (!['admin', 'member'].includes(processedRow.role)) {
+            processedRow.role = 'member';
+        }
+
+    } else if (type === 'buildings') {
+        processedRow = {
+            name: (row.Name || '').trim(),
+            totalFloors: parseInt(row.TotalFloors) || 1,
+            address: (row.Address || '').trim()
+        };
+
+        // Check for duplicate building name
+        const existing = masterData.buildings.find(b =>
+            b.name.toLowerCase() === processedRow.name.toLowerCase()
+        );
+        if (existing) {
+            errors.push(`Building "${processedRow.name}" already exists`);
+        }
+    }
+
+    return {
+        isValid: errors.length === 0,
+        processedRow,
+        errors
+    };
+}
+
+/**
+ * Show import preview
+ */
+function showImportPreview(type, rows, validRows, errors) {
+    const previewContainer = document.getElementById(`${type}-preview`);
+    const headerRow = document.getElementById(`${type}-preview-header`);
+    const bodyRows = document.getElementById(`${type}-preview-body`);
+    const validCount = document.getElementById(`${type}-valid-count`);
+    const errorCount = document.getElementById(`${type}-error-count`);
+
+    // Update counts
+    validCount.textContent = `${validRows.length} valid`;
+    errorCount.textContent = `${errors.length} errors`;
+
+    // Get headers from template
+    const headers = CSV_TEMPLATES[type].headers;
+
+    // Render header
+    headerRow.innerHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '<th>Status</th></tr>';
+
+    // Render body rows
+    let bodyHtml = '';
+    rows.forEach((row, index) => {
+        const error = errors.find(e => e.row === index + 2);
+        const isError = !!error;
+
+        bodyHtml += `<tr class="${isError ? 'row-error' : ''}">`;
+        headers.forEach(h => {
+            bodyHtml += `<td>${Utils.escapeHtml(row[h] || '')}</td>`;
+        });
+        bodyHtml += `<td>${isError ? '<span title="' + Utils.escapeHtml(error.errors.join(', ')) + '">Error</span>' : 'OK'}</td>`;
+        bodyHtml += '</tr>';
+    });
+
+    bodyRows.innerHTML = bodyHtml;
+
+    // Show preview
+    previewContainer.classList.add('show');
+
+    // Disable import button if no valid rows
+    const importBtn = document.getElementById(`${type}-import-btn`);
+    importBtn.disabled = validRows.length === 0;
+}
+
+/**
+ * Cancel import
+ */
+function cancelImport(type) {
+    const previewContainer = document.getElementById(`${type}-preview`);
+    previewContainer.classList.remove('show');
+    importData[type] = { rows: [], validRows: [], errors: [] };
+}
+
+/**
+ * Confirm and execute import
+ */
+async function confirmImport(type) {
+    const data = importData[type];
+    if (!data || data.validRows.length === 0) {
+        Utils.showToast('No valid rows to import', 'error');
+        return;
+    }
+
+    const confirmed = await Utils.showConfirm(
+        `This will import ${data.validRows.length} ${type}. Continue?`,
+        'Confirm Import'
+    );
+
+    if (!confirmed) return;
+
+    Utils.showLoading(`Importing ${data.validRows.length} ${type}...`);
+
+    try {
+        if (type === 'flats') {
+            await importFlats(data.validRows);
+        } else if (type === 'members') {
+            await importMembers(data.validRows);
+        } else if (type === 'buildings') {
+            await importBuildings(data.validRows);
+        }
+
+        Utils.showToast(`Successfully imported ${data.validRows.length} ${type}!`, 'success');
+        cancelImport(type);
+
+    } catch (error) {
+        console.error('Import error:', error);
+        Utils.showToast('Error during import: ' + error.message, 'error');
+    } finally {
+        Utils.hideLoading();
+    }
+}
+
+/**
+ * Import flats
+ */
+async function importFlats(rows) {
+    // Get existing flats
+    let flats = await storage.getFlats() || [];
+
+    // Add new flats
+    rows.forEach(row => {
+        // Check if flat already exists
+        const existingIndex = flats.findIndex(f =>
+            f.flatNo.toLowerCase() === row.flatNo.toLowerCase() &&
+            f.buildingId === row.buildingId
+        );
+
+        const flatData = {
+            id: existingIndex !== -1 ? flats[existingIndex].id : Utils.generateId(),
+            flatNo: row.flatNo,
+            buildingId: row.buildingId,
+            flatTypeId: row.flatTypeId,
+            area: row.area,
+            ownerName: row.ownerName,
+            ownerPhone: row.ownerPhone,
+            ownerEmail: row.ownerEmail,
+            twoWheelerCount: row.twoWheelerCount,
+            fourWheelerCount: row.fourWheelerCount,
+            isOccupied: row.isOccupied,
+            isActive: true,
+            createdAt: existingIndex !== -1 ? flats[existingIndex].createdAt : new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        if (existingIndex !== -1) {
+            flats[existingIndex] = flatData;
+        } else {
+            flats.push(flatData);
+        }
+    });
+
+    // Save all flats
+    await storage.saveFlats(flats);
+}
+
+/**
+ * Import members
+ */
+async function importMembers(rows) {
+    // Get existing users and flats
+    let users = await storage.getUsers() || [];
+    const flats = await storage.getFlats() || [];
+
+    // Add new members
+    for (const row of rows) {
+        // Check if username already exists
+        const existingIndex = users.findIndex(u =>
+            u.username.toLowerCase() === row.username.toLowerCase()
+        );
+
+        // Find linked flat
+        let flatId = null;
+        if (row.flatNo) {
+            const flat = flats.find(f => f.flatNo.toLowerCase() === row.flatNo.toLowerCase());
+            if (flat) {
+                flatId = flat.id;
+            }
+        }
+
+        const userData = {
+            id: existingIndex !== -1 ? users[existingIndex].id : Utils.generateId(),
+            username: row.username,
+            password: existingIndex !== -1 && !row.password ? users[existingIndex].password : row.password, // Keep existing password if not provided
+            name: row.name,
+            email: row.email,
+            phone: row.phone,
+            role: row.role,
+            flatId: flatId,
+            isActive: true,
+            createdAt: existingIndex !== -1 ? users[existingIndex].createdAt : new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        if (existingIndex !== -1) {
+            users[existingIndex] = userData;
+        } else {
+            users.push(userData);
+        }
+    }
+
+    // Save all users
+    await storage.saveUsers(users);
+}
+
+/**
+ * Import buildings
+ */
+async function importBuildings(rows) {
+    // Add new buildings to master data
+    rows.forEach(row => {
+        masterData.buildings.push({
+            id: Utils.generateId(),
+            name: row.name,
+            totalFloors: row.totalFloors,
+            address: row.address,
+            isActive: true
+        });
+    });
+
+    // Save master data
+    await storage.saveMasterData(masterData);
+
+    // Re-render buildings table
+    renderBuildingsTable();
 }

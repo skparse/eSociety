@@ -1184,3 +1184,281 @@ p {
     opacity: 1;
     visibility: visible;
 }
+
+/* ===================================
+   Mobile Enhancements
+   =================================== */
+
+/* Pull to Refresh Indicator */
+#pull-refresh-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary);
+    color: white;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    z-index: 9999;
+}
+
+#pull-refresh-indicator .pull-refresh-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+#pull-refresh-indicator .pull-refresh-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+}
+
+#pull-refresh-indicator.ready .pull-refresh-spinner,
+#pull-refresh-indicator.refreshing .pull-refresh-spinner {
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Install App Button */
+.install-app-button {
+    position: fixed;
+    bottom: 80px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+    z-index: 1000;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.install-app-button:hover {
+    background: var(--primary-dark);
+    transform: scale(1.05);
+}
+
+.install-app-button svg {
+    flex-shrink: 0;
+}
+
+/* Bottom Navigation for Mobile */
+.bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid var(--gray-200);
+    padding: 0.5rem 0;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0));
+    z-index: 100;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+}
+
+.bottom-nav-items {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    color: var(--gray-500);
+    text-decoration: none;
+    font-size: 0.625rem;
+    font-weight: 500;
+    transition: color 0.2s;
+    border-radius: var(--radius);
+}
+
+.bottom-nav-item svg {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 0.25rem;
+}
+
+.bottom-nav-item.active {
+    color: var(--primary);
+}
+
+.bottom-nav-item:hover {
+    color: var(--primary);
+    background: var(--gray-50);
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 768px) {
+    /* Show bottom navigation */
+    .bottom-nav {
+        display: block;
+    }
+
+    /* Add padding to bottom of pages for bottom nav */
+    .admin-layout .main-content,
+    .member-layout .main-content {
+        padding-bottom: 80px;
+    }
+
+    /* Larger touch targets */
+    .btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .btn-sm {
+        min-height: 36px;
+        padding: 0.5rem 1rem;
+    }
+
+    .form-control,
+    .form-select {
+        min-height: 44px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    /* Better table scrolling */
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Sticky table headers on mobile */
+    .table thead {
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 10;
+    }
+
+    /* Card improvements */
+    .card {
+        border-radius: var(--radius);
+        margin-bottom: 1rem;
+    }
+
+    /* Better modal positioning */
+    .modal-backdrop {
+        padding: 0.5rem;
+    }
+
+    .modal {
+        max-height: calc(100vh - 1rem);
+        max-width: calc(100vw - 1rem);
+        margin: auto;
+    }
+
+    /* Hide install button text on small screens */
+    .install-app-button span {
+        display: none;
+    }
+
+    .install-app-button {
+        padding: 0.75rem;
+        bottom: 90px;
+    }
+
+    /* Floating action button style for primary actions */
+    .fab-button {
+        position: fixed;
+        bottom: 90px;
+        right: 16px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        border: none;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 99;
+        cursor: pointer;
+    }
+
+    .fab-button:active {
+        transform: scale(0.95);
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+    /* Reduce padding on mobile */
+    .content {
+        padding: 1rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .modal-body,
+    .modal-footer {
+        padding: 1rem;
+    }
+
+    /* Stack form rows */
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    /* Full width buttons */
+    .page-header-actions {
+        width: 100%;
+    }
+
+    .page-header-actions .btn {
+        flex: 1;
+    }
+
+    /* Compact stats */
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-card .value {
+        font-size: 1.5rem;
+    }
+}
+
+/* Safe area for notched phones */
+@supports (padding: env(safe-area-inset-bottom)) {
+    .bottom-nav {
+        padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    }
+
+    body {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+/* Disable text selection on interactive elements */
+.btn, .nav-link, .bottom-nav-item {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}

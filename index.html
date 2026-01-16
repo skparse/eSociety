@@ -2,8 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Society Bills">
     <title>Society Maintenance Billing</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
     <link rel="stylesheet" href="css/style.css">
     <style>
         .login-tabs {
@@ -41,24 +53,6 @@
 
         .tab-content.active {
             display: block;
-        }
-
-        .society-info-banner {
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
-            color: white;
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius);
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-            display: none;
-        }
-
-        .society-info-banner.show {
-            display: block;
-        }
-
-        .society-code-input {
-            text-transform: uppercase;
         }
 
         .not-configured-message {
@@ -118,16 +112,9 @@
 
                 <!-- Society Login Tab -->
                 <div id="society-tab" class="tab-content active">
-                    <div id="society-info-banner" class="society-info-banner">
-                        <span id="society-name-display"></span>
-                    </div>
-
                     <form id="society-login-form" class="login-form">
-                        <div class="form-group" id="society-code-group">
-                            <label for="society-code" class="form-label">Society Code</label>
-                            <input type="text" id="society-code" name="society-code" class="form-control society-code-input" placeholder="Enter society code (e.g., ABC123)" required autocomplete="off">
-                            <small id="society-code-status" class="text-muted"></small>
-                        </div>
+                        <!-- Hidden society code field (populated from URL parameter) -->
+                        <input type="hidden" id="society-code" name="society-code" value="">
 
                         <div class="form-group">
                             <label for="username" class="form-label">Username</label>
@@ -194,6 +181,7 @@
     <script src="js/utils.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/mobile.js"></script>
     <script>
         let societyValidated = false;
         let validatedSocietyName = '';
@@ -244,29 +232,15 @@
                     societyInput.value = societyCode.toUpperCase();
                     societyFromUrl = true;
 
-                    // Auto-validate and show society name
+                    // Auto-validate society code
                     validateSocietyCode().then(() => {
                         if (societyValidated) {
-                            // Hide the society code field completely
-                            document.getElementById('society-code-group').style.display = 'none';
-                            // Show society name in banner
-                            document.getElementById('society-info-banner').classList.add('show');
                             // Focus on username field
                             document.getElementById('username').focus();
                         }
                     });
                 }
             }
-
-            // Handle society code validation on blur
-            document.getElementById('society-code').addEventListener('blur', validateSocietyCode);
-            document.getElementById('society-code').addEventListener('input', function() {
-                if (!societyFromUrl) {
-                    societyValidated = false;
-                    document.getElementById('society-info-banner').classList.remove('show');
-                    document.getElementById('society-code-status').textContent = '';
-                }
-            });
 
             // Handle form submissions
             document.getElementById('society-login-form').addEventListener('submit', handleSocietyLogin);
@@ -294,47 +268,22 @@
 
         async function validateSocietyCode() {
             const societyCode = document.getElementById('society-code').value.trim().toUpperCase();
-            const statusEl = document.getElementById('society-code-status');
-            const banner = document.getElementById('society-info-banner');
 
-            if (!societyCode) {
-                statusEl.textContent = '';
-                banner.classList.remove('show');
+            if (!societyCode || societyCode.length < 3) {
                 societyValidated = false;
                 return;
             }
-
-            if (societyCode.length < 3) {
-                statusEl.textContent = 'Society code must be at least 3 characters';
-                statusEl.className = 'text-danger';
-                banner.classList.remove('show');
-                societyValidated = false;
-                return;
-            }
-
-            statusEl.textContent = 'Validating...';
-            statusEl.className = 'text-muted';
 
             try {
                 const result = await storage.validateSociety(societyCode);
 
                 if (result.success && result.valid) {
-                    statusEl.textContent = 'Society found';
-                    statusEl.className = 'text-success';
-                    document.getElementById('society-name-display').textContent = result.societyName;
-                    banner.classList.add('show');
                     societyValidated = true;
                     validatedSocietyName = result.societyName;
                 } else {
-                    statusEl.textContent = 'Society not found';
-                    statusEl.className = 'text-danger';
-                    banner.classList.remove('show');
                     societyValidated = false;
                 }
             } catch (error) {
-                statusEl.textContent = 'Error validating society';
-                statusEl.className = 'text-danger';
-                banner.classList.remove('show');
                 societyValidated = false;
             }
         }
@@ -369,7 +318,7 @@
             btnSpinner.classList.remove('d-none');
 
             try {
-                const result = await auth.login(societyCode, username, password);
+                const result = await auth.login(societyCode, username, password, validatedSocietyName);
 
                 if (result.success) {
                     Utils.showToast('Login successful!', 'success');
@@ -450,6 +399,19 @@
             } else {
                 window.location.href = 'member/dashboard.html';
             }
+        }
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('SW registered:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('SW registration failed:', error);
+                    });
+            });
         }
     </script>
 </body>

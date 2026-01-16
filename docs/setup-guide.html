@@ -217,6 +217,7 @@
                 <li><a href="#initial-setup">Part 1: Initial Setup (One-Time)</a></li>
                 <li><a href="#create-society">Part 2: Creating a New Society</a></li>
                 <li><a href="#share-access">Part 3: Sharing Access with Members</a></li>
+                <li><a href="#bulk-import">Part 4: Bulk Import Data (CSV)</a></li>
                 <li><a href="#login-credentials">Login Credentials Reference</a></li>
                 <li><a href="#faq">Frequently Asked Questions</a></li>
             </ul>
@@ -412,6 +413,273 @@
                     <h4>Members Bookmark the Link</h4>
                     <p>Ask members to bookmark the link for easy future access. They only need to enter their username and password - the society is automatically selected from the link.</p>
                 </div>
+            </div>
+        </div>
+
+        <!-- Part 4: Bulk Import -->
+        <div class="docs-section" id="bulk-import">
+            <h2>Part 4: Bulk Import Data (CSV)</h2>
+            <p>Save time by importing buildings, flats, and members in bulk using CSV files instead of adding them one by one.</p>
+
+            <div class="warning-box">
+                <strong>Important: Import Order</strong><br>
+                You must import data in this specific order:
+                <ol style="margin: 0.5rem 0 0 1.5rem;">
+                    <li><strong>Buildings</strong> - Import buildings/wings first</li>
+                    <li><strong>Flats</strong> - Import flats (requires buildings to exist)</li>
+                    <li><strong>Members</strong> - Import members (can link to flats)</li>
+                </ol>
+            </div>
+
+            <h3 style="margin-top: 2rem; color: var(--gray-700);">How to Import</h3>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Go to Master Data > Import Data</h4>
+                    <p>Login as Society Admin and navigate to <strong>Master Data</strong> page. Click on the <strong>"Import Data"</strong> tab.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Download Template</h4>
+                    <p>Click <strong>"Download Template"</strong> for the type of data you want to import (Buildings, Flats, or Members). This gives you a CSV file with the correct headers and sample data.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Fill Your Data</h4>
+                    <p>Open the template in Excel or Google Sheets. Keep the header row and replace the sample data with your actual data. Save as CSV file.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Upload & Preview</h4>
+                    <p>Click <strong>"Upload CSV File"</strong> and select your file. The system will show a preview with validation - green rows are valid, red rows have errors.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h4>Import</h4>
+                    <p>Click <strong>"Import"</strong> to add all valid rows. Any rows with errors will be skipped - you can fix them and import again.</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 2rem; color: var(--gray-700);">CSV Template Details</h3>
+
+            <!-- Buildings Template -->
+            <h4 style="margin-top: 1.5rem;">1. Buildings Template</h4>
+            <table class="credentials-table">
+                <thead>
+                    <tr>
+                        <th>Column</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>Name</code></td>
+                        <td>Yes</td>
+                        <td>Building or wing name</td>
+                        <td>Building A</td>
+                    </tr>
+                    <tr>
+                        <td><code>TotalFloors</code></td>
+                        <td>No</td>
+                        <td>Number of floors</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td><code>Address</code></td>
+                        <td>No</td>
+                        <td>Building address or location</td>
+                        <td>Near Main Gate</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box">
+                <strong>Sample Buildings CSV:</strong><br>
+                <code style="display: block; margin-top: 0.5rem; white-space: pre; font-size: 0.8rem;">Name,TotalFloors,Address
+Building A,10,Near Main Gate
+Building B,12,East Wing
+Building C,8,West Wing</code>
+            </div>
+
+            <!-- Flats Template -->
+            <h4 style="margin-top: 1.5rem;">2. Flats Template</h4>
+            <table class="credentials-table">
+                <thead>
+                    <tr>
+                        <th>Column</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>FlatNo</code></td>
+                        <td>Yes</td>
+                        <td>Flat number/name</td>
+                        <td>A-101</td>
+                    </tr>
+                    <tr>
+                        <td><code>Building</code></td>
+                        <td>Yes</td>
+                        <td>Building name (must exist)</td>
+                        <td>Building A</td>
+                    </tr>
+                    <tr>
+                        <td><code>FlatType</code></td>
+                        <td>Yes</td>
+                        <td>Flat type (must exist in Master Data)</td>
+                        <td>2 BHK</td>
+                    </tr>
+                    <tr>
+                        <td><code>Area</code></td>
+                        <td>No</td>
+                        <td>Area in square feet</td>
+                        <td>750</td>
+                    </tr>
+                    <tr>
+                        <td><code>OwnerName</code></td>
+                        <td>Yes</td>
+                        <td>Owner's full name</td>
+                        <td>John Doe</td>
+                    </tr>
+                    <tr>
+                        <td><code>OwnerPhone</code></td>
+                        <td>No</td>
+                        <td>10-digit phone number</td>
+                        <td>9876543210</td>
+                    </tr>
+                    <tr>
+                        <td><code>OwnerEmail</code></td>
+                        <td>No</td>
+                        <td>Email address</td>
+                        <td>john@email.com</td>
+                    </tr>
+                    <tr>
+                        <td><code>TwoWheelers</code></td>
+                        <td>No</td>
+                        <td>Number of 2-wheelers parked inside</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td><code>FourWheelers</code></td>
+                        <td>No</td>
+                        <td>Number of 4-wheelers parked inside</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td><code>IsOccupied</code></td>
+                        <td>No</td>
+                        <td>Yes or No</td>
+                        <td>Yes</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box">
+                <strong>Sample Flats CSV:</strong><br>
+                <code style="display: block; margin-top: 0.5rem; white-space: pre; font-size: 0.8rem;">FlatNo,Building,FlatType,Area,OwnerName,OwnerPhone,OwnerEmail,TwoWheelers,FourWheelers,IsOccupied
+A-101,Building A,2 BHK,750,John Doe,9876543210,john@email.com,1,1,Yes
+A-102,Building A,1 BHK,450,Jane Smith,9876543211,jane@email.com,0,1,Yes
+B-101,Building B,3 BHK,1100,Bob Wilson,9876543212,bob@email.com,2,2,Yes</code>
+            </div>
+
+            <div class="warning-box">
+                <strong>Note:</strong> The Building and FlatType values must match exactly with what you have in Master Data. If "Building A" doesn't exist, import will fail for that row.
+            </div>
+
+            <!-- Members Template -->
+            <h4 style="margin-top: 1.5rem;">3. Members Template</h4>
+            <table class="credentials-table">
+                <thead>
+                    <tr>
+                        <th>Column</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>Username</code></td>
+                        <td>Yes</td>
+                        <td>Login username (min 3 chars)</td>
+                        <td>john.doe</td>
+                    </tr>
+                    <tr>
+                        <td><code>Password</code></td>
+                        <td>Yes</td>
+                        <td>Login password (min 4 chars)</td>
+                        <td>password123</td>
+                    </tr>
+                    <tr>
+                        <td><code>Name</code></td>
+                        <td>Yes</td>
+                        <td>Full name</td>
+                        <td>John Doe</td>
+                    </tr>
+                    <tr>
+                        <td><code>Email</code></td>
+                        <td>No</td>
+                        <td>Email address</td>
+                        <td>john@email.com</td>
+                    </tr>
+                    <tr>
+                        <td><code>Phone</code></td>
+                        <td>No</td>
+                        <td>Phone number</td>
+                        <td>9876543210</td>
+                    </tr>
+                    <tr>
+                        <td><code>Role</code></td>
+                        <td>No</td>
+                        <td>member or admin (default: member)</td>
+                        <td>member</td>
+                    </tr>
+                    <tr>
+                        <td><code>LinkedFlat</code></td>
+                        <td>No</td>
+                        <td>Flat number to link (must exist)</td>
+                        <td>A-101</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box">
+                <strong>Sample Members CSV:</strong><br>
+                <code style="display: block; margin-top: 0.5rem; white-space: pre; font-size: 0.8rem;">Username,Password,Name,Email,Phone,Role,LinkedFlat
+john.doe,password123,John Doe,john@email.com,9876543210,member,A-101
+jane.smith,pass456,Jane Smith,jane@email.com,9876543211,member,A-102
+bob.wilson,pass789,Bob Wilson,bob@email.com,9876543212,member,B-101</code>
+            </div>
+
+            <h3 style="margin-top: 2rem; color: var(--gray-700);">Tips for Successful Import</h3>
+            <ul style="color: var(--gray-600); line-height: 1.8;">
+                <li><strong>Keep the header row</strong> - Don't delete or modify the first row with column names</li>
+                <li><strong>Check Building/FlatType names</strong> - They must match exactly (case-insensitive)</li>
+                <li><strong>Save as CSV</strong> - When saving from Excel, choose "CSV (Comma delimited)"</li>
+                <li><strong>No special characters in FlatNo</strong> - Use simple formats like A-101, B-202</li>
+                <li><strong>Duplicate handling</strong> - If a flat or member already exists, it will be updated (not duplicated)</li>
+                <li><strong>Fix errors and re-import</strong> - You can import the same file multiple times; only new/changed data will be added</li>
+            </ul>
+
+            <div class="success-box">
+                <strong>Quick Start:</strong> Import 3 buildings, then 50 flats, then 50 members - all in under 5 minutes!
             </div>
         </div>
 

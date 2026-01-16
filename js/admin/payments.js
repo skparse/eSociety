@@ -22,6 +22,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('user-avatar').textContent = Utils.getInitials(user.name);
     }
 
+    // Display society name
+    const societyName = auth.getSocietyName();
+    if (societyName) {
+        document.getElementById('society-name').textContent = societyName;
+    }
+
     // Set default date filter (current month)
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);

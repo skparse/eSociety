@@ -24,6 +24,13 @@ async function initMemberPortal() {
     document.getElementById('user-name').textContent = user.name;
     document.getElementById('user-avatar').textContent = Utils.getInitials(user.name);
 
+    // Display society name
+    const societyName = auth.getSocietyName();
+    const societyNameEl = document.getElementById('society-name');
+    if (societyName && societyNameEl) {
+        societyNameEl.textContent = societyName;
+    }
+
     Utils.showLoading('Loading...');
 
     try {
