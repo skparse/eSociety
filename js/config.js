@@ -14,7 +14,7 @@ const CONFIG = {
     GOOGLE_SCRIPT: {
         // IMPORTANT: Paste your deployed Google Apps Script Web App URL here
         // Example: 'https://script.google.com/macros/s/AKfycbx.../exec'
-        WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbwUly3IkE2vlMpXMwwMpSiNWER27QLCWwGhUiZyFutBVMpJwPxypQIJ6eucQOJZS8KTyA/exec'  // <-- PASTE YOUR URL HERE
+        WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbysAzQEfpPtdh-gtkSfWvbR7m2NmL2ji54yYC0YCrXXM3Qtiwx0PZumNZ8doSj6AiSh/exec'  // <-- PASTE YOUR URL HERE
     },
 
     // Application Settings
