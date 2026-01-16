@@ -1,6 +1,6 @@
 /**
  * Society Maintenance Billing System
- * Storage Module - Google Apps Script Integration
+ * Storage Module - Google Apps Script Integration (Multi-Tenant)
  */
 
 class Storage {
@@ -16,24 +16,30 @@ class Storage {
     }
 
     /**
-     * Set the Web App URL
+     * Get current society ID
      */
-    set webAppUrl(value) {
-        CONFIG.GOOGLE_SCRIPT.WEB_APP_URL = value;
+    get societyId() {
+        return getCurrentSocietyId();
     }
 
     /**
      * Make API call to Google Apps Script
-     * Google Apps Script Web Apps use redirects, so we need special handling
+     * Automatically includes societyId for society-specific operations
      */
-    async apiCall(action, sheet = null, data = null) {
+    async apiCall(action, sheet = null, data = null, includeSocietyId = true) {
         if (!this.webAppUrl) {
-            throw new Error('Google Apps Script URL not configured');
+            throw new Error('Google Apps Script URL not configured. Please check config.js');
         }
 
         let url = `${this.webAppUrl}?action=${action}`;
+
+        // Include societyId for society-specific operations
+        if (includeSocietyId && this.societyId) {
+            url += `&societyId=${encodeURIComponent(this.societyId)}`;
+        }
+
         if (sheet) {
-            url += `&sheet=${sheet}`;
+            url += `&sheet=${encodeURIComponent(sheet)}`;
         }
 
         const options = {
@@ -41,8 +47,6 @@ class Storage {
             redirect: 'follow'
         };
 
-        // For POST requests, send data as text/plain to avoid CORS preflight
-        // Google Apps Script can still parse JSON from the body
         if (data) {
             options.headers = {
                 'Content-Type': 'text/plain;charset=utf-8'
@@ -53,14 +57,12 @@ class Storage {
         try {
             const response = await fetch(url, options);
 
-            // Check if response is ok
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const text = await response.text();
 
-            // Try to parse as JSON
             let result;
             try {
                 result = JSON.parse(text);
@@ -80,10 +82,73 @@ class Storage {
         }
     }
 
+    // ==================== SUPERADMIN API METHODS ====================
+
+    /**
+     * Superadmin login
+     */
+    async superadminLogin(username, password) {
+        return await this.apiCall('superadminLogin', null, { username, password }, false);
+    }
+
+    /**
+     * Create a new society (superadmin only)
+     */
+    async createSociety(societyCode, societyName, adminPassword) {
+        return await this.apiCall('createSociety', null, {
+            societyCode,
+            societyName,
+            adminPassword
+        }, false);
+    }
+
+    /**
+     * List all societies (superadmin only)
+     */
+    async listSocieties() {
+        return await this.apiCall('listSocieties', null, null, false);
+    }
+
+    /**
+     * Delete a society (superadmin only)
+     */
+    async deleteSociety(societyId) {
+        const url = `${this.webAppUrl}?action=deleteSociety&societyId=${encodeURIComponent(societyId)}`;
+        const response = await fetch(url, { method: 'GET', redirect: 'follow' });
+        const text = await response.text();
+        return JSON.parse(text);
+    }
+
+    /**
+     * Validate if a society exists
+     */
+    async validateSociety(societyId) {
+        const url = `${this.webAppUrl}?action=validateSociety&societyId=${encodeURIComponent(societyId)}`;
+        const response = await fetch(url, { method: 'GET', redirect: 'follow' });
+        const text = await response.text();
+        return JSON.parse(text);
+    }
+
+    /**
+     * Get society info
+     */
+    async getSocietyInfo(societyId) {
+        const url = `${this.webAppUrl}?action=getSocietyInfo&societyId=${encodeURIComponent(societyId)}`;
+        const response = await fetch(url, { method: 'GET', redirect: 'follow' });
+        const text = await response.text();
+        return JSON.parse(text);
+    }
+
+    // ==================== SOCIETY DATA METHODS ====================
+
     /**
      * Read data from a sheet
      */
     async readSheet(sheetName) {
+        if (!this.societyId) {
+            throw new Error('No society selected');
+        }
+
         // Check cache first
         if (CONFIG.CACHE.ENABLED) {
             const cached = this.getFromCache(sheetName);
@@ -107,6 +172,10 @@ class Storage {
      * Write data to a sheet
      */
     async writeSheet(sheetName, data) {
+        if (!this.societyId) {
+            throw new Error('No society selected');
+        }
+
         const result = await this.apiCall('write', sheetName, data);
 
         // Invalidate cache
@@ -116,27 +185,37 @@ class Storage {
     }
 
     /**
-     * Initialize the system
-     */
-    async initializeSystem(adminPassword = 'admin123') {
-        const result = await this.apiCall('init', null, { adminPassword });
-        return result;
-    }
-
-    /**
-     * Get system status
+     * Get system status for current society
      */
     async getStatus() {
-        const result = await this.apiCall('status');
-        return result;
+        if (!this.societyId) {
+            throw new Error('No society selected');
+        }
+        return await this.apiCall('status');
     }
 
     /**
-     * Cache management
+     * Initialize society data
      */
+    async initializeSystem(adminPassword = 'admin123') {
+        if (!this.societyId) {
+            throw new Error('No society selected');
+        }
+        return await this.apiCall('init', null, { adminPassword });
+    }
+
+    // ==================== CACHE MANAGEMENT ====================
+
+    /**
+     * Get cache key with society prefix
+     */
+    getCacheKey(sheetName) {
+        return CONFIG.STORAGE_KEYS.CACHE_PREFIX + (this.societyId || '') + '_' + sheetName;
+    }
+
     getFromCache(sheetName) {
-        const key = CONFIG.STORAGE_KEYS.CACHE_PREFIX + sheetName;
-        const timestampKey = CONFIG.STORAGE_KEYS.CACHE_TIMESTAMP + sheetName;
+        const key = this.getCacheKey(sheetName);
+        const timestampKey = key + '_ts';
 
         const timestamp = localStorage.getItem(timestampKey);
         if (!timestamp) return null;
@@ -159,8 +238,8 @@ class Storage {
     }
 
     saveToCache(sheetName, data) {
-        const key = CONFIG.STORAGE_KEYS.CACHE_PREFIX + sheetName;
-        const timestampKey = CONFIG.STORAGE_KEYS.CACHE_TIMESTAMP + sheetName;
+        const key = this.getCacheKey(sheetName);
+        const timestampKey = key + '_ts';
 
         try {
             localStorage.setItem(key, JSON.stringify(data));
@@ -171,8 +250,8 @@ class Storage {
     }
 
     invalidateCache(sheetName) {
-        const key = CONFIG.STORAGE_KEYS.CACHE_PREFIX + sheetName;
-        const timestampKey = CONFIG.STORAGE_KEYS.CACHE_TIMESTAMP + sheetName;
+        const key = this.getCacheKey(sheetName);
+        const timestampKey = key + '_ts';
 
         localStorage.removeItem(key);
         localStorage.removeItem(timestampKey);
@@ -184,7 +263,7 @@ class Storage {
         });
     }
 
-    // ==================== Data Access Methods ====================
+    // ==================== DATA ACCESS METHODS ====================
 
     /**
      * Get society settings

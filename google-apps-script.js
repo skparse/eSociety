@@ -1,6 +1,6 @@
 /**
  * Society Maintenance Billing System
- * Google Apps Script Backend
+ * Google Apps Script Backend - Multi-Tenant Version
  *
  * SETUP INSTRUCTIONS:
  * 1. Go to https://script.google.com
@@ -11,21 +11,25 @@
  * 6. Set "Execute as": "Me"
  * 7. Set "Who has access": "Anyone"
  * 8. Click "Deploy" and authorize when prompted
- * 9. Copy the Web App URL and use it in your application
+ * 9. Copy the Web App URL and paste it in config.js
  */
 
-// Spreadsheet ID - will be auto-created on first run
-let SPREADSHEET_ID = null;
-
-// Sheet names
+// Sheet names for each society
 const SHEETS = {
   SETTINGS: 'Settings',
   MASTER_DATA: 'MasterData',
   USERS: 'Users',
   FLATS: 'Flats',
   BILLS: 'Bills',
-  PAYMENTS: 'Payments',
-  CONFIG: '_Config'
+  PAYMENTS: 'Payments'
+};
+
+// Superadmin credentials (CHANGE THESE!)
+const SUPERADMIN = {
+  username: 'superadmin',
+  // Default password: 'password' - CHANGE THIS after first login!
+  // Run resetSuperadminPassword() function to generate a new hash
+  passwordHash: '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8'
 };
 
 // Default data templates
@@ -84,26 +88,47 @@ function handleRequest(e) {
   try {
     const params = e.parameter;
     const action = params.action;
+    const societyId = params.societyId;
 
-    // Set CORS headers
     const output = ContentService.createTextOutput();
     output.setMimeType(ContentService.MimeType.JSON);
 
     let result;
 
+    // Superadmin actions (no societyId required)
     switch(action) {
+      case 'superadminLogin':
+        result = superadminLogin(e);
+        break;
+      case 'createSociety':
+        result = createSociety(e);
+        break;
+      case 'listSocieties':
+        result = listSocieties();
+        break;
+      case 'deleteSociety':
+        result = deleteSociety(params.societyId);
+        break;
+      case 'getSocietyInfo':
+        result = getSocietyInfo(params.societyId);
+        break;
+      case 'validateSociety':
+        result = validateSociety(params.societyId);
+        break;
+
+      // Society-specific actions (require societyId)
       case 'init':
-        result = initializeSystem(e);
+        result = initializeSociety(e, societyId);
         break;
       case 'read':
-        result = readData(params.sheet);
+        result = readData(societyId, params.sheet);
         break;
       case 'write':
         const postData = JSON.parse(e.postData.contents);
-        result = writeData(params.sheet, postData);
+        result = writeData(societyId, params.sheet, postData);
         break;
       case 'status':
-        result = getStatus();
+        result = getStatus(societyId);
         break;
       default:
         result = { success: false, error: 'Invalid action' };
@@ -123,39 +148,261 @@ function handleRequest(e) {
   }
 }
 
-/**
- * Get or create the spreadsheet
- */
-function getSpreadsheet() {
-  // Check if we have a stored spreadsheet ID
-  const scriptProperties = PropertiesService.getScriptProperties();
-  SPREADSHEET_ID = scriptProperties.getProperty('SPREADSHEET_ID');
+// ==================== SUPERADMIN FUNCTIONS ====================
 
-  if (SPREADSHEET_ID) {
-    try {
-      return SpreadsheetApp.openById(SPREADSHEET_ID);
-    } catch(e) {
-      // Spreadsheet was deleted, create new one
-      SPREADSHEET_ID = null;
+/**
+ * Superadmin login
+ */
+function superadminLogin(e) {
+  try {
+    const postData = e.postData ? JSON.parse(e.postData.contents) : {};
+    const { username, password } = postData;
+
+    if (!username || !password) {
+      return { success: false, error: 'Username and password required' };
     }
+
+    const hashedPassword = hashPassword(password);
+
+    if (username === SUPERADMIN.username && hashedPassword === SUPERADMIN.passwordHash) {
+      return {
+        success: true,
+        role: 'superadmin',
+        message: 'Superadmin login successful'
+      };
+    }
+
+    return { success: false, error: 'Invalid credentials' };
+  } catch(error) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Create a new society
+ */
+function createSociety(e) {
+  try {
+    const postData = e.postData ? JSON.parse(e.postData.contents) : {};
+    const { societyCode, societyName, adminPassword } = postData;
+
+    if (!societyCode || !societyName) {
+      return { success: false, error: 'Society code and name are required' };
+    }
+
+    // Validate society code format (alphanumeric, 3-10 chars)
+    if (!/^[A-Z0-9]{3,10}$/i.test(societyCode)) {
+      return { success: false, error: 'Society code must be 3-10 alphanumeric characters' };
+    }
+
+    const societyIdUpper = societyCode.toUpperCase();
+    const scriptProperties = PropertiesService.getScriptProperties();
+
+    // Check if society already exists
+    const existingId = scriptProperties.getProperty('society_' + societyIdUpper);
+    if (existingId) {
+      return { success: false, error: 'Society code already exists' };
+    }
+
+    // Create new spreadsheet for this society
+    const ss = SpreadsheetApp.create('Society Data - ' + societyIdUpper);
+    const spreadsheetId = ss.getId();
+
+    // Store the mapping
+    scriptProperties.setProperty('society_' + societyIdUpper, spreadsheetId);
+
+    // Store society metadata
+    const societies = getSocietiesRegistry();
+    societies.push({
+      id: societyIdUpper,
+      name: societyName,
+      spreadsheetId: spreadsheetId,
+      spreadsheetUrl: ss.getUrl(),
+      createdAt: new Date().toISOString(),
+      isActive: true
+    });
+    scriptProperties.setProperty('societies_registry', JSON.stringify(societies));
+
+    // Create sheets structure
+    createSheets(ss);
+
+    // Initialize with default data and admin user
+    const password = adminPassword || 'admin123';
+    const defaultAdmin = {
+      id: generateId(),
+      username: 'admin',
+      password: hashPassword(password),
+      role: 'admin',
+      flatId: null,
+      name: 'Administrator',
+      email: 'admin@' + societyIdUpper.toLowerCase() + '.com',
+      phone: '',
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    const settings = { ...INITIAL_DATA.settings, societyName: societyName };
+
+    writeToSheet(ss, SHEETS.SETTINGS, settings);
+    writeToSheet(ss, SHEETS.MASTER_DATA, INITIAL_DATA.masterData);
+    writeToSheet(ss, SHEETS.USERS, [defaultAdmin]);
+    writeToSheet(ss, SHEETS.FLATS, []);
+    writeToSheet(ss, SHEETS.BILLS, []);
+    writeToSheet(ss, SHEETS.PAYMENTS, []);
+
+    return {
+      success: true,
+      message: 'Society created successfully',
+      society: {
+        id: societyIdUpper,
+        name: societyName,
+        spreadsheetUrl: ss.getUrl(),
+        adminUsername: 'admin',
+        adminPassword: password
+      }
+    };
+
+  } catch(error) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * List all societies
+ */
+function listSocieties() {
+  try {
+    const societies = getSocietiesRegistry();
+    return { success: true, societies: societies };
+  } catch(error) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Delete a society (soft delete)
+ */
+function deleteSociety(societyId) {
+  try {
+    if (!societyId) {
+      return { success: false, error: 'Society ID required' };
+    }
+
+    const societyIdUpper = societyId.toUpperCase();
+    const societies = getSocietiesRegistry();
+    const index = societies.findIndex(s => s.id === societyIdUpper);
+
+    if (index === -1) {
+      return { success: false, error: 'Society not found' };
+    }
+
+    // Soft delete - mark as inactive
+    societies[index].isActive = false;
+    societies[index].deletedAt = new Date().toISOString();
+
+    const scriptProperties = PropertiesService.getScriptProperties();
+    scriptProperties.setProperty('societies_registry', JSON.stringify(societies));
+
+    return { success: true, message: 'Society deactivated successfully' };
+  } catch(error) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Get society info by ID
+ */
+function getSocietyInfo(societyId) {
+  try {
+    if (!societyId) {
+      return { success: false, error: 'Society ID required' };
+    }
+
+    const societyIdUpper = societyId.toUpperCase();
+    const societies = getSocietiesRegistry();
+    const society = societies.find(s => s.id === societyIdUpper && s.isActive);
+
+    if (!society) {
+      return { success: false, error: 'Society not found' };
+    }
+
+    return { success: true, society: society };
+  } catch(error) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Validate if society exists and is active
+ */
+function validateSociety(societyId) {
+  try {
+    if (!societyId) {
+      return { success: false, valid: false, error: 'Society ID required' };
+    }
+
+    const societyIdUpper = societyId.toUpperCase();
+    const societies = getSocietiesRegistry();
+    const society = societies.find(s => s.id === societyIdUpper && s.isActive);
+
+    if (!society) {
+      return { success: true, valid: false };
+    }
+
+    return { success: true, valid: true, societyName: society.name };
+  } catch(error) {
+    return { success: false, valid: false, error: error.message };
+  }
+}
+
+/**
+ * Get societies registry
+ */
+function getSocietiesRegistry() {
+  const scriptProperties = PropertiesService.getScriptProperties();
+  const registryStr = scriptProperties.getProperty('societies_registry');
+
+  if (!registryStr) {
+    return [];
   }
 
-  // Create new spreadsheet
-  const ss = SpreadsheetApp.create('Society Maintenance Data');
-  SPREADSHEET_ID = ss.getId();
-  scriptProperties.setProperty('SPREADSHEET_ID', SPREADSHEET_ID);
+  try {
+    return JSON.parse(registryStr);
+  } catch(e) {
+    return [];
+  }
+}
 
-  // Create all required sheets
-  createSheets(ss);
+// ==================== SOCIETY-SPECIFIC FUNCTIONS ====================
 
-  return ss;
+/**
+ * Get spreadsheet for a society
+ */
+function getSocietySpreadsheet(societyId) {
+  if (!societyId) {
+    throw new Error('Society ID is required');
+  }
+
+  const societyIdUpper = societyId.toUpperCase();
+  const scriptProperties = PropertiesService.getScriptProperties();
+  const spreadsheetId = scriptProperties.getProperty('society_' + societyIdUpper);
+
+  if (!spreadsheetId) {
+    throw new Error('Society not found: ' + societyId);
+  }
+
+  try {
+    return SpreadsheetApp.openById(spreadsheetId);
+  } catch(e) {
+    throw new Error('Could not access society data');
+  }
 }
 
 /**
  * Create all required sheets
  */
 function createSheets(ss) {
-  // Get or create each sheet
   Object.values(SHEETS).forEach(sheetName => {
     let sheet = ss.getSheetByName(sheetName);
     if (!sheet) {
@@ -171,14 +418,13 @@ function createSheets(ss) {
 }
 
 /**
- * Initialize the system with default data
+ * Initialize society (if called directly without createSociety)
  */
-function initializeSystem(e) {
+function initializeSociety(e, societyId) {
   try {
-    const ss = getSpreadsheet();
+    const ss = getSocietySpreadsheet(societyId);
     const postData = e.postData ? JSON.parse(e.postData.contents) : {};
 
-    // Create default admin user
     const adminPassword = postData.adminPassword || 'admin123';
     const defaultAdmin = {
       id: generateId(),
@@ -194,7 +440,6 @@ function initializeSystem(e) {
       updatedAt: new Date().toISOString()
     };
 
-    // Write initial data to each sheet
     writeToSheet(ss, SHEETS.SETTINGS, INITIAL_DATA.settings);
     writeToSheet(ss, SHEETS.MASTER_DATA, INITIAL_DATA.masterData);
     writeToSheet(ss, SHEETS.USERS, [defaultAdmin]);
@@ -204,9 +449,7 @@ function initializeSystem(e) {
 
     return {
       success: true,
-      message: 'System initialized successfully',
-      spreadsheetId: SPREADSHEET_ID,
-      spreadsheetUrl: ss.getUrl()
+      message: 'Society initialized successfully'
     };
 
   } catch(error) {
@@ -215,11 +458,11 @@ function initializeSystem(e) {
 }
 
 /**
- * Read data from a sheet
+ * Read data from a society's sheet
  */
-function readData(sheetName) {
+function readData(societyId, sheetName) {
   try {
-    const ss = getSpreadsheet();
+    const ss = getSocietySpreadsheet(societyId);
     const sheet = ss.getSheetByName(sheetName);
 
     if (!sheet) {
@@ -235,11 +478,11 @@ function readData(sheetName) {
 }
 
 /**
- * Write data to a sheet
+ * Write data to a society's sheet
  */
-function writeData(sheetName, data) {
+function writeData(societyId, sheetName, data) {
   try {
-    const ss = getSpreadsheet();
+    const ss = getSocietySpreadsheet(societyId);
     const sheet = ss.getSheetByName(sheetName);
 
     if (!sheet) {
@@ -255,18 +498,17 @@ function writeData(sheetName, data) {
 }
 
 /**
- * Get system status
+ * Get society status
  */
-function getStatus() {
+function getStatus(societyId) {
   try {
-    const ss = getSpreadsheet();
+    const ss = getSocietySpreadsheet(societyId);
     const configSheet = ss.getSheetByName(SHEETS.SETTINGS);
     const hasData = configSheet && configSheet.getLastRow() > 0;
 
     return {
       success: true,
       initialized: hasData,
-      spreadsheetId: SPREADSHEET_ID,
       spreadsheetUrl: ss.getUrl()
     };
 
@@ -274,6 +516,8 @@ function getStatus() {
     return { success: false, error: error.message };
   }
 }
+
+// ==================== UTILITY FUNCTIONS ====================
 
 /**
  * Read JSON data from a sheet (stored in cell A1)
@@ -326,14 +570,19 @@ function hashPassword(password) {
  * Test function - run this to verify the script works
  */
 function testScript() {
-  const status = getStatus();
-  Logger.log('Status: ' + JSON.stringify(status));
+  Logger.log('Testing multi-tenant script...');
 
-  if (!status.initialized) {
-    const initResult = initializeSystem({ postData: null });
-    Logger.log('Init Result: ' + JSON.stringify(initResult));
-  }
+  // List societies
+  const societies = listSocieties();
+  Logger.log('Societies: ' + JSON.stringify(societies));
+}
 
-  const settings = readData('Settings');
-  Logger.log('Settings: ' + JSON.stringify(settings));
+/**
+ * Reset superadmin password (run this manually if needed)
+ * Change the password below before running
+ */
+function resetSuperadminPassword() {
+  const newPassword = 'super@123'; // CHANGE THIS!
+  const hash = hashPassword(newPassword);
+  Logger.log('New password hash (update SUPERADMIN.passwordHash with this): ' + hash);
 }

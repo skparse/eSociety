@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Dashboard - Society Maintenance</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .dashboard-header h1 {
+            margin: 0;
+            color: var(--gray-800);
+        }
+
+        .dashboard-header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card h3 {
+            color: var(--gray-500);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        .section-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .section-body {
+            padding: 1.5rem;
+        }
+
+        .society-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .society-table th,
+        .society-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .society-table th {
+            font-weight: 600;
+            color: var(--gray-600);
+            background: var(--gray-50);
+        }
+
+        .society-table tr:hover {
+            background: var(--gray-50);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-300);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: var(--gray-100);
+        }
+
+        .btn-icon.danger:hover {
+            background: #fee2e2;
+            border-color: #fca5a5;
+            color: #dc2626;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-500);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .credentials-box {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .credentials-box h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--gray-700);
+        }
+
+        .credentials-box p {
+            margin: 0.25rem 0;
+            font-family: monospace;
+        }
+
+        .copy-credentials {
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div>
+                <h1>Super Admin Dashboard</h1>
+                <p style="color: var(--gray-500); margin: 0.5rem 0 0 0;">Manage all societies from one place</p>
+            </div>
+            <div class="user-info">
+                <span id="user-name">Super Administrator</span>
+                <button class="btn btn-secondary" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Societies</h3>
+                <div class="value" id="total-societies">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Active Societies</h3>
+                <div class="value" id="active-societies">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Inactive Societies</h3>
+                <div class="value" id="inactive-societies">0</div>
+            </div>
+        </div>
+
+        <!-- Societies Section -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2>Societies</h2>
+                <button class="btn btn-primary" onclick="openCreateModal()">
+                    + Create Society
+                </button>
+            </div>
+            <div class="section-body">
+                <div id="societies-loading" style="text-align: center; padding: 2rem;">
+                    <div class="spinner"></div>
+                    <p>Loading societies...</p>
+                </div>
+                <div id="societies-empty" class="empty-state" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <h3>No societies yet</h3>
+                    <p>Create your first society to get started</p>
+                    <button class="btn btn-primary" onclick="openCreateModal()" style="margin-top: 1rem;">
+                        Create Society
+                    </button>
+                </div>
+                <table class="society-table" id="societies-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Created</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="societies-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Society Modal -->
+    <div class="modal" id="create-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Society</h3>
+                <button class="modal-close" onclick="closeCreateModal()">&times;</button>
+            </div>
+            <form id="create-society-form" onsubmit="handleCreateSociety(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Society Code *</label>
+                        <input type="text" id="society-code" class="form-control" placeholder="e.g., ABC123" required pattern="[A-Za-z0-9]{3,10}" style="text-transform: uppercase;">
+                        <small class="text-muted">3-10 alphanumeric characters. This will be used for login.</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Society Name *</label>
+                        <input type="text" id="society-name" class="form-control" placeholder="e.g., Sunshine Apartments" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Admin Password</label>
+                        <input type="text" id="admin-password" class="form-control" placeholder="Default: admin123" value="admin123">
+                        <small class="text-muted">Password for the society's admin account</small>
+                    </div>
+                    <div id="create-error" class="alert alert-danger d-none"></div>
+                    <div id="create-success" class="credentials-box" style="display: none;">
+                        <h4>Society Created Successfully!</h4>
+                        <p><strong>Society Code:</strong> <span id="created-code"></span></p>
+                        <p><strong>Admin Username:</strong> admin</p>
+                        <p><strong>Admin Password:</strong> <span id="created-password"></span></p>
+                        <p><strong>Spreadsheet:</strong> <a id="created-spreadsheet" href="#" target="_blank">Open in Google Sheets</a></p>
+                        <hr style="margin: 1rem 0;">
+                        <p><strong>Member Login Link:</strong></p>
+                        <p style="word-break: break-all;"><a id="created-member-link" href="#" target="_blank"></a></p>
+                        <button type="button" class="btn btn-sm btn-secondary copy-credentials" onclick="copyMemberLink()">Copy Link</button>
+                        <small class="text-muted d-block" style="margin-top: 0.5rem;">Share this link with society members. They just need username & password to login.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">Close</button>
+                    <button type="submit" class="btn btn-primary" id="create-btn">
+                        <span id="create-btn-text">Create Society</span>
+                        <span id="create-btn-spinner" class="spinner spinner-sm d-none"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Society Modal -->
+    <div class="modal" id="view-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Society Details</h3>
+                <button class="modal-close" onclick="closeViewModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Society Code</label>
+                    <p id="view-code" style="font-weight: 600; font-size: 1.25rem;"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Society Name</label>
+                    <p id="view-name"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Created On</label>
+                    <p id="view-created"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <p id="view-status"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Google Spreadsheet</label>
+                    <p><a id="view-spreadsheet" href="#" target="_blank">Open in Google Sheets</a></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Member Login Link</label>
+                    <p style="word-break: break-all;"><a id="view-member-link" href="#" target="_blank"></a></p>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="copyViewMemberLink()">Copy Link</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeViewModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="delete-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Deactivate Society</h3>
+                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to deactivate society <strong id="delete-society-name"></strong>?</p>
+                <p style="color: var(--gray-500);">Users will no longer be able to login to this society. The data will be preserved.</p>
+                <div id="delete-error" class="alert alert-danger d-none"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" class="btn btn-danger" id="delete-btn" onclick="confirmDelete()">
+                    <span id="delete-btn-text">Deactivate</span>
+                    <span id="delete-btn-spinner" class="spinner spinner-sm d-none"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        let societies = [];
+        let societyToDelete = null;
+
+        // Encode society code for URL (obfuscation)
+        function encodeSocietyCode(code) {
+            // Reverse + Base64 encode
+            const reversed = code.split('').reverse().join('');
+            return btoa(reversed);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            if (!auth.isLoggedIn() || !auth.isSuperadmin()) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Load societies
+            loadSocieties();
+        });
+
+        async function loadSocieties() {
+            const loading = document.getElementById('societies-loading');
+            const empty = document.getElementById('societies-empty');
+            const table = document.getElementById('societies-table');
+            const tbody = document.getElementById('societies-tbody');
+
+            try {
+                const result = await storage.listSocieties();
+
+                if (result.success) {
+                    societies = result.societies || [];
+
+                    // Update stats
+                    const active = societies.filter(s => s.isActive).length;
+                    const inactive = societies.filter(s => !s.isActive).length;
+                    document.getElementById('total-societies').textContent = societies.length;
+                    document.getElementById('active-societies').textContent = active;
+                    document.getElementById('inactive-societies').textContent = inactive;
+
+                    loading.style.display = 'none';
+
+                    if (societies.length === 0) {
+                        empty.style.display = 'block';
+                        table.style.display = 'none';
+                    } else {
+                        empty.style.display = 'none';
+                        table.style.display = 'table';
+                        renderSocieties();
+                    }
+                } else {
+                    throw new Error(result.error || 'Failed to load societies');
+                }
+            } catch (error) {
+                console.error('Error loading societies:', error);
+                loading.innerHTML = '<p style="color: var(--danger);">Error loading societies: ' + error.message + '</p>';
+            }
+        }
+
+        function renderSocieties() {
+            const tbody = document.getElementById('societies-tbody');
+            tbody.innerHTML = '';
+
+            societies.forEach(society => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${society.id}</strong></td>
+                    <td>${society.name}</td>
+                    <td>${formatDate(society.createdAt)}</td>
+                    <td>
+                        <span class="status-badge ${society.isActive ? 'active' : 'inactive'}">
+                            ${society.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" onclick="viewSociety('${society.id}')" title="View Details">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                            ${society.isActive ? `
+                            <button class="btn-icon danger" onclick="deleteSociety('${society.id}')" title="Deactivate">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-IN', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Create Society
+        function openCreateModal() {
+            document.getElementById('create-society-form').reset();
+            document.getElementById('create-error').classList.add('d-none');
+            document.getElementById('create-success').style.display = 'none';
+            document.getElementById('create-btn').style.display = 'block';
+            document.getElementById('create-modal').classList.add('show');
+        }
+
+        function closeCreateModal() {
+            document.getElementById('create-modal').classList.remove('show');
+            loadSocieties(); // Refresh list
+        }
+
+        async function handleCreateSociety(e) {
+            e.preventDefault();
+
+            const code = document.getElementById('society-code').value.trim().toUpperCase();
+            const name = document.getElementById('society-name').value.trim();
+            const password = document.getElementById('admin-password').value || 'admin123';
+
+            const errorDiv = document.getElementById('create-error');
+            const successDiv = document.getElementById('create-success');
+            const btn = document.getElementById('create-btn');
+            const btnText = document.getElementById('create-btn-text');
+            const btnSpinner = document.getElementById('create-btn-spinner');
+
+            errorDiv.classList.add('d-none');
+
+            btn.disabled = true;
+            btnText.textContent = 'Creating...';
+            btnSpinner.classList.remove('d-none');
+
+            try {
+                const result = await storage.createSociety(code, name, password);
+
+                if (result.success) {
+                    // Show success message with credentials
+                    document.getElementById('created-code').textContent = result.society.id;
+                    document.getElementById('created-password').textContent = result.society.adminPassword;
+                    document.getElementById('created-spreadsheet').href = result.society.spreadsheetUrl;
+
+                    // Generate member login link with encoded society code
+                    const baseUrl = window.location.origin + window.location.pathname.replace('/superadmin/dashboard.html', '');
+                    const encodedCode = encodeSocietyCode(result.society.id);
+                    const memberLink = baseUrl + '/index.html?s=' + encodedCode;
+                    document.getElementById('created-member-link').href = memberLink;
+                    document.getElementById('created-member-link').textContent = memberLink;
+
+                    successDiv.style.display = 'block';
+                    btn.style.display = 'none';
+
+                    Utils.showToast('Society created successfully!', 'success');
+                } else {
+                    throw new Error(result.error || 'Failed to create society');
+                }
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.classList.remove('d-none');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Create Society';
+                btnSpinner.classList.add('d-none');
+            }
+        }
+
+        // View Society
+        function viewSociety(societyId) {
+            const society = societies.find(s => s.id === societyId);
+            if (!society) return;
+
+            document.getElementById('view-code').textContent = society.id;
+            document.getElementById('view-name').textContent = society.name;
+            document.getElementById('view-created').textContent = formatDate(society.createdAt);
+            document.getElementById('view-status').innerHTML = `
+                <span class="status-badge ${society.isActive ? 'active' : 'inactive'}">
+                    ${society.isActive ? 'Active' : 'Inactive'}
+                </span>
+            `;
+            document.getElementById('view-spreadsheet').href = society.spreadsheetUrl || '#';
+
+            // Generate member login link with encoded society code
+            const baseUrl = window.location.origin + window.location.pathname.replace('/superadmin/dashboard.html', '');
+            const encodedCode = encodeSocietyCode(society.id);
+            const memberLink = baseUrl + '/index.html?s=' + encodedCode;
+            document.getElementById('view-member-link').href = memberLink;
+            document.getElementById('view-member-link').textContent = memberLink;
+
+            document.getElementById('view-modal').classList.add('show');
+        }
+
+        function closeViewModal() {
+            document.getElementById('view-modal').classList.remove('show');
+        }
+
+        // Delete Society
+        function deleteSociety(societyId) {
+            const society = societies.find(s => s.id === societyId);
+            if (!society) return;
+
+            societyToDelete = societyId;
+            document.getElementById('delete-society-name').textContent = society.name + ' (' + society.id + ')';
+            document.getElementById('delete-error').classList.add('d-none');
+            document.getElementById('delete-modal').classList.add('show');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.remove('show');
+            societyToDelete = null;
+        }
+
+        async function confirmDelete() {
+            if (!societyToDelete) return;
+
+            const errorDiv = document.getElementById('delete-error');
+            const btn = document.getElementById('delete-btn');
+            const btnText = document.getElementById('delete-btn-text');
+            const btnSpinner = document.getElementById('delete-btn-spinner');
+
+            btn.disabled = true;
+            btnText.textContent = 'Deactivating...';
+            btnSpinner.classList.remove('d-none');
+
+            try {
+                const result = await storage.deleteSociety(societyToDelete);
+
+                if (result.success) {
+                    Utils.showToast('Society deactivated successfully!', 'success');
+                    closeDeleteModal();
+                    loadSocieties();
+                } else {
+                    throw new Error(result.error || 'Failed to deactivate society');
+                }
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.classList.remove('d-none');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Deactivate';
+                btnSpinner.classList.add('d-none');
+            }
+        }
+
+        function handleLogout() {
+            auth.logout();
+            window.location.href = '../index.html';
+        }
+
+        function copyMemberLink() {
+            const link = document.getElementById('created-member-link').textContent;
+            copyToClipboard(link);
+        }
+
+        function copyViewMemberLink() {
+            const link = document.getElementById('view-member-link').textContent;
+            copyToClipboard(link);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                Utils.showToast('Link copied to clipboard!', 'success');
+            }).catch(() => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                Utils.showToast('Link copied to clipboard!', 'success');
+            });
+        }
+    </script>
+</body>
+</html>

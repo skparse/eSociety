@@ -6,311 +6,87 @@
     <title>Society Maintenance Billing</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Setup Wizard Styles */
-        .setup-container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+        .login-tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gray-200);
         }
 
-        .setup-card {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-        }
-
-        .setup-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 2rem;
+        .login-tab {
+            flex: 1;
+            padding: 0.75rem;
             text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            transition: all 0.2s;
         }
 
-        .setup-header h1 {
-            font-size: 1.5rem;
+        .login-tab:hover {
+            color: var(--primary);
+        }
+
+        .login-tab.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: -2px;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .society-info-banner {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .society-info-banner.show {
+            display: block;
+        }
+
+        .society-code-input {
+            text-transform: uppercase;
+        }
+
+        .not-configured-message {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .not-configured-message h2 {
+            color: var(--danger);
+            margin-bottom: 1rem;
+        }
+
+        .not-configured-message p {
+            color: var(--gray-600);
             margin-bottom: 0.5rem;
         }
 
-        .setup-header p {
-            opacity: 0.9;
-            font-size: 0.875rem;
-        }
-
-        .setup-body {
-            padding: 2rem;
-        }
-
-        .setup-steps {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 2rem;
-            gap: 0.5rem;
-        }
-
-        .setup-step {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
+        .not-configured-message code {
             background: var(--gray-100);
-            border-radius: var(--radius);
-            font-size: 0.875rem;
-            color: var(--gray-500);
-        }
-
-        .setup-step.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .setup-step.completed {
-            background: var(--success);
-            color: white;
-        }
-
-        .setup-step-number {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.75rem;
-        }
-
-        .setup-content {
-            min-height: 300px;
-        }
-
-        .step-content {
-            display: none;
-        }
-
-        .step-content.active {
-            display: block;
-        }
-
-        .instruction-step {
-            display: flex;
-            gap: 1rem;
-            padding: 1rem;
-            background: var(--gray-50);
-            border-radius: var(--radius);
-            margin-bottom: 1rem;
-        }
-
-        .instruction-number {
-            width: 28px;
-            height: 28px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.875rem;
-            flex-shrink: 0;
-        }
-
-        .instruction-text {
-            flex: 1;
-        }
-
-        .instruction-text a {
-            color: var(--primary);
-            font-weight: 500;
-        }
-
-        .code-container {
-            position: relative;
-            margin: 1.5rem 0;
-        }
-
-        .code-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            background: var(--gray-800);
-            color: var(--gray-300);
-            border-radius: var(--radius) var(--radius) 0 0;
-            font-size: 0.8125rem;
-        }
-
-        .code-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--gray-400);
-            cursor: pointer;
-            background: none;
-            border: none;
-            font-size: 0.8125rem;
-        }
-
-        .code-toggle:hover {
-            color: white;
-        }
-
-        .code-block {
-            background: var(--gray-900);
-            color: #a5d6ff;
-            padding: 1rem;
-            border-radius: 0 0 var(--radius) var(--radius);
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.75rem;
-            line-height: 1.5;
-            max-height: 300px;
-            overflow: auto;
-            white-space: pre;
-            display: none;
-        }
-
-        .code-block.expanded {
-            display: block;
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: var(--radius);
-            font-size: 0.8125rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            z-index: 10;
-        }
-
-        .copy-btn:hover {
-            background: var(--primary-dark);
-        }
-
-        .copy-btn.copied {
-            background: var(--success);
-        }
-
-        .url-input-group {
-            display: flex;
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-
-        .url-input-group input {
-            flex: 1;
-        }
-
-        .setup-footer {
-            display: flex;
-            justify-content: space-between;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--gray-200);
-            margin-top: 1.5rem;
-        }
-
-        .status-message {
-            padding: 1rem;
-            border-radius: var(--radius);
-            margin: 1rem 0;
-        }
-
-        .status-message.success {
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #86efac;
-        }
-
-        .status-message.error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
-        }
-
-        .status-message.info {
-            background: #dbeafe;
-            color: #1e40af;
-            border: 1px solid #93c5fd;
-        }
-
-        .success-icon {
-            font-size: 4rem;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .success-message {
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .success-message h3 {
-            color: var(--success);
-            margin-bottom: 1rem;
-        }
-
-        /* Login specific styles */
-        .login-link {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--gray-200);
-            text-align: center;
-        }
-
-        .login-link p {
-            font-size: 0.8125rem;
-            color: var(--gray-500);
-            margin: 0;
-        }
-
-        .configured-banner {
-            background: #dcfce7;
-            color: #166534;
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius);
-            margin-bottom: 1.5rem;
-            font-size: 0.875rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .configured-banner button {
-            font-size: 0.75rem;
             padding: 0.25rem 0.5rem;
-        }
-
-        @media (max-width: 768px) {
-            .setup-steps {
-                flex-wrap: wrap;
-            }
-
-            .url-input-group {
-                flex-direction: column;
-            }
-
-            .setup-footer {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .setup-footer button {
-                width: 100%;
-            }
+            border-radius: var(--radius);
+            font-size: 0.875rem;
         }
     </style>
 </head>
 <body>
     <!-- Login View -->
-    <div id="login-view" class="login-container" style="display: none;">
+    <div id="login-view" class="login-container">
         <div class="login-card">
             <div class="login-logo">
                 <div style="width: 60px; height: 60px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
@@ -323,225 +99,85 @@
                 <p>Billing Management System</p>
             </div>
 
-            <div id="configured-banner" class="configured-banner d-none">
-                <span>Connected to Google Sheets</span>
-                <button class="btn btn-sm btn-outline-secondary" onclick="showSetup()">Reconfigure</button>
+            <!-- Not Configured Message (hidden by default) -->
+            <div id="not-configured" class="not-configured-message" style="display: none;">
+                <h2>System Not Configured</h2>
+                <p>The Google Apps Script URL is not configured.</p>
+                <p>Please update <code>js/config.js</code> with your Web App URL.</p>
+                <br>
+                <p><small>If you are the administrator, deploy the Google Apps Script first.</small></p>
             </div>
 
-            <form id="login-form" class="login-form">
-                <div class="form-group">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required autocomplete="username">
+            <!-- Login Form Container -->
+            <div id="login-container">
+                <!-- Login Tabs -->
+                <div class="login-tabs">
+                    <button class="login-tab active" data-tab="society">Society Login</button>
+                    <button class="login-tab" data-tab="superadmin">Super Admin</button>
                 </div>
 
-                <div class="form-group">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required autocomplete="current-password">
-                </div>
-
-                <div id="login-error" class="alert alert-danger d-none"></div>
-
-                <button type="submit" class="btn btn-primary btn-lg" id="login-btn">
-                    <span id="login-btn-text">Sign In</span>
-                    <span id="login-btn-spinner" class="spinner spinner-sm d-none"></span>
-                </button>
-            </form>
-
-            <div class="login-link">
-                <p>Default credentials: admin / admin123</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Setup Wizard View -->
-    <div id="setup-view" class="setup-container" style="display: none;">
-        <div class="setup-card">
-            <div class="setup-header">
-                <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                </div>
-                <h1>Society Maintenance Setup</h1>
-                <p>Connect your application to Google Sheets in just a few steps</p>
-            </div>
-
-            <div class="setup-body">
-                <!-- Progress Steps -->
-                <div class="setup-steps">
-                    <div class="setup-step active" id="step-indicator-1">
-                        <span class="setup-step-number">1</span>
-                        <span>Create Script</span>
+                <!-- Society Login Tab -->
+                <div id="society-tab" class="tab-content active">
+                    <div id="society-info-banner" class="society-info-banner">
+                        <span id="society-name-display"></span>
                     </div>
-                    <div class="setup-step" id="step-indicator-2">
-                        <span class="setup-step-number">2</span>
-                        <span>Copy Code</span>
-                    </div>
-                    <div class="setup-step" id="step-indicator-3">
-                        <span class="setup-step-number">3</span>
-                        <span>Connect</span>
+
+                    <form id="society-login-form" class="login-form">
+                        <div class="form-group" id="society-code-group">
+                            <label for="society-code" class="form-label">Society Code</label>
+                            <input type="text" id="society-code" name="society-code" class="form-control society-code-input" placeholder="Enter society code (e.g., ABC123)" required autocomplete="off">
+                            <small id="society-code-status" class="text-muted"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required autocomplete="username">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required autocomplete="current-password">
+                        </div>
+
+                        <div id="login-error" class="alert alert-danger d-none"></div>
+
+                        <button type="submit" class="btn btn-primary btn-lg" id="login-btn">
+                            <span id="login-btn-text">Sign In</span>
+                            <span id="login-btn-spinner" class="spinner spinner-sm d-none"></span>
+                        </button>
+                    </form>
+
+                    <div class="login-link">
+                        <p>Default credentials: admin / admin123</p>
                     </div>
                 </div>
 
-                <!-- Step Contents -->
-                <div class="setup-content">
-                    <!-- Step 1: Create Script -->
-                    <div class="step-content active" id="step-1">
-                        <h3 style="margin-bottom: 1.5rem;">Step 1: Create Google Apps Script</h3>
-
-                        <div class="instruction-step">
-                            <span class="instruction-number">1</span>
-                            <div class="instruction-text">
-                                Go to <a href="https://script.google.com" target="_blank">script.google.com</a> and sign in with your Google account
-                            </div>
+                <!-- Superadmin Login Tab -->
+                <div id="superadmin-tab" class="tab-content">
+                    <form id="superadmin-login-form" class="login-form">
+                        <div class="form-group">
+                            <label for="super-username" class="form-label">Username</label>
+                            <input type="text" id="super-username" name="super-username" class="form-control" placeholder="Enter superadmin username" required autocomplete="username">
                         </div>
 
-                        <div class="instruction-step">
-                            <span class="instruction-number">2</span>
-                            <div class="instruction-text">
-                                Click <strong>"New Project"</strong> to create a new Apps Script project
-                            </div>
+                        <div class="form-group">
+                            <label for="super-password" class="form-label">Password</label>
+                            <input type="password" id="super-password" name="super-password" class="form-control" placeholder="Enter password" required autocomplete="current-password">
                         </div>
 
-                        <div class="instruction-step">
-                            <span class="instruction-number">3</span>
-                            <div class="instruction-text">
-                                Click on "Untitled project" at the top and rename it to <strong>"Society Maintenance Backend"</strong>
-                            </div>
-                        </div>
+                        <div id="super-login-error" class="alert alert-danger d-none"></div>
 
-                        <div class="instruction-step">
-                            <span class="instruction-number">4</span>
-                            <div class="instruction-text">
-                                Delete all the default code in the editor (select all and delete)
-                            </div>
-                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg" id="super-login-btn">
+                            <span id="super-login-btn-text">Sign In as Super Admin</span>
+                            <span id="super-login-btn-spinner" class="spinner spinner-sm d-none"></span>
+                        </button>
+                    </form>
 
-                        <div class="status-message info">
-                            <strong>Note:</strong> Your data will be stored in a Google Sheet in YOUR Google account. Only you have access to it.
-                        </div>
+                    <div class="login-link">
+                        <p>Superadmin access only</p>
                     </div>
-
-                    <!-- Step 2: Copy Code -->
-                    <div class="step-content" id="step-2">
-                        <h3 style="margin-bottom: 1.5rem;">Step 2: Copy the Backend Script</h3>
-
-                        <p>Copy the code below and paste it into your Google Apps Script editor:</p>
-
-                        <div class="code-container">
-                            <button class="copy-btn" onclick="copyScriptCode()">
-                                <span id="copy-btn-text">Copy Code</span>
-                            </button>
-                            <div class="code-header">
-                                <span>google-apps-script.js</span>
-                                <button class="code-toggle" onclick="toggleCode()">
-                                    <span id="toggle-text">Show Code</span>
-                                    <span id="toggle-icon">+</span>
-                                </button>
-                            </div>
-                            <pre class="code-block" id="script-code"></pre>
-                        </div>
-
-                        <div class="instruction-step">
-                            <span class="instruction-number">5</span>
-                            <div class="instruction-text">
-                                After pasting, click <strong>Deploy</strong> > <strong>New deployment</strong>
-                            </div>
-                        </div>
-
-                        <div class="instruction-step">
-                            <span class="instruction-number">6</span>
-                            <div class="instruction-text">
-                                Click the gear icon and select <strong>"Web app"</strong>
-                            </div>
-                        </div>
-
-                        <div class="instruction-step">
-                            <span class="instruction-number">7</span>
-                            <div class="instruction-text">
-                                Set <strong>"Execute as"</strong> to "Me" and <strong>"Who has access"</strong> to "Anyone"
-                            </div>
-                        </div>
-
-                        <div class="instruction-step">
-                            <span class="instruction-number">8</span>
-                            <div class="instruction-text">
-                                Click <strong>Deploy</strong>, then <strong>Authorize access</strong> and allow the permissions
-                            </div>
-                        </div>
-
-                        <div class="instruction-step">
-                            <span class="instruction-number">9</span>
-                            <div class="instruction-text">
-                                <strong>Copy the Web App URL</strong> that appears (starts with https://script.google.com/macros/s/...)
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Step 3: Connect & Initialize -->
-                    <div class="step-content" id="step-3">
-                        <h3 style="margin-bottom: 1.5rem;">Step 3: Connect to Your Backend</h3>
-
-                        <p>Paste the Web App URL you copied from Google Apps Script:</p>
-
-                        <div class="url-input-group">
-                            <input type="text" id="script-url" class="form-control" placeholder="https://script.google.com/macros/s/.../exec">
-                            <button class="btn btn-primary" onclick="testConnection()" id="test-btn">
-                                <span id="test-btn-text">Test Connection</span>
-                                <span id="test-btn-spinner" class="spinner spinner-sm d-none"></span>
-                            </button>
-                        </div>
-
-                        <div id="connection-status"></div>
-
-                        <div id="init-section" style="display: none;">
-                            <hr style="margin: 1.5rem 0;">
-                            <h4>Initialize System</h4>
-                            <p>Set up the initial admin account:</p>
-
-                            <div class="form-group">
-                                <label class="form-label">Admin Password</label>
-                                <input type="password" id="admin-password" class="form-control" value="admin123" placeholder="Enter admin password">
-                                <small class="text-muted">Default: admin123. You can change this later.</small>
-                            </div>
-
-                            <button class="btn btn-success btn-lg" onclick="initializeSystem()" id="init-btn" style="margin-top: 1rem;">
-                                <span id="init-btn-text">Initialize System</span>
-                                <span id="init-btn-spinner" class="spinner spinner-sm d-none"></span>
-                            </button>
-                        </div>
-
-                        <div id="success-section" style="display: none;">
-                            <div class="success-message">
-                                <div class="success-icon">&#10004;</div>
-                                <h3>Setup Complete!</h3>
-                                <p>Your Society Maintenance System is ready to use.</p>
-                                <p><strong>Username:</strong> admin<br><strong>Password:</strong> <span id="final-password">admin123</span></p>
-                                <button class="btn btn-primary btn-lg" onclick="goToLogin()" style="margin-top: 1rem;">
-                                    Go to Login
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Navigation Buttons -->
-                <div class="setup-footer" id="setup-footer">
-                    <button class="btn btn-secondary" id="prev-btn" onclick="prevStep()" style="visibility: hidden;">
-                        Previous
-                    </button>
-                    <button class="btn btn-primary" id="next-btn" onclick="nextStep()">
-                        Next Step
-                    </button>
                 </div>
             </div>
-        </div>
-
-        <div style="text-align: center; margin-top: 1rem;">
-            <button class="btn btn-link" onclick="showLogin()" id="skip-to-login" style="display: none;">
-                Already configured? Go to Login
-            </button>
         </div>
     </div>
 
@@ -559,280 +195,33 @@
     <script src="js/storage.js"></script>
     <script src="js/auth.js"></script>
     <script>
-        // Google Apps Script code to embed
-        const SCRIPT_CODE = `/**
- * Society Maintenance Billing System
- * Google Apps Script Backend
- */
+        let societyValidated = false;
+        let validatedSocietyName = '';
+        let societyFromUrl = false;
 
-// Spreadsheet ID - will be auto-created on first run
-let SPREADSHEET_ID = null;
+        // Encode society code for URL (obfuscation)
+        function encodeSocietyCode(code) {
+            // Reverse + Base64 encode
+            const reversed = code.split('').reverse().join('');
+            return btoa(reversed);
+        }
 
-// Sheet names
-const SHEETS = {
-  SETTINGS: 'Settings',
-  MASTER_DATA: 'MasterData',
-  USERS: 'Users',
-  FLATS: 'Flats',
-  BILLS: 'Bills',
-  PAYMENTS: 'Payments',
-  CONFIG: '_Config'
-};
-
-// Default data templates
-const INITIAL_DATA = {
-  settings: {
-    societyName: 'My Society',
-    address: '',
-    registrationNo: '',
-    phone: '',
-    email: '',
-    billingDay: 1,
-    dueDays: 15,
-    lateFeePercent: 2,
-    logo: ''
-  },
-  masterData: {
-    buildings: [],
-    flatTypes: [
-      { id: 'ft-1', name: '1 BHK', defaultArea: 450, isActive: true },
-      { id: 'ft-2', name: '2 BHK', defaultArea: 750, isActive: true },
-      { id: 'ft-3', name: '3 BHK', defaultArea: 1100, isActive: true },
-      { id: 'ft-4', name: 'Shop', defaultArea: 200, isActive: true }
-    ],
-    chargeTypes: [
-      { id: 'ct-1', name: 'Maintenance', calculationType: 'per_sqft', defaultAmount: 3, isMonthly: true, isActive: true },
-      { id: 'ct-2', name: 'Sinking Fund', calculationType: 'per_sqft', defaultAmount: 0.5, isMonthly: true, isActive: true },
-      { id: 'ct-3', name: 'Water Charges', calculationType: 'fixed', defaultAmount: 200, isMonthly: true, isActive: true },
-      { id: 'ct-4', name: 'Parking - 2 Wheeler', calculationType: 'per_vehicle', defaultAmount: 100, isMonthly: true, isActive: true, vehicleType: '2wheeler' },
-      { id: 'ct-5', name: 'Parking - 4 Wheeler', calculationType: 'per_vehicle', defaultAmount: 500, isMonthly: true, isActive: true, vehicleType: '4wheeler' }
-    ]
-  },
-  users: [],
-  flats: [],
-  bills: [],
-  payments: []
-};
-
-function doGet(e) {
-  return handleRequest(e);
-}
-
-function doPost(e) {
-  return handleRequest(e);
-}
-
-function handleRequest(e) {
-  try {
-    const params = e.parameter;
-    const action = params.action;
-    const output = ContentService.createTextOutput();
-    output.setMimeType(ContentService.MimeType.JSON);
-
-    let result;
-
-    switch(action) {
-      case 'init':
-        result = initializeSystem(e);
-        break;
-      case 'read':
-        result = readData(params.sheet);
-        break;
-      case 'write':
-        const postData = JSON.parse(e.postData.contents);
-        result = writeData(params.sheet, postData);
-        break;
-      case 'status':
-        result = getStatus();
-        break;
-      default:
-        result = { success: false, error: 'Invalid action' };
-    }
-
-    output.setContent(JSON.stringify(result));
-    return output;
-
-  } catch(error) {
-    const output = ContentService.createTextOutput();
-    output.setMimeType(ContentService.MimeType.JSON);
-    output.setContent(JSON.stringify({
-      success: false,
-      error: error.message
-    }));
-    return output;
-  }
-}
-
-function getSpreadsheet() {
-  const scriptProperties = PropertiesService.getScriptProperties();
-  SPREADSHEET_ID = scriptProperties.getProperty('SPREADSHEET_ID');
-
-  if (SPREADSHEET_ID) {
-    try {
-      return SpreadsheetApp.openById(SPREADSHEET_ID);
-    } catch(e) {
-      SPREADSHEET_ID = null;
-    }
-  }
-
-  const ss = SpreadsheetApp.create('Society Maintenance Data');
-  SPREADSHEET_ID = ss.getId();
-  scriptProperties.setProperty('SPREADSHEET_ID', SPREADSHEET_ID);
-  createSheets(ss);
-
-  return ss;
-}
-
-function createSheets(ss) {
-  Object.values(SHEETS).forEach(sheetName => {
-    let sheet = ss.getSheetByName(sheetName);
-    if (!sheet) {
-      sheet = ss.insertSheet(sheetName);
-    }
-  });
-
-  const defaultSheet = ss.getSheetByName('Sheet1');
-  if (defaultSheet) {
-    ss.deleteSheet(defaultSheet);
-  }
-}
-
-function initializeSystem(e) {
-  try {
-    const ss = getSpreadsheet();
-    const postData = e.postData ? JSON.parse(e.postData.contents) : {};
-
-    const adminPassword = postData.adminPassword || 'admin123';
-    const defaultAdmin = {
-      id: generateId(),
-      username: 'admin',
-      password: hashPassword(adminPassword),
-      role: 'admin',
-      flatId: null,
-      name: 'Administrator',
-      email: 'admin@society.com',
-      phone: '',
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    writeToSheet(ss, SHEETS.SETTINGS, INITIAL_DATA.settings);
-    writeToSheet(ss, SHEETS.MASTER_DATA, INITIAL_DATA.masterData);
-    writeToSheet(ss, SHEETS.USERS, [defaultAdmin]);
-    writeToSheet(ss, SHEETS.FLATS, []);
-    writeToSheet(ss, SHEETS.BILLS, []);
-    writeToSheet(ss, SHEETS.PAYMENTS, []);
-
-    return {
-      success: true,
-      message: 'System initialized successfully',
-      spreadsheetId: SPREADSHEET_ID,
-      spreadsheetUrl: ss.getUrl()
-    };
-
-  } catch(error) {
-    return { success: false, error: error.message };
-  }
-}
-
-function readData(sheetName) {
-  try {
-    const ss = getSpreadsheet();
-    const sheet = ss.getSheetByName(sheetName);
-
-    if (!sheet) {
-      return { success: false, error: 'Sheet not found: ' + sheetName };
-    }
-
-    const data = readFromSheet(sheet);
-    return { success: true, data: data };
-
-  } catch(error) {
-    return { success: false, error: error.message };
-  }
-}
-
-function writeData(sheetName, data) {
-  try {
-    const ss = getSpreadsheet();
-    const sheet = ss.getSheetByName(sheetName);
-
-    if (!sheet) {
-      return { success: false, error: 'Sheet not found: ' + sheetName };
-    }
-
-    writeToSheet(ss, sheetName, data);
-    return { success: true, message: 'Data saved successfully' };
-
-  } catch(error) {
-    return { success: false, error: error.message };
-  }
-}
-
-function getStatus() {
-  try {
-    const ss = getSpreadsheet();
-    const configSheet = ss.getSheetByName(SHEETS.SETTINGS);
-    const hasData = configSheet && configSheet.getLastRow() > 0;
-
-    return {
-      success: true,
-      initialized: hasData,
-      spreadsheetId: SPREADSHEET_ID,
-      spreadsheetUrl: ss.getUrl()
-    };
-
-  } catch(error) {
-    return { success: false, error: error.message };
-  }
-}
-
-function readFromSheet(sheet) {
-  const value = sheet.getRange('A1').getValue();
-  if (!value) {
-    return null;
-  }
-  try {
-    return JSON.parse(value);
-  } catch(e) {
-    return value;
-  }
-}
-
-function writeToSheet(ss, sheetName, data) {
-  const sheet = ss.getSheetByName(sheetName);
-  if (sheet) {
-    const jsonString = JSON.stringify(data);
-    sheet.getRange('A1').setValue(jsonString);
-  }
-}
-
-function generateId() {
-  return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 9);
-}
-
-function hashPassword(password) {
-  const rawHash = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, password);
-  let hash = '';
-  for (let i = 0; i < rawHash.length; i++) {
-    let hex = (rawHash[i] & 0xFF).toString(16);
-    if (hex.length === 1) hex = '0' + hex;
-    hash += hex;
-  }
-  return hash;
-}`;
-
-        let currentStep = 1;
-        const totalSteps = 3;
+        // Decode society code from URL
+        function decodeSocietyCode(encoded) {
+            try {
+                const decoded = atob(encoded);
+                return decoded.split('').reverse().join('');
+            } catch (e) {
+                return null;
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Populate script code
-            document.getElementById('script-code').textContent = SCRIPT_CODE;
-
-            // Check if running from file:// protocol (causes CORS issues)
-            if (window.location.protocol === 'file:') {
-                console.warn('Running from file:// protocol - API calls may fail due to CORS');
+            // Check if Google Script is configured
+            if (!isGoogleScriptConfigured()) {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('not-configured').style.display = 'block';
+                return;
             }
 
             // Check if already logged in
@@ -841,254 +230,119 @@ function hashPassword(password) {
                 return;
             }
 
-            // Check if Google Script is configured
-            if (isGoogleScriptConfigured()) {
-                showLogin();
-                document.getElementById('configured-banner').classList.remove('d-none');
-            } else {
-                showSetup();
-            }
+            // Setup tab switching
+            setupTabs();
 
-            // Handle login form submission
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
-        });
+            // Check for encoded society code in URL parameter (?s=encoded)
+            const urlParams = new URLSearchParams(window.location.search);
+            const encodedParam = urlParams.get('s');
 
-        function showLogin() {
-            document.getElementById('login-view').style.display = 'flex';
-            document.getElementById('setup-view').style.display = 'none';
-        }
+            if (encodedParam) {
+                const societyCode = decodeSocietyCode(encodedParam);
+                if (societyCode) {
+                    const societyInput = document.getElementById('society-code');
+                    societyInput.value = societyCode.toUpperCase();
+                    societyFromUrl = true;
 
-        function showSetup() {
-            document.getElementById('login-view').style.display = 'none';
-            document.getElementById('setup-view').style.display = 'block';
-
-            // Show skip to login if already configured
-            if (isGoogleScriptConfigured()) {
-                document.getElementById('skip-to-login').style.display = 'inline-block';
-                // Pre-fill URL
-                document.getElementById('script-url').value = getStoredScriptUrl();
-            }
-        }
-
-        function goToLogin() {
-            showLogin();
-        }
-
-        // Setup wizard navigation
-        function nextStep() {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                updateStepUI();
-            }
-        }
-
-        function prevStep() {
-            if (currentStep > 1) {
-                currentStep--;
-                updateStepUI();
-            }
-        }
-
-        function updateStepUI() {
-            // Update step indicators
-            for (let i = 1; i <= totalSteps; i++) {
-                const indicator = document.getElementById(`step-indicator-${i}`);
-                const content = document.getElementById(`step-${i}`);
-
-                indicator.classList.remove('active', 'completed');
-                content.classList.remove('active');
-
-                if (i < currentStep) {
-                    indicator.classList.add('completed');
-                } else if (i === currentStep) {
-                    indicator.classList.add('active');
-                    content.classList.add('active');
+                    // Auto-validate and show society name
+                    validateSocietyCode().then(() => {
+                        if (societyValidated) {
+                            // Hide the society code field completely
+                            document.getElementById('society-code-group').style.display = 'none';
+                            // Show society name in banner
+                            document.getElementById('society-info-banner').classList.add('show');
+                            // Focus on username field
+                            document.getElementById('username').focus();
+                        }
+                    });
                 }
             }
 
-            // Update navigation buttons
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
+            // Handle society code validation on blur
+            document.getElementById('society-code').addEventListener('blur', validateSocietyCode);
+            document.getElementById('society-code').addEventListener('input', function() {
+                if (!societyFromUrl) {
+                    societyValidated = false;
+                    document.getElementById('society-info-banner').classList.remove('show');
+                    document.getElementById('society-code-status').textContent = '';
+                }
+            });
 
-            prevBtn.style.visibility = currentStep > 1 ? 'visible' : 'hidden';
+            // Handle form submissions
+            document.getElementById('society-login-form').addEventListener('submit', handleSocietyLogin);
+            document.getElementById('superadmin-login-form').addEventListener('submit', handleSuperadminLogin);
+        });
 
-            if (currentStep === totalSteps) {
-                nextBtn.style.display = 'none';
-            } else {
-                nextBtn.style.display = 'block';
-            }
-        }
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.login-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tab
+                    this.classList.add('active');
 
-        // Code display functions
-        function toggleCode() {
-            const codeBlock = document.getElementById('script-code');
-            const toggleText = document.getElementById('toggle-text');
-            const toggleIcon = document.getElementById('toggle-icon');
-
-            if (codeBlock.classList.contains('expanded')) {
-                codeBlock.classList.remove('expanded');
-                toggleText.textContent = 'Show Code';
-                toggleIcon.textContent = '+';
-            } else {
-                codeBlock.classList.add('expanded');
-                toggleText.textContent = 'Hide Code';
-                toggleIcon.textContent = '-';
-            }
-        }
-
-        function copyScriptCode() {
-            const code = SCRIPT_CODE;
-            navigator.clipboard.writeText(code).then(() => {
-                const btn = document.querySelector('.copy-btn');
-                const btnText = document.getElementById('copy-btn-text');
-                btn.classList.add('copied');
-                btnText.textContent = 'Copied!';
-
-                setTimeout(() => {
-                    btn.classList.remove('copied');
-                    btnText.textContent = 'Copy Code';
-                }, 2000);
-            }).catch(err => {
-                // Fallback for older browsers
-                const textarea = document.createElement('textarea');
-                textarea.value = code;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-
-                const btn = document.querySelector('.copy-btn');
-                const btnText = document.getElementById('copy-btn-text');
-                btn.classList.add('copied');
-                btnText.textContent = 'Copied!';
-
-                setTimeout(() => {
-                    btn.classList.remove('copied');
-                    btnText.textContent = 'Copy Code';
-                }, 2000);
+                    // Show/hide tab content
+                    const tabId = this.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(tabId + '-tab').classList.add('active');
+                });
             });
         }
 
-        // Connection test
-        async function testConnection() {
-            const url = document.getElementById('script-url').value.trim();
-            const statusDiv = document.getElementById('connection-status');
-            const testBtn = document.getElementById('test-btn');
-            const btnText = document.getElementById('test-btn-text');
-            const btnSpinner = document.getElementById('test-btn-spinner');
+        async function validateSocietyCode() {
+            const societyCode = document.getElementById('society-code').value.trim().toUpperCase();
+            const statusEl = document.getElementById('society-code-status');
+            const banner = document.getElementById('society-info-banner');
 
-            if (!url) {
-                statusDiv.innerHTML = '<div class="status-message error">Please enter the Web App URL</div>';
+            if (!societyCode) {
+                statusEl.textContent = '';
+                banner.classList.remove('show');
+                societyValidated = false;
                 return;
             }
 
-            if (!url.includes('script.google.com') || !url.includes('/exec')) {
-                statusDiv.innerHTML = '<div class="status-message error">Invalid URL format. URL should end with /exec</div>';
+            if (societyCode.length < 3) {
+                statusEl.textContent = 'Society code must be at least 3 characters';
+                statusEl.className = 'text-danger';
+                banner.classList.remove('show');
+                societyValidated = false;
                 return;
             }
 
-            // Show loading
-            testBtn.disabled = true;
-            btnText.textContent = 'Testing...';
-            btnSpinner.classList.remove('d-none');
-            statusDiv.innerHTML = '<div class="status-message info">Testing connection...</div>';
+            statusEl.textContent = 'Validating...';
+            statusEl.className = 'text-muted';
 
             try {
-                // Save URL temporarily
-                saveScriptUrl(url);
+                const result = await storage.validateSociety(societyCode);
 
-                // Test connection
-                const result = await storage.getStatus();
-
-                if (result.success) {
-                    statusDiv.innerHTML = `<div class="status-message success">
-                        Connection successful!
-                        ${result.initialized ? 'System is already initialized.' : 'System needs initialization.'}
-                    </div>`;
-
-                    if (result.initialized) {
-                        // Show go to login
-                        document.getElementById('init-section').style.display = 'none';
-                        document.getElementById('success-section').style.display = 'block';
-                        document.getElementById('setup-footer').style.display = 'none';
-                    } else {
-                        // Show init section
-                        document.getElementById('init-section').style.display = 'block';
-                    }
+                if (result.success && result.valid) {
+                    statusEl.textContent = 'Society found';
+                    statusEl.className = 'text-success';
+                    document.getElementById('society-name-display').textContent = result.societyName;
+                    banner.classList.add('show');
+                    societyValidated = true;
+                    validatedSocietyName = result.societyName;
                 } else {
-                    statusDiv.innerHTML = `<div class="status-message error">Connection failed: ${result.error || 'Unknown error'}</div>`;
+                    statusEl.textContent = 'Society not found';
+                    statusEl.className = 'text-danger';
+                    banner.classList.remove('show');
+                    societyValidated = false;
                 }
             } catch (error) {
-                console.error('Connection error:', error);
-                let errorMsg = error.message;
-                let helpText = '';
-
-                // Provide helpful guidance based on error type
-                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-                    helpText = `
-                        <br><br><strong>Troubleshooting:</strong>
-                        <ul style="text-align: left; margin-top: 0.5rem;">
-                            <li>Make sure you deployed the script as a <strong>Web app</strong></li>
-                            <li>Set "Who has access" to <strong>"Anyone"</strong></li>
-                            <li>Make sure the URL ends with <strong>/exec</strong></li>
-                            <li>Try redeploying: Deploy > Manage deployments > Edit > New version > Deploy</li>
-                            <li>If opening this file directly (file://), try using a local web server instead</li>
-                        </ul>
-                    `;
-                } else if (error.message.includes('CORS')) {
-                    helpText = '<br><br>CORS error: Make sure "Who has access" is set to "Anyone" in the deployment settings.';
-                }
-
-                statusDiv.innerHTML = `<div class="status-message error">Connection failed: ${errorMsg}${helpText}</div>`;
-            } finally {
-                testBtn.disabled = false;
-                btnText.textContent = 'Test Connection';
-                btnSpinner.classList.add('d-none');
+                statusEl.textContent = 'Error validating society';
+                statusEl.className = 'text-danger';
+                banner.classList.remove('show');
+                societyValidated = false;
             }
         }
 
-        // Initialize system
-        async function initializeSystem() {
-            const password = document.getElementById('admin-password').value || 'admin123';
-            const initBtn = document.getElementById('init-btn');
-            const btnText = document.getElementById('init-btn-text');
-            const btnSpinner = document.getElementById('init-btn-spinner');
-            const statusDiv = document.getElementById('connection-status');
-
-            // Show loading
-            initBtn.disabled = true;
-            btnText.textContent = 'Initializing...';
-            btnSpinner.classList.remove('d-none');
-
-            try {
-                const result = await storage.initializeSystem(password);
-
-                if (result.success) {
-                    document.getElementById('init-section').style.display = 'none';
-                    document.getElementById('success-section').style.display = 'block';
-                    document.getElementById('setup-footer').style.display = 'none';
-                    document.getElementById('final-password').textContent = password;
-
-                    statusDiv.innerHTML = `<div class="status-message success">
-                        System initialized successfully!<br>
-                        <small>Your data is stored at: <a href="${result.spreadsheetUrl}" target="_blank">Google Sheet</a></small>
-                    </div>`;
-                } else {
-                    statusDiv.innerHTML = `<div class="status-message error">Initialization failed: ${result.error || 'Unknown error'}</div>`;
-                }
-            } catch (error) {
-                statusDiv.innerHTML = `<div class="status-message error">Initialization failed: ${error.message}</div>`;
-            } finally {
-                initBtn.disabled = false;
-                btnText.textContent = 'Initialize System';
-                btnSpinner.classList.add('d-none');
-            }
-        }
-
-        // Login handling
-        async function handleLogin(e) {
+        async function handleSocietyLogin(e) {
             e.preventDefault();
 
+            const societyCode = document.getElementById('society-code').value.trim().toUpperCase();
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('login-error');
@@ -1099,13 +353,23 @@ function hashPassword(password) {
             // Clear previous error
             errorDiv.classList.add('d-none');
 
+            // Validate society code first if not already validated
+            if (!societyValidated) {
+                await validateSocietyCode();
+                if (!societyValidated) {
+                    errorDiv.textContent = 'Please enter a valid society code';
+                    errorDiv.classList.remove('d-none');
+                    return;
+                }
+            }
+
             // Show loading state
             loginBtn.disabled = true;
             btnText.textContent = 'Signing in...';
             btnSpinner.classList.remove('d-none');
 
             try {
-                const result = await auth.login(username, password);
+                const result = await auth.login(societyCode, username, password);
 
                 if (result.success) {
                     Utils.showToast('Login successful!', 'success');
@@ -1115,22 +379,59 @@ function hashPassword(password) {
                 } else {
                     errorDiv.textContent = result.message;
                     errorDiv.classList.remove('d-none');
-
-                    // Reset button
-                    loginBtn.disabled = false;
-                    btnText.textContent = 'Sign In';
-                    btnSpinner.classList.add('d-none');
+                    resetButton(loginBtn, btnText, btnSpinner, 'Sign In');
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                errorDiv.textContent = 'An error occurred. Please try again.';
+                errorDiv.textContent = error.message || 'An error occurred. Please try again.';
                 errorDiv.classList.remove('d-none');
-
-                // Reset button
-                loginBtn.disabled = false;
-                btnText.textContent = 'Sign In';
-                btnSpinner.classList.add('d-none');
+                resetButton(loginBtn, btnText, btnSpinner, 'Sign In');
             }
+        }
+
+        async function handleSuperadminLogin(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('super-username').value.trim();
+            const password = document.getElementById('super-password').value;
+            const errorDiv = document.getElementById('super-login-error');
+            const loginBtn = document.getElementById('super-login-btn');
+            const btnText = document.getElementById('super-login-btn-text');
+            const btnSpinner = document.getElementById('super-login-btn-spinner');
+
+            // Clear previous error
+            errorDiv.classList.add('d-none');
+
+            // Show loading state
+            loginBtn.disabled = true;
+            btnText.textContent = 'Signing in...';
+            btnSpinner.classList.remove('d-none');
+
+            try {
+                const result = await auth.superadminLogin(username, password);
+
+                if (result.success) {
+                    Utils.showToast('Superadmin login successful!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'superadmin/dashboard.html';
+                    }, 500);
+                } else {
+                    errorDiv.textContent = result.message;
+                    errorDiv.classList.remove('d-none');
+                    resetButton(loginBtn, btnText, btnSpinner, 'Sign In as Super Admin');
+                }
+            } catch (error) {
+                console.error('Superadmin login error:', error);
+                errorDiv.textContent = error.message || 'An error occurred. Please try again.';
+                errorDiv.classList.remove('d-none');
+                resetButton(loginBtn, btnText, btnSpinner, 'Sign In as Super Admin');
+            }
+        }
+
+        function resetButton(btn, textEl, spinnerEl, text) {
+            btn.disabled = false;
+            textEl.textContent = text;
+            spinnerEl.classList.add('d-none');
         }
 
         function redirectToDashboard() {
@@ -1142,7 +443,9 @@ function hashPassword(password) {
             }
 
             // Redirect based on role
-            if (auth.isAdmin()) {
+            if (auth.isSuperadmin()) {
+                window.location.href = 'superadmin/dashboard.html';
+            } else if (auth.isAdmin()) {
                 window.location.href = 'admin/dashboard.html';
             } else {
                 window.location.href = 'member/dashboard.html';

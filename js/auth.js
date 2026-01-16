@@ -1,6 +1,6 @@
 /**
  * Society Maintenance Billing System
- * Authentication Module
+ * Authentication Module (Multi-Tenant)
  */
 
 class Auth {
@@ -11,11 +11,14 @@ class Auth {
     }
 
     /**
-     * Login user with username and password
+     * Login user with society code, username and password
      */
-    async login(username, password) {
+    async login(societyId, username, password) {
         try {
-            // Get users from storage
+            // Set society context first
+            setCurrentSociety(societyId.toUpperCase());
+
+            // Get users from storage (will use societyId)
             const users = await storage.getUsers();
 
             // Find user by username
@@ -24,19 +27,30 @@ class Auth {
             );
 
             if (!user) {
+                clearCurrentSociety();
                 return { success: false, message: 'Invalid username or password' };
             }
 
             // Verify password
             const hashedPassword = await Utils.hashPassword(password);
             if (user.password !== hashedPassword) {
+                clearCurrentSociety();
                 return { success: false, message: 'Invalid username or password' };
             }
+
+            // Get society name
+            const societyInfo = await storage.getSocietyInfo(societyId);
+            const societyName = societyInfo.success ? societyInfo.society.name : societyId;
+
+            // Update society with name
+            setCurrentSociety(societyId.toUpperCase(), societyName);
 
             // Create session
             const session = {
                 userId: user.id,
                 role: user.role,
+                societyId: societyId.toUpperCase(),
+                societyName: societyName,
                 loginTime: Date.now(),
                 expiresAt: Date.now() + this.sessionTimeout
             };
@@ -49,7 +63,9 @@ class Auth {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                flatId: user.flatId
+                flatId: user.flatId,
+                societyId: societyId.toUpperCase(),
+                societyName: societyName
             }));
 
             return {
@@ -58,12 +74,49 @@ class Auth {
                     id: user.id,
                     name: user.name,
                     role: user.role,
-                    flatId: user.flatId
+                    flatId: user.flatId,
+                    societyId: societyId.toUpperCase(),
+                    societyName: societyName
                 }
             };
         } catch (error) {
             console.error('Login error:', error);
-            return { success: false, message: 'An error occurred during login' };
+            clearCurrentSociety();
+            return { success: false, message: error.message || 'An error occurred during login' };
+        }
+    }
+
+    /**
+     * Superadmin login
+     */
+    async superadminLogin(username, password) {
+        try {
+            const result = await storage.superadminLogin(username, password);
+
+            if (result.success) {
+                // Create superadmin session
+                const session = {
+                    userId: 'superadmin',
+                    role: 'superadmin',
+                    loginTime: Date.now(),
+                    expiresAt: Date.now() + this.sessionTimeout
+                };
+
+                localStorage.setItem(this.sessionKey, JSON.stringify(session));
+                localStorage.setItem(this.userKey, JSON.stringify({
+                    id: 'superadmin',
+                    username: username,
+                    name: 'Super Administrator',
+                    role: 'superadmin'
+                }));
+
+                return { success: true, role: 'superadmin' };
+            }
+
+            return { success: false, message: result.error || 'Invalid credentials' };
+        } catch (error) {
+            console.error('Superadmin login error:', error);
+            return { success: false, message: error.message || 'An error occurred' };
         }
     }
 
@@ -73,6 +126,7 @@ class Auth {
     logout() {
         localStorage.removeItem(this.sessionKey);
         localStorage.removeItem(this.userKey);
+        clearCurrentSociety();
         storage.invalidateAllCache();
     }
 
@@ -132,6 +186,14 @@ class Auth {
     }
 
     /**
+     * Check if current user is superadmin
+     */
+    isSuperadmin() {
+        const session = this.getSession();
+        return session && session.role === 'superadmin';
+    }
+
+    /**
      * Check if current user is admin
      */
     isAdmin() {
@@ -148,11 +210,39 @@ class Auth {
     }
 
     /**
+     * Get current society ID
+     */
+    getSocietyId() {
+        const session = this.getSession();
+        return session ? session.societyId : null;
+    }
+
+    /**
+     * Get current society name
+     */
+    getSocietyName() {
+        const session = this.getSession();
+        return session ? session.societyName : null;
+    }
+
+    /**
      * Require authentication - redirect if not logged in
      */
     requireAuth(requiredRole = null) {
         if (!this.isLoggedIn()) {
             window.location.href = '/index.html?redirect=' + encodeURIComponent(window.location.pathname);
+            return false;
+        }
+
+        // Superadmin has access to superadmin panel only
+        if (this.isSuperadmin() && requiredRole !== 'superadmin') {
+            window.location.href = '/superadmin/dashboard.html';
+            return false;
+        }
+
+        // Non-superadmin trying to access superadmin panel
+        if (requiredRole === 'superadmin' && !this.isSuperadmin()) {
+            window.location.href = '/index.html';
             return false;
         }
 
