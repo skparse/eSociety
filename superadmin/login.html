@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Super Admin">
+    <title>Super Admin Login - Society Maintenance</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../manifest.json">
+
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/svg+xml" href="../icons/icon.svg">
+    <link rel="apple-touch-icon" href="../icons/icon-192.png">
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Login View -->
+    <div id="login-view" class="login-container">
+        <div class="login-card">
+            <div class="login-logo">
+                <div style="width: 60px; height: 60px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                </div>
+                <h1>Super Admin</h1>
+                <p>Society Management System</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="superadmin-login-form" class="login-form">
+                <div class="form-group">
+                    <label for="super-username" class="form-label">Username</label>
+                    <input type="text" id="super-username" name="super-username" class="form-control" placeholder="Enter username" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="super-password" class="form-label">Password</label>
+                    <input type="password" id="super-password" name="super-password" class="form-control" placeholder="Enter password" required autocomplete="current-password">
+                </div>
+
+                <div id="super-login-error" class="alert alert-danger d-none"></div>
+
+                <button type="submit" class="btn btn-primary btn-lg" id="super-login-btn">
+                    <span id="super-login-btn-text">Sign In</span>
+                    <span id="super-login-btn-spinner" class="spinner spinner-sm d-none"></span>
+                </button>
+            </form>
+
+            <div class="login-link">
+                <a href="../index.html">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner spinner-lg"></div>
+        <div class="loading-message">Loading...</div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/mobile.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if already logged in as superadmin
+            if (auth.isLoggedIn() && auth.isSuperadmin()) {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            // Handle form submission
+            document.getElementById('superadmin-login-form').addEventListener('submit', handleSuperadminLogin);
+        });
+
+        async function handleSuperadminLogin(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('super-username').value.trim();
+            const password = document.getElementById('super-password').value;
+            const errorDiv = document.getElementById('super-login-error');
+            const loginBtn = document.getElementById('super-login-btn');
+            const btnText = document.getElementById('super-login-btn-text');
+            const btnSpinner = document.getElementById('super-login-btn-spinner');
+
+            // Clear previous error
+            errorDiv.classList.add('d-none');
+
+            // Show loading state
+            loginBtn.disabled = true;
+            btnText.textContent = 'Signing in...';
+            btnSpinner.classList.remove('d-none');
+
+            try {
+                const result = await auth.superadminLogin(username, password);
+
+                if (result.success) {
+                    Utils.showToast('Login successful!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 500);
+                } else {
+                    errorDiv.textContent = result.message;
+                    errorDiv.classList.remove('d-none');
+                    resetButton(loginBtn, btnText, btnSpinner, 'Sign In');
+                }
+            } catch (error) {
+                console.error('Superadmin login error:', error);
+                errorDiv.textContent = error.message || 'An error occurred. Please try again.';
+                errorDiv.classList.remove('d-none');
+                resetButton(loginBtn, btnText, btnSpinner, 'Sign In');
+            }
+        }
+
+        function resetButton(btn, textEl, spinnerEl, text) {
+            btn.disabled = false;
+            textEl.textContent = text;
+            spinnerEl.classList.add('d-none');
+        }
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../service-worker.js')
+                    .then(registration => {
+                        console.log('SW registered:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('SW registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Society Bills">
-    <title>Society Maintenance Billing</title>
+    <title>Society Maintenance Billing - Manage Your Society Bills</title>
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -18,388 +18,1275 @@
 
     <link rel="stylesheet" href="css/style.css">
     <style>
-        .login-tabs {
-            display: flex;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid var(--gray-200);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .login-tab {
-            flex: 1;
-            padding: 0.75rem;
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+        }
+
+        .landing-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Hero Section */
+        .hero {
             text-align: center;
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-size: 0.875rem;
-            color: var(--gray-500);
-            transition: all 0.2s;
+            padding: 4rem 0 2rem;
         }
 
-        .login-tab:hover {
-            color: var(--primary);
-        }
-
-        .login-tab.active {
-            color: var(--primary);
-            border-bottom: 2px solid var(--primary);
-            margin-bottom: -2px;
-            font-weight: 600;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .not-configured-message {
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .not-configured-message h2 {
-            color: var(--danger);
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gray-800);
             margin-bottom: 1rem;
+            line-height: 1.2;
         }
 
-        .not-configured-message p {
+        .hero p {
+            font-size: 1.125rem;
             color: var(--gray-600);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .hero-icon {
+            width: 100px;
+            height: 100px;
+            background: var(--primary);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.3);
+        }
+
+        .hero-icon svg {
+            width: 56px;
+            height: 56px;
+            color: white;
+        }
+
+        /* Statistics Banner */
+        .stats-banner {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem 0;
+            margin: 1rem 0 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        /* Section Title */
+        .section-title {
+            text-align: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gray-800);
             margin-bottom: 0.5rem;
         }
 
-        .not-configured-message code {
-            background: var(--gray-100);
-            padding: 0.25rem 0.5rem;
-            border-radius: var(--radius);
+        .section-subtitle {
+            text-align: center;
+            font-size: 1rem;
+            color: var(--gray-600);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 3rem 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.75rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .feature-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--primary);
+        }
+
+        .feature-card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            font-size: 0.9375rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        /* Screenshots Section */
+        .screenshots {
+            padding: 3rem 0;
+        }
+
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .screenshot-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .screenshot-preview {
+            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+            padding: 2rem;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screenshot-preview svg {
+            width: 80px;
+            height: 80px;
+            color: white;
+            opacity: 0.9;
+        }
+
+        .screenshot-info {
+            padding: 1.25rem;
+        }
+
+        .screenshot-info h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 0.25rem;
+        }
+
+        .screenshot-info p {
             font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        /* Benefits Section */
+        .benefits {
+            padding: 3rem 0;
+            background: white;
+            margin: 2rem -1.5rem;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .benefit-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .benefit-icon {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            background: #dcfce7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .benefit-icon svg {
+            width: 20px;
+            height: 20px;
+            color: #16a34a;
+        }
+
+        .benefit-content h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 0.25rem;
+        }
+
+        .benefit-content p {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        /* Comparison Table */
+        .comparison {
+            padding: 3rem 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .comparison-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .comparison-table th:first-child {
+            width: 40%;
+        }
+
+        .comparison-table td {
+            color: var(--gray-600);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .cross-icon {
+            color: #dc2626;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 3rem 0;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.75rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .testimonial-text {
+            font-size: 0.9375rem;
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 1.25rem;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .testimonial-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .testimonial-info h4 {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .testimonial-info p {
+            font-size: 0.8125rem;
+            color: var(--gray-500);
+        }
+
+        /* FAQ Section */
+        .faq {
+            padding: 3rem 0;
+        }
+
+        .faq-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .faq-question {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            text-align: left;
+        }
+
+        .faq-question:hover {
+            background: var(--gray-50);
+        }
+
+        .faq-question svg {
+            width: 20px;
+            height: 20px;
+            color: var(--gray-500);
+            transition: transform 0.2s;
+        }
+
+        .faq-item.active .faq-question svg {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            display: none;
+            padding: 0 1.5rem 1.25rem;
+            font-size: 0.9375rem;
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        /* PWA Install Section */
+        .pwa-section {
+            padding: 3rem 0;
+            background: white;
+            margin: 2rem -1.5rem;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .pwa-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .pwa-info h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 1rem;
+        }
+
+        .pwa-info p {
+            font-size: 0.9375rem;
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .pwa-steps {
+            list-style: none;
+        }
+
+        .pwa-steps li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            font-size: 0.9375rem;
+            color: var(--gray-700);
+        }
+
+        .pwa-steps li span {
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .pwa-illustration {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .phone-mockup {
+            width: 200px;
+            height: 400px;
+            background: var(--gray-800);
+            border-radius: 30px;
+            padding: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+            border-radius: 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .phone-screen svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+        }
+
+        .phone-screen span {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            padding: 3rem 0;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .step {
+            display: flex;
+            gap: 1.25rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .step-content h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 0.25rem;
+        }
+
+        .step-content p {
+            font-size: 0.9375rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 3rem 0;
+        }
+
+        .contact-card {
+            background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            color: white;
+        }
+
+        .contact-card h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .contact-card p {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .contact-methods {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-method {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            color: white;
+            transition: background 0.2s;
+        }
+
+        .contact-method:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .contact-method svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .contact-method span {
+            font-weight: 500;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 3rem 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 2px solid var(--primary-light);
+        }
+
+        .info-box h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 0.75rem;
+        }
+
+        .info-box p {
+            font-size: 1rem;
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .info-box .highlight {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .landing-footer {
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 2rem;
+        }
+
+        .landing-footer p {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 2rem 0 1rem;
+            }
+
+            .hero h1 {
+                font-size: 1.875rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .hero-icon {
+                width: 80px;
+                height: 80px;
+                border-radius: 20px;
+            }
+
+            .hero-icon svg {
+                width: 44px;
+                height: 44px;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .stat-number {
+                font-size: 1.5rem;
+            }
+
+            .pwa-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .pwa-illustration {
+                order: -1;
+            }
+
+            .phone-mockup {
+                width: 160px;
+                height: 320px;
+            }
+
+            .comparison-table {
+                overflow-x: auto;
+            }
+
+            .comparison-table table {
+                min-width: 500px;
+            }
+
+            .contact-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .contact-methods {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Login View -->
-    <div id="login-view" class="login-container">
-        <div class="login-card">
-            <div class="login-logo">
-                <div style="width: 60px; height: 60px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                </div>
-                <h1>Society Maintenance</h1>
-                <p>Billing Management System</p>
+    <div class="landing-container">
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
             </div>
+            <h1>Simplified Billing for Housing Societies</h1>
+            <p>A complete solution for managing maintenance bills, tracking payments, and keeping your society finances organized.</p>
+        </section>
 
-            <!-- Not Configured Message (hidden by default) -->
-            <div id="not-configured" class="not-configured-message" style="display: none;">
-                <h2>Setup Required</h2>
-                <p>This system hasn't been set up yet.</p>
-                <p>Please contact your administrator to complete the setup.</p>
-                <br>
-                <p><small>Administrator? <a href="docs/setup-guide.html">View Setup Guide</a></small></p>
+        <!-- Statistics Banner -->
+        <section class="stats-banner">
+            <div class="stat-item">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Societies</div>
             </div>
+            <div class="stat-item">
+                <div class="stat-number">50K+</div>
+                <div class="stat-label">Bills Generated</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">₹5Cr+</div>
+                <div class="stat-label">Payments Tracked</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+        </section>
 
-            <!-- Login Form Container -->
-            <div id="login-container">
-                <!-- Login Tabs -->
-                <div class="login-tabs">
-                    <button class="login-tab active" data-tab="society">Society Login</button>
-                    <button class="login-tab" data-tab="superadmin">Super Admin</button>
+        <!-- Features Section -->
+        <section class="features">
+            <h2 class="section-title">Features</h2>
+            <p class="section-subtitle">Everything you need to manage your society's finances efficiently</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </div>
+                    <h3>Easy Bill Generation</h3>
+                    <p>Generate monthly maintenance bills for all flats with just a few clicks. Automatic calculation of charges.</p>
                 </div>
 
-                <!-- Society Login Tab -->
-                <div id="society-tab" class="tab-content active">
-                    <form id="society-login-form" class="login-form">
-                        <!-- Hidden society code field (populated from URL parameter) -->
-                        <input type="hidden" id="society-code" name="society-code" value="">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                            <line x1="1" y1="10" x2="23" y2="10"></line>
+                        </svg>
+                    </div>
+                    <h3>Payment Tracking</h3>
+                    <p>Track all payments with ease. Record online and cash payments, and keep complete payment history.</p>
+                </div>
 
-                        <div class="form-group">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required autocomplete="username">
-                        </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <h3>Member Portal</h3>
+                    <p>Members can view their bills, payment history, and outstanding dues through a dedicated portal.</p>
+                </div>
 
-                        <div class="form-group">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required autocomplete="current-password">
-                        </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <h3>Financial Reports</h3>
+                    <p>Get detailed reports on collections, pending dues, and society finances at a glance.</p>
+                </div>
 
-                        <div id="login-error" class="alert alert-danger d-none"></div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <h3>Secure Access</h3>
+                    <p>Role-based access control ensures only authorized users can view and manage data.</p>
+                </div>
 
-                        <button type="submit" class="btn btn-primary btn-lg" id="login-btn">
-                            <span id="login-btn-text">Sign In</span>
-                            <span id="login-btn-spinner" class="spinner spinner-sm d-none"></span>
-                        </button>
-                    </form>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                    </div>
+                    <h3>Mobile Friendly</h3>
+                    <p>Access from any device. Works perfectly on smartphones, tablets, and desktops.</p>
+                </div>
+            </div>
+        </section>
 
-                    <div class="login-link">
-                        <p>Default credentials: admin / admin123</p>
+        <!-- Screenshots Preview -->
+        <section class="screenshots">
+            <h2 class="section-title">See It In Action</h2>
+            <p class="section-subtitle">A glimpse of our intuitive dashboard and features</p>
+            <div class="screenshot-grid">
+                <div class="screenshot-card">
+                    <div class="screenshot-preview">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                            <line x1="9" y1="21" x2="9" y2="9"></line>
+                        </svg>
+                    </div>
+                    <div class="screenshot-info">
+                        <h3>Admin Dashboard</h3>
+                        <p>Complete overview of society finances and quick actions</p>
                     </div>
                 </div>
-
-                <!-- Superadmin Login Tab -->
-                <div id="superadmin-tab" class="tab-content">
-                    <form id="superadmin-login-form" class="login-form">
-                        <div class="form-group">
-                            <label for="super-username" class="form-label">Username</label>
-                            <input type="text" id="super-username" name="super-username" class="form-control" placeholder="Enter superadmin username" required autocomplete="username">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="super-password" class="form-label">Password</label>
-                            <input type="password" id="super-password" name="super-password" class="form-control" placeholder="Enter password" required autocomplete="current-password">
-                        </div>
-
-                        <div id="super-login-error" class="alert alert-danger d-none"></div>
-
-                        <button type="submit" class="btn btn-primary btn-lg" id="super-login-btn">
-                            <span id="super-login-btn-text">Sign In as Super Admin</span>
-                            <span id="super-login-btn-spinner" class="spinner spinner-sm d-none"></span>
-                        </button>
-                    </form>
-
-                    <div class="login-link">
-                        <p>Superadmin access only</p>
+                <div class="screenshot-card">
+                    <div class="screenshot-preview">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                    </div>
+                    <div class="screenshot-info">
+                        <h3>Bill Management</h3>
+                        <p>Generate, view, and manage bills effortlessly</p>
+                    </div>
+                </div>
+                <div class="screenshot-card">
+                    <div class="screenshot-preview">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                    </div>
+                    <div class="screenshot-info">
+                        <h3>Reports & Analytics</h3>
+                        <p>Detailed insights into collections and dues</p>
                     </div>
                 </div>
             </div>
+        </section>
+
+        <!-- Benefits Section -->
+        <section class="benefits">
+            <div class="landing-container">
+                <h2 class="section-title">Why Society Admins Love Us</h2>
+                <p class="section-subtitle">Benefits that make your life easier</p>
+                <div class="benefits-grid">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h3>Save Time</h3>
+                            <p>Automate bill generation and reduce manual calculations by 90%</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h3>Reduce Errors</h3>
+                            <p>Eliminate calculation mistakes with automated billing system</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h3>Better Collection</h3>
+                            <p>Track pending dues and improve collection rates</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h3>Transparency</h3>
+                            <p>Members can view bills anytime, reducing queries</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h3>No Software Install</h3>
+                            <p>Cloud-based system accessible from any browser</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h3>Free to Use</h3>
+                            <p>No subscription fees - completely free for societies</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison Table -->
+        <section class="comparison">
+            <h2 class="section-title">Manual vs. Digital Billing</h2>
+            <p class="section-subtitle">See how our system compares to traditional methods</p>
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Manual / Excel</th>
+                            <th>Our System</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Bill Generation Time</td>
+                            <td>2-3 hours</td>
+                            <td class="check-icon">2 minutes</td>
+                        </tr>
+                        <tr>
+                            <td>Calculation Errors</td>
+                            <td>Common</td>
+                            <td class="check-icon">Zero</td>
+                        </tr>
+                        <tr>
+                            <td>Member Self-Service</td>
+                            <td class="cross-icon">Not possible</td>
+                            <td class="check-icon">24/7 access</td>
+                        </tr>
+                        <tr>
+                            <td>Payment History</td>
+                            <td>Hard to track</td>
+                            <td class="check-icon">Instant access</td>
+                        </tr>
+                        <tr>
+                            <td>Reports</td>
+                            <td>Manual creation</td>
+                            <td class="check-icon">Auto-generated</td>
+                        </tr>
+                        <tr>
+                            <td>Data Backup</td>
+                            <td>Risk of loss</td>
+                            <td class="check-icon">Cloud backup</td>
+                        </tr>
+                        <tr>
+                            <td>Cost</td>
+                            <td>Paper, printing</td>
+                            <td class="check-icon">Free</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="testimonials">
+            <h2 class="section-title">What Our Users Say</h2>
+            <p class="section-subtitle">Trusted by society administrators across the country</p>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"This system has transformed how we manage our society. Bill generation that used to take hours now takes minutes. Members love being able to check their bills online."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">RK</div>
+                        <div class="testimonial-info">
+                            <h4>Rajesh Kumar</h4>
+                            <p>Secretary, Sunshine Apartments</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Finally, a billing system that's easy to use and doesn't cost anything. Our collection rate has improved significantly since members can see their dues anytime."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">PS</div>
+                        <div class="testimonial-info">
+                            <h4>Priya Sharma</h4>
+                            <p>Treasurer, Green Valley Society</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"The reports feature is a lifesaver during AGMs. Everything is organized and transparent. Best decision we made for our society management."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">AM</div>
+                        <div class="testimonial-info">
+                            <h4>Amit Mehta</h4>
+                            <p>Chairman, Royal Residency</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <p class="section-subtitle">Got questions? We've got answers</p>
+            <div class="faq-list">
+                <div class="faq-item active">
+                    <button class="faq-question">
+                        How do I get started with the system?
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        Contact us to set up your society. We'll create your account and provide you with a unique login link and QR code that you can share with your members.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Is my society's data secure?
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        Yes, your data is stored securely in Google Sheets with access controls. Only authorized users from your society can access the data. Each society has its own isolated database.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        What does it cost to use this system?
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        The system is completely free to use! There are no subscription fees, setup costs, or hidden charges. We believe every society should have access to modern billing tools.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Can members see only their own bills?
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        Yes, members can only view their own bills and payment history. They cannot see other members' information. Admins have access to all data for management purposes.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Does it work on mobile phones?
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        Yes! The system is fully responsive and works perfectly on all devices - smartphones, tablets, and desktops. You can even install it as an app on your phone for quick access.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Can I customize the charge types?
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        Yes, you can fully customize charge types (maintenance, sinking fund, parking, etc.), flat types, buildings, and calculation methods (per sqft, fixed, per vehicle) based on your society's requirements.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PWA Install Section -->
+        <section class="pwa-section">
+            <div class="pwa-content">
+                <div class="pwa-info">
+                    <h2>Install as App</h2>
+                    <p>Get quick access to your society portal by installing it as an app on your phone. No app store download required!</p>
+                    <ul class="pwa-steps">
+                        <li><span>1</span> Open the login link in Chrome/Safari</li>
+                        <li><span>2</span> Tap the menu (three dots or share icon)</li>
+                        <li><span>3</span> Select "Add to Home Screen"</li>
+                        <li><span>4</span> Access instantly like any other app!</li>
+                    </ul>
+                </div>
+                <div class="pwa-illustration">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                            <span>Society Bills</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="how-it-works">
+            <h2 class="section-title">How to Access</h2>
+            <p class="section-subtitle">Getting started is easy</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Contact Your Society Admin</h3>
+                        <p>Reach out to your society administrator or committee member to get your login credentials.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Get the Login Link</h3>
+                        <p>Your admin will provide you with a unique login link or QR code specific to your society.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Login and Access</h3>
+                        <p>Use the link and your credentials to access your society's billing portal and view your bills.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact">
+            <div class="contact-card">
+                <h2>Ready to Get Started?</h2>
+                <p>Want to set up this system for your society? Have questions? We're here to help!</p>
+                <div class="contact-methods">
+                    <a href="mailto:parse.santosh@gmail.com" class="contact-method">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        <span>parse.santosh@gmail.com</span>
+                    </a>
+                    <a href="tel:+919967699254" class="contact-method">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                        <span>+91 9967699254</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <h3>Are You a Society Member?</h3>
+            <p>To access your society's billing portal, you need a <span class="highlight">society-specific login link</span>.</p>
+            <p>Please contact your society administrator to get the login link or scan the QR code displayed on your society notice board.</p>
         </div>
-    </div>
 
-    <!-- Toast Container -->
-    <div id="toast-container" class="toast-container"></div>
-
-    <!-- Loading Overlay -->
-    <div id="loading-overlay" class="loading-overlay">
-        <div class="spinner spinner-lg"></div>
-        <div class="loading-message">Loading...</div>
+        <!-- Footer -->
+        <footer class="landing-footer">
+            <p>Society Maintenance Billing System</p>
+        </footer>
     </div>
 
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/auth.js"></script>
-    <script src="js/mobile.js"></script>
     <script>
-        let societyValidated = false;
-        let validatedSocietyName = '';
-        let societyFromUrl = false;
-
-        // Encode society code for URL (obfuscation)
-        function encodeSocietyCode(code) {
-            // Reverse + Base64 encode
-            const reversed = code.split('').reverse().join('');
-            return btoa(reversed);
-        }
-
-        // Decode society code from URL
-        function decodeSocietyCode(encoded) {
-            try {
-                const decoded = atob(encoded);
-                return decoded.split('').reverse().join('');
-            } catch (e) {
-                return null;
-            }
-        }
-
+        // Check if already logged in and redirect to appropriate dashboard
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if Google Script is configured
-            if (!isGoogleScriptConfigured()) {
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('not-configured').style.display = 'block';
-                return;
-            }
-
-            // Check if already logged in
             if (auth.isLoggedIn()) {
-                redirectToDashboard();
-                return;
-            }
-
-            // Setup tab switching
-            setupTabs();
-
-            // Check for encoded society code in URL parameter (?s=encoded)
-            const urlParams = new URLSearchParams(window.location.search);
-            const encodedParam = urlParams.get('s');
-
-            if (encodedParam) {
-                const societyCode = decodeSocietyCode(encodedParam);
-                if (societyCode) {
-                    const societyInput = document.getElementById('society-code');
-                    societyInput.value = societyCode.toUpperCase();
-                    societyFromUrl = true;
-
-                    // Auto-validate society code
-                    validateSocietyCode().then(() => {
-                        if (societyValidated) {
-                            // Focus on username field
-                            document.getElementById('username').focus();
-                        }
-                    });
+                if (auth.isSuperadmin()) {
+                    window.location.href = 'superadmin/dashboard.html';
+                } else if (auth.isAdmin()) {
+                    window.location.href = 'admin/dashboard.html';
+                } else {
+                    window.location.href = 'member/dashboard.html';
                 }
             }
 
-            // Handle form submissions
-            document.getElementById('society-login-form').addEventListener('submit', handleSocietyLogin);
-            document.getElementById('superadmin-login-form').addEventListener('submit', handleSuperadminLogin);
-        });
+            // FAQ Accordion
+            document.querySelectorAll('.faq-question').forEach(button => {
+                button.addEventListener('click', () => {
+                    const faqItem = button.parentElement;
+                    const isActive = faqItem.classList.contains('active');
 
-        function setupTabs() {
-            const tabs = document.querySelectorAll('.login-tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Remove active class from all tabs
-                    tabs.forEach(t => t.classList.remove('active'));
-                    // Add active class to clicked tab
-                    this.classList.add('active');
-
-                    // Show/hide tab content
-                    const tabId = this.getAttribute('data-tab');
-                    document.querySelectorAll('.tab-content').forEach(content => {
-                        content.classList.remove('active');
+                    // Close all FAQ items
+                    document.querySelectorAll('.faq-item').forEach(item => {
+                        item.classList.remove('active');
                     });
-                    document.getElementById(tabId + '-tab').classList.add('active');
+
+                    // Open clicked item if it wasn't active
+                    if (!isActive) {
+                        faqItem.classList.add('active');
+                    }
                 });
             });
-        }
-
-        async function validateSocietyCode() {
-            const societyCode = document.getElementById('society-code').value.trim().toUpperCase();
-
-            if (!societyCode || societyCode.length < 3) {
-                societyValidated = false;
-                return;
-            }
-
-            try {
-                const result = await storage.validateSociety(societyCode);
-
-                if (result.success && result.valid) {
-                    societyValidated = true;
-                    validatedSocietyName = result.societyName;
-                } else {
-                    societyValidated = false;
-                }
-            } catch (error) {
-                societyValidated = false;
-            }
-        }
-
-        async function handleSocietyLogin(e) {
-            e.preventDefault();
-
-            const societyCode = document.getElementById('society-code').value.trim().toUpperCase();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('login-error');
-            const loginBtn = document.getElementById('login-btn');
-            const btnText = document.getElementById('login-btn-text');
-            const btnSpinner = document.getElementById('login-btn-spinner');
-
-            // Clear previous error
-            errorDiv.classList.add('d-none');
-
-            // Validate society code first if not already validated
-            if (!societyValidated) {
-                await validateSocietyCode();
-                if (!societyValidated) {
-                    errorDiv.textContent = 'Please enter a valid society code';
-                    errorDiv.classList.remove('d-none');
-                    return;
-                }
-            }
-
-            // Show loading state
-            loginBtn.disabled = true;
-            btnText.textContent = 'Signing in...';
-            btnSpinner.classList.remove('d-none');
-
-            try {
-                const result = await auth.login(societyCode, username, password, validatedSocietyName);
-
-                if (result.success) {
-                    Utils.showToast('Login successful!', 'success');
-                    setTimeout(() => {
-                        redirectToDashboard();
-                    }, 500);
-                } else {
-                    errorDiv.textContent = result.message;
-                    errorDiv.classList.remove('d-none');
-                    resetButton(loginBtn, btnText, btnSpinner, 'Sign In');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                errorDiv.textContent = error.message || 'An error occurred. Please try again.';
-                errorDiv.classList.remove('d-none');
-                resetButton(loginBtn, btnText, btnSpinner, 'Sign In');
-            }
-        }
-
-        async function handleSuperadminLogin(e) {
-            e.preventDefault();
-
-            const username = document.getElementById('super-username').value.trim();
-            const password = document.getElementById('super-password').value;
-            const errorDiv = document.getElementById('super-login-error');
-            const loginBtn = document.getElementById('super-login-btn');
-            const btnText = document.getElementById('super-login-btn-text');
-            const btnSpinner = document.getElementById('super-login-btn-spinner');
-
-            // Clear previous error
-            errorDiv.classList.add('d-none');
-
-            // Show loading state
-            loginBtn.disabled = true;
-            btnText.textContent = 'Signing in...';
-            btnSpinner.classList.remove('d-none');
-
-            try {
-                const result = await auth.superadminLogin(username, password);
-
-                if (result.success) {
-                    Utils.showToast('Superadmin login successful!', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'superadmin/dashboard.html';
-                    }, 500);
-                } else {
-                    errorDiv.textContent = result.message;
-                    errorDiv.classList.remove('d-none');
-                    resetButton(loginBtn, btnText, btnSpinner, 'Sign In as Super Admin');
-                }
-            } catch (error) {
-                console.error('Superadmin login error:', error);
-                errorDiv.textContent = error.message || 'An error occurred. Please try again.';
-                errorDiv.classList.remove('d-none');
-                resetButton(loginBtn, btnText, btnSpinner, 'Sign In as Super Admin');
-            }
-        }
-
-        function resetButton(btn, textEl, spinnerEl, text) {
-            btn.disabled = false;
-            textEl.textContent = text;
-            spinnerEl.classList.add('d-none');
-        }
-
-        function redirectToDashboard() {
-            // Check URL redirect parameter
-            const params = Utils.getUrlParams();
-            if (params.redirect) {
-                window.location.href = params.redirect;
-                return;
-            }
-
-            // Redirect based on role
-            if (auth.isSuperadmin()) {
-                window.location.href = 'superadmin/dashboard.html';
-            } else if (auth.isAdmin()) {
-                window.location.href = 'admin/dashboard.html';
-            } else {
-                window.location.href = 'member/dashboard.html';
-            }
-        }
+        });
 
         // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {

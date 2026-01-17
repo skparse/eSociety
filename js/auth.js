@@ -11,6 +11,30 @@ class Auth {
     }
 
     /**
+     * Get base URL for the application (works with GitHub Pages subdirectories)
+     */
+    getBaseUrl() {
+        const path = window.location.pathname;
+        // Find the app root by looking for known directories
+        const adminMatch = path.match(/(.*)\/admin\//);
+        const memberMatch = path.match(/(.*)\/member\//);
+        const superadminMatch = path.match(/(.*)\/superadmin\//);
+        const docsMatch = path.match(/(.*)\/docs\//);
+
+        if (adminMatch) return adminMatch[1] || '.';
+        if (memberMatch) return memberMatch[1] || '.';
+        if (superadminMatch) return superadminMatch[1] || '.';
+        if (docsMatch) return docsMatch[1] || '.';
+
+        // If we're at root level, get directory of current file
+        const lastSlash = path.lastIndexOf('/');
+        if (lastSlash > 0) {
+            return path.substring(0, lastSlash);
+        }
+        return '.';
+    }
+
+    /**
      * Login user with society code, username and password
      * @param {string} societyId - Society code
      * @param {string} username - Username
@@ -240,29 +264,37 @@ class Auth {
      * Require authentication - redirect if not logged in
      */
     requireAuth(requiredRole = null) {
+        const baseUrl = this.getBaseUrl();
+
         if (!this.isLoggedIn()) {
-            window.location.href = '/index.html?redirect=' + encodeURIComponent(window.location.pathname);
+            // Superadmin pages redirect to superadmin login
+            if (requiredRole === 'superadmin') {
+                window.location.href = baseUrl + '/superadmin/login.html';
+            } else {
+                // Other pages redirect to main login (but need society code)
+                window.location.href = baseUrl + '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+            }
             return false;
         }
 
         // Superadmin has access to superadmin panel only
         if (this.isSuperadmin() && requiredRole !== 'superadmin') {
-            window.location.href = '/superadmin/dashboard.html';
+            window.location.href = baseUrl + '/superadmin/dashboard.html';
             return false;
         }
 
         // Non-superadmin trying to access superadmin panel
         if (requiredRole === 'superadmin' && !this.isSuperadmin()) {
-            window.location.href = '/index.html';
+            window.location.href = baseUrl + '/superadmin/login.html';
             return false;
         }
 
         if (requiredRole && this.getSession().role !== requiredRole) {
             // Redirect to appropriate dashboard
             if (this.isAdmin()) {
-                window.location.href = '/admin/dashboard.html';
+                window.location.href = baseUrl + '/admin/dashboard.html';
             } else {
-                window.location.href = '/member/dashboard.html';
+                window.location.href = baseUrl + '/member/dashboard.html';
             }
             return false;
         }

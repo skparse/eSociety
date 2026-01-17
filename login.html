@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Society Bills">
+    <title>Login - Society Maintenance Billing</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .not-configured-message {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .not-configured-message h2 {
+            color: var(--danger);
+            margin-bottom: 1rem;
+        }
+
+        .not-configured-message p {
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+        }
+
+        .not-configured-message code {
+            background: var(--gray-100);
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+        }
+
+        .no-society-message {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .no-society-message h2 {
+            color: var(--gray-700);
+            margin-bottom: 1rem;
+        }
+
+        .no-society-message p {
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+        }
+
+        .no-society-message .icon {
+            width: 64px;
+            height: 64px;
+            background: var(--gray-100);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .no-society-message .icon svg {
+            width: 32px;
+            height: 32px;
+            color: var(--gray-500);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login View -->
+    <div id="login-view" class="login-container">
+        <div class="login-card">
+            <div class="login-logo">
+                <div style="width: 60px; height: 60px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </div>
+                <h1 id="society-title">Society Maintenance</h1>
+                <p>Billing Management System</p>
+            </div>
+
+            <!-- Not Configured Message (hidden by default) -->
+            <div id="not-configured" class="not-configured-message" style="display: none;">
+                <h2>Setup Required</h2>
+                <p>This system hasn't been set up yet.</p>
+                <p>Please contact your administrator to complete the setup.</p>
+                <br>
+                <p><small>Administrator? <a href="docs/setup-guide.html">View Setup Guide</a></small></p>
+            </div>
+
+            <!-- No Society Code Message (hidden by default) -->
+            <div id="no-society" class="no-society-message" style="display: none;">
+                <div class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <h2>Login Link Required</h2>
+                <p>To login, you need a society-specific link.</p>
+                <p>Please contact your society administrator to get the login link or scan the QR code provided by them.</p>
+                <br>
+                <a href="index.html" class="btn btn-secondary">Back to Home</a>
+            </div>
+
+            <!-- Login Form Container -->
+            <div id="login-container" style="display: none;">
+                <form id="society-login-form" class="login-form">
+                    <!-- Hidden society code field (populated from URL parameter) -->
+                    <input type="hidden" id="society-code" name="society-code" value="">
+
+                    <div class="form-group">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required autocomplete="username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required autocomplete="current-password">
+                    </div>
+
+                    <div id="login-error" class="alert alert-danger d-none"></div>
+
+                    <button type="submit" class="btn btn-primary btn-lg" id="login-btn">
+                        <span id="login-btn-text">Sign In</span>
+                        <span id="login-btn-spinner" class="spinner spinner-sm d-none"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner spinner-lg"></div>
+        <div class="loading-message">Loading...</div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/mobile.js"></script>
+    <script>
+        let societyValidated = false;
+        let validatedSocietyName = '';
+        let societyFromUrl = false;
+
+        // Encode society code for URL (obfuscation)
+        function encodeSocietyCode(code) {
+            // Reverse + Base64 encode
+            const reversed = code.split('').reverse().join('');
+            return btoa(reversed);
+        }
+
+        // Decode society code from URL
+        function decodeSocietyCode(encoded) {
+            try {
+                const decoded = atob(encoded);
+                return decoded.split('').reverse().join('');
+            } catch (e) {
+                return null;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if Google Script is configured
+            if (!isGoogleScriptConfigured()) {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('no-society').style.display = 'none';
+                document.getElementById('not-configured').style.display = 'block';
+                return;
+            }
+
+            // Check if already logged in
+            if (auth.isLoggedIn()) {
+                redirectToDashboard();
+                return;
+            }
+
+            // Check for encoded society code in URL parameter (?s=encoded)
+            const urlParams = new URLSearchParams(window.location.search);
+            const encodedParam = urlParams.get('s');
+
+            if (encodedParam) {
+                const societyCode = decodeSocietyCode(encodedParam);
+                if (societyCode) {
+                    const societyInput = document.getElementById('society-code');
+                    societyInput.value = societyCode.toUpperCase();
+                    societyFromUrl = true;
+
+                    // Show login form
+                    document.getElementById('login-container').style.display = 'block';
+                    document.getElementById('no-society').style.display = 'none';
+
+                    // Auto-validate society code
+                    validateSocietyCode().then(() => {
+                        if (societyValidated) {
+                            // Update title with society name
+                            if (validatedSocietyName) {
+                                document.getElementById('society-title').textContent = validatedSocietyName;
+                            }
+                            // Focus on username field
+                            document.getElementById('username').focus();
+                        } else {
+                            // Invalid society code - show no society message
+                            document.getElementById('login-container').style.display = 'none';
+                            document.getElementById('no-society').style.display = 'block';
+                        }
+                    });
+                } else {
+                    // Invalid encoded parameter
+                    document.getElementById('no-society').style.display = 'block';
+                }
+            } else {
+                // No society code in URL - show message
+                document.getElementById('no-society').style.display = 'block';
+            }
+
+            // Handle form submission
+            document.getElementById('society-login-form').addEventListener('submit', handleSocietyLogin);
+        });
+
+        async function validateSocietyCode() {
+            const societyCode = document.getElementById('society-code').value.trim().toUpperCase();
+
+            if (!societyCode || societyCode.length < 3) {
+                societyValidated = false;
+                return;
+            }
+
+            try {
+                const result = await storage.validateSociety(societyCode);
+
+                if (result.success && result.valid) {
+                    societyValidated = true;
+                    validatedSocietyName = result.societyName;
+                } else {
+                    societyValidated = false;
+                }
+            } catch (error) {
+                societyValidated = false;
+            }
+        }
+
+        async function handleSocietyLogin(e) {
+            e.preventDefault();
+
+            const societyCode = document.getElementById('society-code').value.trim().toUpperCase();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('login-error');
+            const loginBtn = document.getElementById('login-btn');
+            const btnText = document.getElementById('login-btn-text');
+            const btnSpinner = document.getElementById('login-btn-spinner');
+
+            // Clear previous error
+            errorDiv.classList.add('d-none');
+
+            // Validate society code first if not already validated
+            if (!societyValidated) {
+                await validateSocietyCode();
+                if (!societyValidated) {
+                    errorDiv.textContent = 'Invalid society. Please use the correct login link.';
+                    errorDiv.classList.remove('d-none');
+                    return;
+                }
+            }
+
+            // Show loading state
+            loginBtn.disabled = true;
+            btnText.textContent = 'Signing in...';
+            btnSpinner.classList.remove('d-none');
+
+            try {
+                const result = await auth.login(societyCode, username, password, validatedSocietyName);
+
+                if (result.success) {
+                    Utils.showToast('Login successful!', 'success');
+                    setTimeout(() => {
+                        redirectToDashboard();
+                    }, 500);
+                } else {
+                    errorDiv.textContent = result.message;
+                    errorDiv.classList.remove('d-none');
+                    resetButton(loginBtn, btnText, btnSpinner, 'Sign In');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.textContent = error.message || 'An error occurred. Please try again.';
+                errorDiv.classList.remove('d-none');
+                resetButton(loginBtn, btnText, btnSpinner, 'Sign In');
+            }
+        }
+
+        function resetButton(btn, textEl, spinnerEl, text) {
+            btn.disabled = false;
+            textEl.textContent = text;
+            spinnerEl.classList.add('d-none');
+        }
+
+        function redirectToDashboard() {
+            // Check URL redirect parameter
+            const params = Utils.getUrlParams();
+            if (params.redirect) {
+                window.location.href = params.redirect;
+                return;
+            }
+
+            // Redirect based on role
+            if (auth.isSuperadmin()) {
+                window.location.href = 'superadmin/dashboard.html';
+            } else if (auth.isAdmin()) {
+                window.location.href = 'admin/dashboard.html';
+            } else {
+                window.location.href = 'member/dashboard.html';
+            }
+        }
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('SW registered:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('SW registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -507,7 +507,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Check authentication
             if (!auth.isLoggedIn() || !auth.isSuperadmin()) {
-                window.location.href = '../index.html';
+                window.location.href = 'login.html';
                 return;
             }
 
@@ -646,7 +646,7 @@
                     // Generate member login link with encoded society code
                     const baseUrl = window.location.origin + window.location.pathname.replace('/superadmin/dashboard.html', '');
                     const encodedCode = encodeSocietyCode(result.society.id);
-                    const memberLink = baseUrl + '/index.html?s=' + encodedCode;
+                    const memberLink = baseUrl + '/login.html?s=' + encodedCode;
                     document.getElementById('created-member-link').href = memberLink;
                     document.getElementById('created-member-link').textContent = memberLink;
 
@@ -697,7 +697,7 @@
             // Generate member login link with encoded society code
             const baseUrl = window.location.origin + window.location.pathname.replace('/superadmin/dashboard.html', '');
             const encodedCode = encodeSocietyCode(society.id);
-            const memberLink = baseUrl + '/index.html?s=' + encodedCode;
+            const memberLink = baseUrl + '/login.html?s=' + encodedCode;
             document.getElementById('view-member-link').href = memberLink;
             document.getElementById('view-member-link').textContent = memberLink;
 
@@ -770,7 +770,7 @@
 
         function handleLogout() {
             auth.logout();
-            window.location.href = '../index.html';
+            window.location.href = 'login.html';
         }
 
         function copyMemberLink() {
