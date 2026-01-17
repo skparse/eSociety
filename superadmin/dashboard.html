@@ -373,9 +373,9 @@
                         <input type="text" id="society-name" class="form-control" placeholder="e.g., Sunshine Apartments" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Admin Password</label>
-                        <input type="text" id="admin-password" class="form-control" placeholder="Default: admin123" value="admin123">
-                        <small class="text-muted">Password for the society's admin account</small>
+                        <label class="form-label">Admin Password *</label>
+                        <input type="password" id="admin-password" class="form-control" placeholder="Min 6 characters" required minlength="6">
+                        <small class="text-muted">Password for the society's admin account (required)</small>
                     </div>
                     <div id="create-error" class="alert alert-danger d-none"></div>
                     <div id="create-success" class="credentials-box" style="display: none;">
@@ -620,7 +620,13 @@
 
             const code = document.getElementById('society-code').value.trim().toUpperCase();
             const name = document.getElementById('society-name').value.trim();
-            const password = document.getElementById('admin-password').value || 'admin123';
+            const password = document.getElementById('admin-password').value;
+
+            if (!password || password.length < 6) {
+                document.getElementById('create-error').textContent = 'Admin password is required (min 6 characters)';
+                document.getElementById('create-error').classList.remove('d-none');
+                return;
+            }
 
             const errorDiv = document.getElementById('create-error');
             const successDiv = document.getElementById('create-success');

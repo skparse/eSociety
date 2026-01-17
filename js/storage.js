@@ -197,9 +197,12 @@ class Storage {
     /**
      * Initialize society data
      */
-    async initializeSystem(adminPassword = 'admin123') {
+    async initializeSystem(adminPassword) {
         if (!this.societyId) {
             throw new Error('No society selected');
+        }
+        if (!adminPassword || adminPassword.length < 6) {
+            throw new Error('Admin password is required (min 6 characters)');
         }
         return await this.apiCall('init', null, { adminPassword });
     }

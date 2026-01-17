@@ -24,13 +24,32 @@ const SHEETS = {
   PAYMENTS: 'Payments'
 };
 
-// Superadmin credentials (CHANGE THESE!)
-const SUPERADMIN = {
-  username: 'superadmin',
-  // Default password: 'password' - CHANGE THIS after first login!
-  // Run resetSuperadminPassword() function to generate a new hash
-  passwordHash: '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8'
-};
+// Superadmin credentials are stored in a separate protected sheet
+// Run setupSuperadminSheet() once to create the credentials sheet
+const SUPERADMIN_SHEET_ID = PropertiesService.getScriptProperties().getProperty('SUPERADMIN_SHEET_ID');
+
+/**
+ * Get superadmin credentials from protected sheet
+ */
+function getSuperadminCredentials() {
+  if (!SUPERADMIN_SHEET_ID) {
+    return null;
+  }
+  try {
+    const ss = SpreadsheetApp.openById(SUPERADMIN_SHEET_ID);
+    const sheet = ss.getSheetByName('Credentials');
+    if (!sheet) return null;
+
+    const data = sheet.getRange('A2:B2').getValues()[0];
+    return {
+      username: data[0],
+      passwordHash: data[1]
+    };
+  } catch (e) {
+    Logger.log('Error reading superadmin credentials: ' + e.message);
+    return null;
+  }
+}
 
 // Default data templates
 const INITIAL_DATA = {
@@ -162,9 +181,15 @@ function superadminLogin(e) {
       return { success: false, error: 'Username and password required' };
     }
 
+    // Get credentials from protected sheet
+    const superadmin = getSuperadminCredentials();
+    if (!superadmin) {
+      return { success: false, error: 'Superadmin not configured. Run setupSuperadminSheet() first.' };
+    }
+
     const hashedPassword = hashPassword(password);
 
-    if (username === SUPERADMIN.username && hashedPassword === SUPERADMIN.passwordHash) {
+    if (username === superadmin.username && hashedPassword === superadmin.passwordHash) {
       return {
         success: true,
         role: 'superadmin',
@@ -227,7 +252,10 @@ function createSociety(e) {
     createSheets(ss);
 
     // Initialize with default data and admin user
-    const password = adminPassword || 'admin123';
+    if (!adminPassword || adminPassword.length < 6) {
+      return { success: false, error: 'Admin password is required (min 6 characters)' };
+    }
+    const password = adminPassword;
     const defaultAdmin = {
       id: generateId(),
       username: 'admin',
@@ -425,7 +453,10 @@ function initializeSociety(e, societyId) {
     const ss = getSocietySpreadsheet(societyId);
     const postData = e.postData ? JSON.parse(e.postData.contents) : {};
 
-    const adminPassword = postData.adminPassword || 'admin123';
+    const adminPassword = postData.adminPassword;
+    if (!adminPassword || adminPassword.length < 6) {
+      return { success: false, error: 'Admin password is required (min 6 characters)' };
+    }
     const defaultAdmin = {
       id: generateId(),
       username: 'admin',
@@ -578,11 +609,101 @@ function testScript() {
 }
 
 /**
- * Reset superadmin password (run this manually if needed)
- * Change the password below before running
+ * Setup superadmin credentials sheet (RUN THIS ONCE)
+ * This creates a separate spreadsheet for superadmin credentials
+ * The spreadsheet ID is stored in script properties (not visible in code)
+ */
+function setupSuperadminSheet() {
+  // Check if already setup
+  const existingId = PropertiesService.getScriptProperties().getProperty('SUPERADMIN_SHEET_ID');
+  if (existingId) {
+    Logger.log('Superadmin sheet already exists. ID: ' + existingId);
+    Logger.log('To reset, first run: clearSuperadminSetup()');
+    return;
+  }
+
+  // Create new spreadsheet for credentials (not linked to any society)
+  const ss = SpreadsheetApp.create('_SYSTEM_CREDENTIALS_DO_NOT_SHARE');
+  const sheet = ss.getActiveSheet();
+  sheet.setName('Credentials');
+
+  // Set headers
+  sheet.getRange('A1:B1').setValues([['Username', 'PasswordHash']]);
+  sheet.getRange('A1:B1').setFontWeight('bold');
+
+  // Generate random password
+  const randomPassword = generateRandomPassword(12);
+  const hashedPassword = hashPassword(randomPassword);
+
+  // Set default superadmin
+  sheet.getRange('A2:B2').setValues([['admin', hashedPassword]]);
+
+  // Protect the sheet
+  const protection = sheet.protect().setDescription('Superadmin Credentials - DO NOT MODIFY');
+  protection.setWarningOnly(true);
+
+  // Store the spreadsheet ID in script properties (hidden from code)
+  PropertiesService.getScriptProperties().setProperty('SUPERADMIN_SHEET_ID', ss.getId());
+
+  Logger.log('===========================================');
+  Logger.log('SUPERADMIN SETUP COMPLETE');
+  Logger.log('===========================================');
+  Logger.log('Credentials Spreadsheet ID: ' + ss.getId());
+  Logger.log('Username: admin');
+  Logger.log('Password: ' + randomPassword);
+  Logger.log('===========================================');
+  Logger.log('IMPORTANT: Save this password now!');
+  Logger.log('It cannot be recovered after this.');
+  Logger.log('===========================================');
+}
+
+/**
+ * Generate random password
+ */
+function generateRandomPassword(length) {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#$!';
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+}
+
+/**
+ * Reset superadmin password
+ * Run this to generate a new password
  */
 function resetSuperadminPassword() {
-  const newPassword = 'super@123'; // CHANGE THIS!
-  const hash = hashPassword(newPassword);
-  Logger.log('New password hash (update SUPERADMIN.passwordHash with this): ' + hash);
+  const sheetId = PropertiesService.getScriptProperties().getProperty('SUPERADMIN_SHEET_ID');
+  if (!sheetId) {
+    Logger.log('Superadmin not setup. Run setupSuperadminSheet() first.');
+    return;
+  }
+
+  const ss = SpreadsheetApp.openById(sheetId);
+  const sheet = ss.getSheetByName('Credentials');
+
+  // Generate new random password
+  const newPassword = generateRandomPassword(12);
+  const hashedPassword = hashPassword(newPassword);
+
+  // Update the password hash
+  sheet.getRange('B2').setValue(hashedPassword);
+
+  Logger.log('===========================================');
+  Logger.log('PASSWORD RESET COMPLETE');
+  Logger.log('===========================================');
+  Logger.log('New Password: ' + newPassword);
+  Logger.log('===========================================');
+  Logger.log('IMPORTANT: Save this password now!');
+  Logger.log('===========================================');
+}
+
+/**
+ * Clear superadmin setup (use with caution)
+ */
+function clearSuperadminSetup() {
+  PropertiesService.getScriptProperties().deleteProperty('SUPERADMIN_SHEET_ID');
+  Logger.log('Superadmin setup cleared. Run setupSuperadminSheet() to setup again.');
+  Logger.log('Note: The old credentials spreadsheet still exists. Delete it manually if needed.');
 }

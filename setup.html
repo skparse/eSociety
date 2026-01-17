@@ -232,6 +232,12 @@
                     <div class="form-text">Paste the Web App URL from step 4</div>
                 </div>
 
+                <div class="form-group">
+                    <label for="admin-password" class="form-label required">Admin Password</label>
+                    <input type="password" id="admin-password" class="form-control" placeholder="Min 6 characters" required minlength="6">
+                    <div class="form-text">Set a secure password for the admin account</div>
+                </div>
+
                 <button type="button" id="initialize-btn" class="btn btn-primary btn-lg" style="width: 100%;" onclick="initializeSystem()">
                     <span id="init-btn-text">Initialize System</span>
                     <span id="init-btn-spinner" class="spinner spinner-sm d-none"></span>
@@ -356,7 +362,10 @@ function initializeSystem(e) {
   try {
     const ss = getSpreadsheet();
     const postData = e.postData ? JSON.parse(e.postData.contents) : {};
-    const adminPassword = postData.adminPassword || 'admin123';
+    const adminPassword = postData.adminPassword;
+    if (!adminPassword || adminPassword.length < 6) {
+      return { success: false, error: 'Admin password required (min 6 characters)' };
+    }
 
     const defaultAdmin = {
       id: 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 9),
@@ -450,6 +459,7 @@ function hashPassword(password) {
 
         async function initializeSystem() {
             const scriptUrl = document.getElementById('script-url').value.trim();
+            const adminPassword = document.getElementById('admin-password').value;
 
             if (!scriptUrl) {
                 Utils.showToast('Please enter the Web App URL', 'error');
@@ -458,6 +468,11 @@ function hashPassword(password) {
 
             if (!scriptUrl.includes('script.google.com')) {
                 Utils.showToast('Invalid URL. Must be a Google Apps Script Web App URL', 'error');
+                return;
+            }
+
+            if (!adminPassword || adminPassword.length < 6) {
+                Utils.showToast('Admin password is required (min 6 characters)', 'error');
                 return;
             }
 
@@ -488,8 +503,8 @@ function hashPassword(password) {
                     log('System already initialized. Verifying...', 'success');
                 } else {
                     // Initialize the system
-                    log('Initializing system with default data...');
-                    const initResult = await storage.initializeSystem('admin123');
+                    log('Initializing system with your admin password...');
+                    const initResult = await storage.initializeSystem(adminPassword);
                     log('System initialized successfully!', 'success');
 
                     if (initResult.spreadsheetUrl) {
@@ -501,13 +516,13 @@ function hashPassword(password) {
                 statusDiv.className = 'setup-status success';
                 statusDiv.innerHTML = `
                     <strong>Setup Complete!</strong>
-                    <p>Your system has been initialized successfully. You can now login with the default credentials.</p>
-                    <p><strong>Username:</strong> admin<br><strong>Password:</strong> admin123</p>
+                    <p>Your system has been initialized successfully. You can now login with your credentials.</p>
+                    <p><strong>Username:</strong> admin<br><strong>Password:</strong> (the password you entered above)</p>
                 `;
 
                 log('');
                 log('=== Setup Complete ===', 'success');
-                log('Default login: admin / admin123', 'success');
+                log('Login with: admin / (your password)', 'success');
 
                 // Reset button
                 btnText.textContent = 'Setup Complete!';
