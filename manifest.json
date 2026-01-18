@@ -1,6 +1,6 @@
 {
-    "name": "Society Maintenance Billing",
-    "short_name": "Society Bills",
+    "name": "eSociety",
+    "short_name": "eSociety",
     "description": "Manage society maintenance bills, payments, and members",
     "start_url": "./login.html",
     "scope": "./",
