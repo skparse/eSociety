@@ -2,7 +2,8 @@
     "name": "Society Maintenance Billing",
     "short_name": "Society Bills",
     "description": "Manage society maintenance bills, payments, and members",
-    "start_url": "/index.html",
+    "start_url": "./login.html",
+    "scope": "./",
     "display": "standalone",
     "background_color": "#f1f5f9",
     "theme_color": "#2563eb",
@@ -61,8 +62,13 @@
     "shortcuts": [
         {
             "name": "View Bills",
-            "url": "/member/dashboard.html",
+            "url": "./member/dashboard.html",
             "description": "View your maintenance bills"
+        },
+        {
+            "name": "Admin Dashboard",
+            "url": "./admin/dashboard.html",
+            "description": "Admin dashboard"
         }
     ]
 }

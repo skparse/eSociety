@@ -195,38 +195,53 @@
             const urlParams = new URLSearchParams(window.location.search);
             const encodedParam = urlParams.get('s');
 
+            let societyCode = null;
+
             if (encodedParam) {
-                const societyCode = decodeSocietyCode(encodedParam);
+                // Society code from URL parameter
+                societyCode = decodeSocietyCode(encodedParam);
                 if (societyCode) {
-                    const societyInput = document.getElementById('society-code');
-                    societyInput.value = societyCode.toUpperCase();
                     societyFromUrl = true;
-
-                    // Show login form
-                    document.getElementById('login-container').style.display = 'block';
-                    document.getElementById('no-society').style.display = 'none';
-
-                    // Auto-validate society code
-                    validateSocietyCode().then(() => {
-                        if (societyValidated) {
-                            // Update title with society name
-                            if (validatedSocietyName) {
-                                document.getElementById('society-title').textContent = validatedSocietyName;
-                            }
-                            // Focus on username field
-                            document.getElementById('username').focus();
-                        } else {
-                            // Invalid society code - show no society message
-                            document.getElementById('login-container').style.display = 'none';
-                            document.getElementById('no-society').style.display = 'block';
-                        }
-                    });
-                } else {
-                    // Invalid encoded parameter
-                    document.getElementById('no-society').style.display = 'block';
+                    // Store in localStorage for PWA usage
+                    localStorage.setItem('last_society_code', societyCode.toUpperCase());
+                    localStorage.setItem('last_society_encoded', encodedParam);
                 }
             } else {
-                // No society code in URL - show message
+                // Check localStorage for previously used society (for PWA)
+                const savedCode = localStorage.getItem('last_society_code');
+                if (savedCode) {
+                    societyCode = savedCode;
+                    societyFromUrl = false; // Loaded from storage, not URL
+                }
+            }
+
+            if (societyCode) {
+                const societyInput = document.getElementById('society-code');
+                societyInput.value = societyCode.toUpperCase();
+
+                // Show login form
+                document.getElementById('login-container').style.display = 'block';
+                document.getElementById('no-society').style.display = 'none';
+
+                // Auto-validate society code
+                validateSocietyCode().then(() => {
+                    if (societyValidated) {
+                        // Update title with society name
+                        if (validatedSocietyName) {
+                            document.getElementById('society-title').textContent = validatedSocietyName;
+                        }
+                        // Focus on username field
+                        document.getElementById('username').focus();
+                    } else {
+                        // Invalid society code - clear stored and show no society message
+                        localStorage.removeItem('last_society_code');
+                        localStorage.removeItem('last_society_encoded');
+                        document.getElementById('login-container').style.display = 'none';
+                        document.getElementById('no-society').style.display = 'block';
+                    }
+                });
+            } else {
+                // No society code found - show message
                 document.getElementById('no-society').style.display = 'block';
             }
 

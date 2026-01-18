@@ -3,18 +3,26 @@
  * Provides offline support and caching
  */
 
-const CACHE_NAME = 'society-billing-v1';
-const STATIC_ASSETS = [
-    '/',
-    '/index.html',
-    '/css/style.css',
-    '/css/admin.css',
-    '/css/member.css',
-    '/js/config.js',
-    '/js/utils.js',
-    '/js/storage.js',
-    '/js/auth.js',
-    '/manifest.json'
+const CACHE_NAME = 'society-billing-v2';
+
+// Get the base path dynamically (works with subdirectories like GitHub Pages)
+const getBasePath = () => {
+    const swPath = self.location.pathname;
+    return swPath.substring(0, swPath.lastIndexOf('/') + 1);
+};
+
+// Static assets to cache (relative paths)
+const STATIC_ASSET_NAMES = [
+    'index.html',
+    'login.html',
+    'css/style.css',
+    'css/admin.css',
+    'css/member.css',
+    'js/config.js',
+    'js/utils.js',
+    'js/storage.js',
+    'js/auth.js',
+    'manifest.json'
 ];
 
 // Install event - cache static assets
@@ -23,7 +31,11 @@ self.addEventListener('install', (event) => {
         caches.open(CACHE_NAME)
             .then((cache) => {
                 console.log('Caching static assets');
-                return cache.addAll(STATIC_ASSETS);
+                const basePath = getBasePath();
+                const urlsToCache = STATIC_ASSET_NAMES.map(name => basePath + name);
+                // Also cache the base path itself
+                urlsToCache.unshift(basePath);
+                return cache.addAll(urlsToCache);
             })
             .then(() => self.skipWaiting())
     );
@@ -105,13 +117,14 @@ self.addEventListener('sync', (event) => {
 self.addEventListener('push', (event) => {
     if (event.data) {
         const data = event.data.json();
+        const basePath = getBasePath();
         const options = {
             body: data.body,
-            icon: '/icons/icon-192.png',
-            badge: '/icons/icon-72.png',
+            icon: basePath + 'icons/icon-192.png',
+            badge: basePath + 'icons/icon-72.png',
             vibrate: [100, 50, 100],
             data: {
-                url: data.url || '/'
+                url: data.url || basePath
             }
         };
         event.waitUntil(
