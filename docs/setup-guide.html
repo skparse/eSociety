@@ -305,10 +305,9 @@
             </div>
 
             <div class="info-box">
-                <strong>Default Super Admin Credentials:</strong><br>
-                Username: <code>superadmin</code><br>
-                Password: <code>password</code><br>
-                <em>(Change this after first login for security)</em>
+                <strong>Super Admin Credentials:</strong><br>
+                Username and password are generated during the initial setup.<br>
+                <em>(Check the Google Apps Script logs after running setupSuperadminSheet())</em>
             </div>
 
             <div class="step">
@@ -568,7 +567,7 @@ Building C,8,West Wing</code>
                         <td><code>OwnerEmail</code></td>
                         <td>No</td>
                         <td>Email address</td>
-                        <td>john@email.com</td>
+                        <td>owner@example.com</td>
                     </tr>
                     <tr>
                         <td><code>TwoWheelers</code></td>
@@ -594,9 +593,9 @@ Building C,8,West Wing</code>
             <div class="info-box">
                 <strong>Sample Flats CSV:</strong><br>
                 <code style="display: block; margin-top: 0.5rem; white-space: pre; font-size: 0.8rem;">FlatNo,Building,FlatType,Area,OwnerName,OwnerPhone,OwnerEmail,TwoWheelers,FourWheelers,IsOccupied
-A-101,Building A,2 BHK,750,John Doe,9876543210,john@email.com,1,1,Yes
-A-102,Building A,1 BHK,450,Jane Smith,9876543211,jane@email.com,0,1,Yes
-B-101,Building B,3 BHK,1100,Bob Wilson,9876543212,bob@email.com,2,2,Yes</code>
+A-101,Building A,2 BHK,750,Owner Name,0000000000,owner@example.com,1,1,Yes
+A-102,Building A,1 BHK,450,Owner Name 2,0000000000,owner2@example.com,0,1,Yes
+B-101,Building B,3 BHK,1100,Owner Name 3,0000000000,owner3@example.com,2,2,Yes</code>
             </div>
 
             <div class="warning-box">
@@ -637,13 +636,13 @@ B-101,Building B,3 BHK,1100,Bob Wilson,9876543212,bob@email.com,2,2,Yes</code>
                         <td><code>Email</code></td>
                         <td>No</td>
                         <td>Email address</td>
-                        <td>john@email.com</td>
+                        <td>user@example.com</td>
                     </tr>
                     <tr>
                         <td><code>Phone</code></td>
                         <td>No</td>
                         <td>Phone number</td>
-                        <td>9876543210</td>
+                        <td>0000000000</td>
                     </tr>
                     <tr>
                         <td><code>Role</code></td>
@@ -663,9 +662,9 @@ B-101,Building B,3 BHK,1100,Bob Wilson,9876543212,bob@email.com,2,2,Yes</code>
             <div class="info-box">
                 <strong>Sample Members CSV:</strong><br>
                 <code style="display: block; margin-top: 0.5rem; white-space: pre; font-size: 0.8rem;">Username,Password,Name,Email,Phone,Role,LinkedFlat
-john.doe,password123,John Doe,john@email.com,9876543210,member,A-101
-jane.smith,pass456,Jane Smith,jane@email.com,9876543211,member,A-102
-bob.wilson,pass789,Bob Wilson,bob@email.com,9876543212,member,B-101</code>
+user1,yourpassword,Member Name,user1@example.com,0000000000,member,A-101
+user2,yourpassword,Member Name 2,user2@example.com,0000000000,member,A-102
+user3,yourpassword,Member Name 3,user3@example.com,0000000000,member,B-101</code>
             </div>
 
             <h3 style="margin-top: 2rem; color: var(--gray-700);">Tips for Successful Import</h3>

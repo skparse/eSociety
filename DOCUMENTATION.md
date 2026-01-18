@@ -62,10 +62,9 @@ A complete Society Maintenance Billing web application using HTML5 and vanilla J
 
 ### Step 5: Login
 
-- **Username:** admin
-- **Password:** admin123
+Use the admin credentials you set during society creation.
 
-**Change the password after first login!**
+**Important**: Use a strong password and keep it secure!
 
 ---
 
@@ -307,7 +306,7 @@ POST ?action=init
 
 ### Admin Credentials
 - Username: `admin`
-- Password: `admin123`
+- Password: Set during society creation (min 6 characters)
 
 ---
 
