@@ -1315,7 +1315,15 @@ p {
 @media (max-width: 768px) {
     /* Show bottom navigation */
     .bottom-nav {
-        display: block;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .bottom-nav .bottom-nav-item {
+        flex: 1;
+        max-width: 120px;
     }
 
     /* Add padding to bottom of pages for bottom nav */

@@ -3,7 +3,7 @@
  * Provides offline support and caching
  */
 
-const CACHE_NAME = 'society-billing-v2';
+const CACHE_NAME = 'society-billing-v4';
 
 // Get the base path dynamically (works with subdirectories like GitHub Pages)
 const getBasePath = () => {
@@ -70,7 +70,8 @@ self.addEventListener('fetch', (event) => {
     }
 
     // For HTML pages - network first, fallback to cache
-    if (request.headers.get('accept').includes('text/html')) {
+    const acceptHeader = request.headers.get('accept') || '';
+    if (acceptHeader.includes('text/html')) {
         event.respondWith(
             fetch(request)
                 .then((response) => {
