@@ -53,12 +53,11 @@ A complete Society Maintenance Billing web application using HTML5 and vanilla J
 5. Click **Authorize access** and allow permissions
 6. **Copy the Web App URL** (looks like `https://script.google.com/macros/s/.../exec`)
 
-### Step 4: Initialize the Application
+### Step 4: Configure the Application
 
-1. Open `setup.html` in your browser
-2. Paste the Web App URL
-3. Click **Initialize System**
-4. Wait for "Setup Complete!" message
+1. Open `docs/setup-guide.html` in your browser for detailed setup instructions
+2. Update `js/config.js` with your Web App URL
+3. Run the superadmin setup function from Apps Script editor
 
 ### Step 5: Login
 
@@ -88,7 +87,6 @@ Use the admin credentials you set during society creation.
 ```
 eSociety/
 ├── index.html                 # Login page
-├── setup.html                 # Setup wizard
 ├── google-apps-script.js      # Backend script (deploy to Google)
 ├── admin/
 │   ├── dashboard.html         # Admin dashboard
@@ -114,6 +112,8 @@ eSociety/
 │   ├── utils.js               # Utilities
 │   ├── admin/                 # Admin scripts
 │   └── member/                # Member scripts
+├── docs/
+│   └── setup-guide.html       # Interactive setup guide
 ├── README.md
 └── DOCUMENTATION.md
 ```

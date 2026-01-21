@@ -56,7 +56,6 @@ A modern, cloud-based Society Maintenance Billing System built as a Progressive 
 eSociety/
 ├── index.html                    # Login page (multi-society)
 ├── login.html                    # Alternative login
-├── setup.html                    # One-time system setup
 ├── manifest.json                 # PWA manifest
 ├── service-worker.js             # Offline support
 ├── google-apps-script.js         # Backend script (deploy to Google, gitignored)

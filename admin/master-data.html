@@ -1,23 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Master Data - Society Maintenance</title>
+    <title>Master Data - eSociety</title>
     <link rel="manifest" href="../manifest.json">
     <link rel="icon" type="image/svg+xml" href="../icons/icon.svg">
     <link rel="apple-touch-icon" href="../icons/icon-192.png">
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/design-system.css">
     <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/admin-enhanced.css">
+    <link rel="stylesheet" href="../css/themes.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <script src="../js/theme.js"></script>
+    <style>
+        /* Critical inline styles for immediate light theme sidebar */
+        [data-theme="light"] .sidebar {
+            background: #ffffff !important;
+            color: #334155 !important;
+        }
+        [data-theme="light"] .sidebar-logo,
+        [data-theme="light"] .sidebar-logo-text,
+        [data-theme="light"] .sidebar-user-name {
+            color: #0f172a !important;
+        }
+        [data-theme="light"] .nav-link {
+            color: #475569 !important;
+        }
+        [data-theme="light"] .nav-link.active {
+            color: #4338ca !important;
+            background: rgba(99, 102, 241, 0.1) !important;
+        }
+        [data-theme="light"] .nav-section-title,
+        [data-theme="light"] .sidebar-logo-text span,
+        [data-theme="light"] .sidebar-user-role {
+            color: #64748b !important;
+        }
+    </style>
     <!-- Papa Parse for CSV parsing -->
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <style>
+        /* Import Section - Dark Theme */
         .import-section {
-            background: var(--gray-50);
-            border: 2px dashed var(--gray-300);
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px dashed rgba(255, 255, 255, 0.15);
             border-radius: var(--radius-lg);
             padding: 2rem;
             text-align: center;
@@ -25,20 +55,20 @@
             transition: all 0.2s;
         }
         .import-section:hover {
-            border-color: var(--primary);
-            background: #f0f9ff;
+            border-color: var(--primary-400);
+            background: rgba(99, 102, 241, 0.1);
         }
         .import-section.dragover {
-            border-color: var(--primary);
-            background: #dbeafe;
+            border-color: var(--primary-400);
+            background: rgba(99, 102, 241, 0.15);
         }
         .import-section h4 {
             margin: 0 0 0.5rem 0;
-            color: var(--gray-700);
+            color: white !important;
         }
         .import-section p {
             margin: 0 0 1rem 0;
-            color: var(--gray-500);
+            color: var(--slate-400);
             font-size: 0.875rem;
         }
         .import-actions {
@@ -74,23 +104,30 @@
             align-items: center;
             margin-bottom: 1rem;
         }
+        .preview-header h5 {
+            color: white !important;
+        }
         .preview-stats {
             display: flex;
             gap: 1rem;
         }
         .preview-stat {
             padding: 0.5rem 1rem;
-            background: var(--gray-100);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--radius);
             font-size: 0.875rem;
+            color: var(--slate-300);
         }
         .preview-stat.success {
-            background: #dcfce7;
-            color: #166534;
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: var(--success-400);
         }
         .preview-stat.error {
-            background: #fee2e2;
-            color: #991b1b;
+            background: rgba(244, 63, 94, 0.15);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: var(--danger-400);
         }
         .preview-table {
             max-height: 400px;
@@ -100,15 +137,15 @@
             font-size: 0.8125rem;
         }
         .row-error {
-            background: #fee2e2 !important;
+            background: rgba(244, 63, 94, 0.15) !important;
         }
         .row-error td {
-            color: #991b1b;
+            color: var(--danger-400);
         }
         .template-info {
-            background: #dbeafe;
-            border: 1px solid #93c5fd;
-            color: #1e40af;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: var(--primary-300);
             padding: 1rem;
             border-radius: var(--radius);
             margin-bottom: 1.5rem;
@@ -117,10 +154,39 @@
         .template-info strong {
             display: block;
             margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        /* Master Data Tabs - Dark Theme */
+        .master-data-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .master-data-tab {
+            padding: 0.625rem 1.25rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--slate-400);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .master-data-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .master-data-tab.active {
+            background: var(--gradient-primary);
+            border-color: transparent;
+            color: white;
         }
     </style>
 </head>
-<body>
+<body class="grain-texture">
     <div class="admin-layout">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
@@ -224,6 +290,24 @@
                 <div class="top-bar-left">
                     <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
                     <h1 class="top-bar-title">Master Data</h1>
+                </div>
+                <div class="top-bar-right">
+                    <button class="theme-toggle" onclick="ThemeManager.toggle()" title="Toggle theme">
+                        <svg class="theme-icon-light" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg class="theme-icon-dark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
                 </div>
             </header>
 

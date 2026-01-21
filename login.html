@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#4f46e5">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="eSociety">
-    <title>Login - Society Maintenance Billing</title>
+    <title>Login - eSociety</title>
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -16,126 +16,225 @@
     <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .not-configured-message {
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .not-configured-message h2 {
-            color: var(--danger);
-            margin-bottom: 1rem;
-        }
-
-        .not-configured-message p {
-            color: var(--gray-600);
-            margin-bottom: 0.5rem;
-        }
-
-        .not-configured-message code {
-            background: var(--gray-100);
-            padding: 0.25rem 0.5rem;
-            border-radius: var(--radius);
-            font-size: 0.875rem;
-        }
-
-        .no-society-message {
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .no-society-message h2 {
-            color: var(--gray-700);
-            margin-bottom: 1rem;
-        }
-
-        .no-society-message p {
-            color: var(--gray-600);
-            margin-bottom: 0.5rem;
-        }
-
-        .no-society-message .icon {
-            width: 64px;
-            height: 64px;
-            background: var(--gray-100);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-        }
-
-        .no-society-message .icon svg {
-            width: 32px;
-            height: 32px;
-            color: var(--gray-500);
-        }
-    </style>
+    <link rel="stylesheet" href="css/design-system.css">
+    <link rel="stylesheet" href="css/login-enhanced.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <script src="js/theme.js"></script>
 </head>
-<body>
-    <!-- Login View -->
-    <div id="login-view" class="login-container">
-        <div class="login-card">
-            <div class="login-logo">
-                <div style="width: 60px; height: 60px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+<body class="grain-texture">
+    <!-- Login Page Container -->
+    <div class="login-page" id="login-view">
+
+        <!-- Brand Side (Left Panel) -->
+        <div class="login-brand">
+            <div class="login-brand-content">
+                <!-- Animated Logo -->
+                <div class="login-brand-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                         <polyline points="9 22 9 12 15 12 15 22"></polyline>
                     </svg>
                 </div>
-                <h1 id="society-title">Society Maintenance</h1>
-                <p>Billing Management System</p>
-            </div>
 
-            <!-- Not Configured Message (hidden by default) -->
-            <div id="not-configured" class="not-configured-message" style="display: none;">
-                <h2>Setup Required</h2>
-                <p>This system hasn't been set up yet.</p>
-                <p>Please contact your administrator to complete the setup.</p>
-                <br>
-                <p><small>Administrator? <a href="docs/setup-guide.html">View Setup Guide</a></small></p>
-            </div>
+                <h1 class="login-brand-title">eSociety</h1>
+                <p class="login-brand-subtitle">
+                    The complete billing management solution for modern housing societies.
+                    Streamline maintenance, track payments, and bring transparency to your community.
+                </p>
 
-            <!-- No Society Code Message (hidden by default) -->
-            <div id="no-society" class="no-society-message" style="display: none;">
-                <div class="icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                    </svg>
+                <!-- Trust Badges -->
+                <div class="login-trust-badges">
+                    <div class="trust-badge">
+                        <div class="trust-badge-value">500+</div>
+                        <div class="trust-badge-label">Societies</div>
+                    </div>
+                    <div class="trust-badge">
+                        <div class="trust-badge-value">50K+</div>
+                        <div class="trust-badge-label">Bills Generated</div>
+                    </div>
+                    <div class="trust-badge">
+                        <div class="trust-badge-value">99.9%</div>
+                        <div class="trust-badge-label">Uptime</div>
+                    </div>
                 </div>
-                <h2>Login Link Required</h2>
-                <p>To login, you need a society-specific link.</p>
-                <p>Please contact your society administrator to get the login link or scan the QR code provided by them.</p>
-                <br>
-                <a href="index.html" class="btn btn-secondary">Back to Home</a>
             </div>
+        </div>
 
-            <!-- Login Form Container -->
-            <div id="login-container" style="display: none;">
-                <form id="society-login-form" class="login-form">
-                    <!-- Hidden society code field (populated from URL parameter) -->
-                    <input type="hidden" id="society-code" name="society-code" value="">
+        <!-- Form Side (Right Panel) -->
+        <div class="login-form-container">
+            <!-- Theme Toggle -->
+            <div style="position: absolute; top: 1rem; right: 1rem; z-index: 10;">
+                <button class="theme-toggle" onclick="ThemeManager.toggle()" title="Toggle theme">
+                    <svg class="theme-icon-light" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="theme-icon-dark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="login-card-enhanced">
 
-                    <div class="form-group">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required autocomplete="username">
+                <!-- Mobile Logo (visible only on small screens) -->
+                <div class="login-mobile-logo">
+                    <div class="login-mobile-logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                    </div>
+                    <div style="font-family: var(--font-display); font-size: var(--text-xl); font-weight: 600; color: var(--slate-900);">
+                        eSociety
+                    </div>
+                </div>
+
+                <!-- Not Configured Message (hidden by default) -->
+                <div id="not-configured" class="not-configured-enhanced" style="display: none;">
+                    <div class="error-icon warning">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </div>
+                    <h2 class="error-title">Setup Required</h2>
+                    <p class="error-description">
+                        This system hasn't been configured yet. Please contact your administrator to complete the initial setup.
+                    </p>
+                    <a href="docs/setup-guide.html" class="btn btn-primary">
+                        View Setup Guide
+                    </a>
+                </div>
+
+                <!-- No Society Code Message (hidden by default) -->
+                <div id="no-society" class="no-society-enhanced" style="display: none;">
+                    <div class="error-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </div>
+                    <h2 class="error-title">Login Link Required</h2>
+                    <p class="error-description">
+                        To access your society portal, you need a unique login link. Please contact your society administrator to get the login link or scan the QR code provided.
+                    </p>
+                    <a href="index.html" class="btn btn-outline-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Back to Home
+                    </a>
+                </div>
+
+                <!-- Login Form Container -->
+                <div id="login-container" style="display: none;">
+                    <!-- Card Header -->
+                    <div class="login-card-header">
+                        <h2 class="login-card-title">Welcome back</h2>
+                        <p class="login-card-description">Sign in to access your society portal</p>
+
+                        <!-- Society Badge (shown when society is validated) -->
+                        <div id="society-badge" class="society-badge" style="display: none;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            </svg>
+                            <span id="society-badge-name">Society Name</span>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required autocomplete="current-password">
+                    <form id="society-login-form" class="login-form-enhanced">
+                        <!-- Hidden society code field -->
+                        <input type="hidden" id="society-code" name="society-code" value="">
+
+                        <!-- Username Field -->
+                        <div class="login-form-group">
+                            <label for="username" class="login-form-label">Username</label>
+                            <div style="position: relative;">
+                                <svg class="login-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="top: calc(50% + 12px);">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                <input
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    class="login-form-input"
+                                    placeholder="Enter your username"
+                                    required
+                                    autocomplete="username"
+                                    autocapitalize="none"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="login-form-group">
+                            <label for="password" class="login-form-label">Password</label>
+                            <div style="position: relative;">
+                                <svg class="login-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="top: calc(50% + 12px);">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    class="login-form-input"
+                                    placeholder="Enter your password"
+                                    required
+                                    autocomplete="current-password"
+                                >
+                                <button type="button" class="password-toggle" onclick="togglePassword()" aria-label="Toggle password visibility">
+                                    <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    <svg id="eye-off-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Error Message -->
+                        <div id="login-error" class="login-error" style="display: none;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span id="login-error-text"></span>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="login-submit" id="login-btn">
+                            <span id="login-btn-text">Sign In</span>
+                            <span id="login-btn-spinner" class="login-spinner" style="display: none;"></span>
+                        </button>
+                    </form>
+
+                    <!-- Card Footer -->
+                    <div class="login-card-footer">
+                        <p class="login-footer-text">
+                            Need help? Contact your
+                            <a href="mailto:admin@example.com" class="login-footer-link">society administrator</a>
+                        </p>
                     </div>
-
-                    <div id="login-error" class="alert alert-danger d-none"></div>
-
-                    <button type="submit" class="btn btn-primary btn-lg" id="login-btn">
-                        <span id="login-btn-text">Sign In</span>
-                        <span id="login-btn-spinner" class="spinner spinner-sm d-none"></span>
-                    </button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -159,9 +258,25 @@
         let validatedSocietyName = '';
         let societyFromUrl = false;
 
+        // Toggle password visibility
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            const eyeOffIcon = document.getElementById('eye-off-icon');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeIcon.style.display = 'none';
+                eyeOffIcon.style.display = 'block';
+            } else {
+                input.type = 'password';
+                eyeIcon.style.display = 'block';
+                eyeOffIcon.style.display = 'none';
+            }
+        }
+
         // Encode society code for URL (obfuscation)
         function encodeSocietyCode(code) {
-            // Reverse + Base64 encode
             const reversed = code.split('').reverse().join('');
             return btoa(reversed);
         }
@@ -198,20 +313,17 @@
             let societyCode = null;
 
             if (encodedParam) {
-                // Society code from URL parameter
                 societyCode = decodeSocietyCode(encodedParam);
                 if (societyCode) {
                     societyFromUrl = true;
-                    // Store in localStorage for PWA usage
                     localStorage.setItem('last_society_code', societyCode.toUpperCase());
                     localStorage.setItem('last_society_encoded', encodedParam);
                 }
             } else {
-                // Check localStorage for previously used society (for PWA)
                 const savedCode = localStorage.getItem('last_society_code');
                 if (savedCode) {
                     societyCode = savedCode;
-                    societyFromUrl = false; // Loaded from storage, not URL
+                    societyFromUrl = false;
                 }
             }
 
@@ -219,21 +331,18 @@
                 const societyInput = document.getElementById('society-code');
                 societyInput.value = societyCode.toUpperCase();
 
-                // Show login form
                 document.getElementById('login-container').style.display = 'block';
                 document.getElementById('no-society').style.display = 'none';
 
-                // Auto-validate society code
                 validateSocietyCode().then(() => {
                     if (societyValidated) {
-                        // Update title with society name
                         if (validatedSocietyName) {
-                            document.getElementById('society-title').textContent = validatedSocietyName;
+                            // Update society badge
+                            document.getElementById('society-badge').style.display = 'inline-flex';
+                            document.getElementById('society-badge-name').textContent = validatedSocietyName;
                         }
-                        // Focus on username field
                         document.getElementById('username').focus();
                     } else {
-                        // Invalid society code - clear stored and show no society message
                         localStorage.removeItem('last_society_code');
                         localStorage.removeItem('last_society_encoded');
                         document.getElementById('login-container').style.display = 'none';
@@ -241,11 +350,9 @@
                     }
                 });
             } else {
-                // No society code found - show message
                 document.getElementById('no-society').style.display = 'block';
             }
 
-            // Handle form submission
             document.getElementById('society-login-form').addEventListener('submit', handleSocietyLogin);
         });
 
@@ -278,19 +385,19 @@
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('login-error');
+            const errorText = document.getElementById('login-error-text');
             const loginBtn = document.getElementById('login-btn');
             const btnText = document.getElementById('login-btn-text');
             const btnSpinner = document.getElementById('login-btn-spinner');
 
             // Clear previous error
-            errorDiv.classList.add('d-none');
+            errorDiv.style.display = 'none';
 
-            // Validate society code first if not already validated
             if (!societyValidated) {
                 await validateSocietyCode();
                 if (!societyValidated) {
-                    errorDiv.textContent = 'Invalid society. Please use the correct login link.';
-                    errorDiv.classList.remove('d-none');
+                    errorText.textContent = 'Invalid society. Please use the correct login link.';
+                    errorDiv.style.display = 'flex';
                     return;
                 }
             }
@@ -298,7 +405,7 @@
             // Show loading state
             loginBtn.disabled = true;
             btnText.textContent = 'Signing in...';
-            btnSpinner.classList.remove('d-none');
+            btnSpinner.style.display = 'block';
 
             try {
                 const result = await auth.login(societyCode, username, password, validatedSocietyName);
@@ -309,14 +416,14 @@
                         redirectToDashboard();
                     }, 500);
                 } else {
-                    errorDiv.textContent = result.message;
-                    errorDiv.classList.remove('d-none');
+                    errorText.textContent = result.message;
+                    errorDiv.style.display = 'flex';
                     resetButton(loginBtn, btnText, btnSpinner, 'Sign In');
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                errorDiv.textContent = error.message || 'An error occurred. Please try again.';
-                errorDiv.classList.remove('d-none');
+                errorText.textContent = error.message || 'An error occurred. Please try again.';
+                errorDiv.style.display = 'flex';
                 resetButton(loginBtn, btnText, btnSpinner, 'Sign In');
             }
         }
@@ -324,18 +431,16 @@
         function resetButton(btn, textEl, spinnerEl, text) {
             btn.disabled = false;
             textEl.textContent = text;
-            spinnerEl.classList.add('d-none');
+            spinnerEl.style.display = 'none';
         }
 
         function redirectToDashboard() {
-            // Check URL redirect parameter
             const params = Utils.getUrlParams();
             if (params.redirect) {
                 window.location.href = params.redirect;
                 return;
             }
 
-            // Redirect based on role
             if (auth.isSuperadmin()) {
                 window.location.href = 'superadmin/dashboard.html';
             } else if (auth.isAdmin()) {

@@ -1,0 +1,605 @@
+/* ===================================
+   eSociety - Micro-interactions & Animations
+   Premium Motion Design System
+   =================================== */
+
+/* ========================
+   PAGE LOAD ANIMATIONS
+   ======================== */
+
+/* Fade in animations on page load */
+@keyframes pageLoad {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+body {
+    animation: pageLoad 0.4s ease-out;
+}
+
+/* Staggered entrance for cards and list items */
+.stat-card,
+.feature-card,
+.benefit-card,
+.quick-action,
+.activity-item,
+.testimonial-card {
+    opacity: 0;
+    animation: slideInUp 0.6s ease-out forwards;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Stagger delays for elements */
+.stat-card:nth-child(1),
+.feature-card:nth-child(1),
+.quick-action:nth-child(1) { animation-delay: 0.1s; }
+
+.stat-card:nth-child(2),
+.feature-card:nth-child(2),
+.quick-action:nth-child(2) { animation-delay: 0.15s; }
+
+.stat-card:nth-child(3),
+.feature-card:nth-child(3),
+.quick-action:nth-child(3) { animation-delay: 0.2s; }
+
+.stat-card:nth-child(4),
+.feature-card:nth-child(4),
+.quick-action:nth-child(4) { animation-delay: 0.25s; }
+
+.stat-card:nth-child(5),
+.feature-card:nth-child(5),
+.quick-action:nth-child(5) { animation-delay: 0.3s; }
+
+.stat-card:nth-child(6),
+.feature-card:nth-child(6),
+.quick-action:nth-child(6) { animation-delay: 0.35s; }
+
+/* ========================
+   HOVER MICRO-INTERACTIONS
+   ======================== */
+
+/* Button hover lift effect */
+.btn,
+.login-submit,
+.hero-btn-primary,
+.hero-btn-secondary,
+.cta-btn-primary,
+.cta-btn-secondary {
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn:hover:not(:disabled),
+.login-submit:hover:not(:disabled),
+.hero-btn-primary:hover,
+.cta-btn-primary:hover {
+    transform: translateY(-2px) scale(1.02);
+}
+
+.btn:active:not(:disabled),
+.login-submit:active:not(:disabled),
+.hero-btn-primary:active,
+.cta-btn-primary:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* Card hover effects */
+.card,
+.widget,
+.stat-card,
+.feature-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-card:hover,
+.feature-card:hover {
+    transform: translateY(-6px);
+}
+
+/* Icon bounce on hover */
+.quick-action:hover .quick-action-icon,
+.feature-card:hover .feature-icon {
+    animation: iconBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes iconBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+/* ========================
+   FORM INTERACTIONS
+   ======================== */
+
+/* Input focus animation */
+.form-control,
+.login-form-input {
+    transition: all 0.25s ease-out;
+}
+
+.form-control:focus,
+.login-form-input:focus {
+    transform: scale(1.01);
+}
+
+/* Input icon color transition */
+.login-form-icon {
+    transition: all 0.25s ease-out;
+}
+
+/* Checkbox/Radio animations */
+input[type="checkbox"],
+input[type="radio"] {
+    transition: all 0.2s ease;
+}
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+    animation: checkPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes checkPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* ========================
+   NAVIGATION ANIMATIONS
+   ======================== */
+
+/* Sidebar link hover */
+.nav-link {
+    transition: all 0.2s ease-out;
+}
+
+.nav-link:hover {
+    padding-left: calc(var(--space-6) + 4px);
+}
+
+.nav-link.active {
+    animation: navActive 0.3s ease-out;
+}
+
+@keyframes navActive {
+    0% { background-color: transparent; }
+    50% { background-color: rgba(99, 102, 241, 0.3); }
+    100% { background-color: rgba(99, 102, 241, 0.2); }
+}
+
+/* Bottom nav tap feedback */
+.bottom-nav-item {
+    transition: all 0.2s ease-out;
+}
+
+.bottom-nav-item:active {
+    transform: scale(0.95);
+}
+
+/* ========================
+   TABLE ROW ANIMATIONS
+   ======================== */
+
+.table tbody tr {
+    transition: all 0.2s ease-out;
+}
+
+.table tbody tr:hover {
+    transform: scale(1.005);
+}
+
+/* ========================
+   MODAL ANIMATIONS
+   ======================== */
+
+.modal-backdrop {
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal {
+    animation: modalSlideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ========================
+   TOAST ANIMATIONS
+   ======================== */
+
+.toast {
+    animation: toastEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes toastEnter {
+    from {
+        opacity: 0;
+        transform: translateX(100%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+.toast.hiding {
+    animation: toastExit 0.3s ease-in forwards;
+}
+
+@keyframes toastExit {
+    to {
+        opacity: 0;
+        transform: translateX(100%) scale(0.8);
+    }
+}
+
+/* ========================
+   LOADING ANIMATIONS
+   ======================== */
+
+/* Enhanced spinner */
+.spinner {
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Pulse loading animation */
+.loading-pulse {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* Skeleton loading effect */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--slate-200) 0%,
+        var(--slate-100) 50%,
+        var(--slate-200) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: var(--radius);
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ========================
+   ERROR/SUCCESS STATES
+   ======================== */
+
+/* Error shake animation */
+.shake,
+.login-error {
+    animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+    20%, 40%, 60%, 80% { transform: translateX(8px); }
+}
+
+/* Success checkmark animation */
+.success-check {
+    animation: successPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes successPop {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* ========================
+   BADGE ANIMATIONS
+   ======================== */
+
+.badge {
+    transition: all 0.2s ease-out;
+}
+
+.badge:hover {
+    transform: scale(1.05);
+}
+
+/* Notification badge pulse */
+.badge-notification {
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* ========================
+   COUNTER ANIMATIONS
+   ======================== */
+
+/* Number counting animation */
+.count-up {
+    animation: countUp 0.8s ease-out;
+}
+
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================
+   HERO SECTION ANIMATIONS
+   ======================== */
+
+/* Hero text entrance */
+.hero-title,
+.hero-description,
+.hero-actions,
+.hero-stats {
+    opacity: 0;
+    animation: heroEntrance 0.8s ease-out forwards;
+}
+
+.hero-title { animation-delay: 0.2s; }
+.hero-description { animation-delay: 0.4s; }
+.hero-actions { animation-delay: 0.6s; }
+.hero-stats { animation-delay: 0.8s; }
+
+@keyframes heroEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hero visual 3D tilt */
+.hero-card-preview {
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Floating animation for decorative elements */
+.floating-card,
+.animate-float {
+    animation: floating 4s ease-in-out infinite;
+}
+
+@keyframes floating {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.floating-card-1 { animation-delay: 0s; }
+.floating-card-2 { animation-delay: 1s; }
+
+/* ========================
+   SCROLL-TRIGGERED ANIMATIONS
+   ======================== */
+
+/* Elements that fade in on scroll */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Scale in animation */
+.reveal-scale {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal-scale.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Slide in from left */
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Slide in from right */
+.reveal-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ========================
+   SIDEBAR TOGGLE ANIMATION
+   ======================== */
+
+.sidebar {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-overlay {
+    transition: opacity 0.3s ease-out;
+}
+
+/* ========================
+   RIPPLE EFFECT
+   ======================== */
+
+.ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+}
+
+.ripple:active::after {
+    animation: rippleEffect 0.6s ease-out;
+}
+
+@keyframes rippleEffect {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 0.5;
+    }
+    100% {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+    }
+}
+
+/* ========================
+   ACCESSIBILITY - REDUCED MOTION
+   ======================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .floating-card,
+    .animate-float,
+    .hero-card-preview {
+        animation: none !important;
+    }
+
+    .reveal,
+    .reveal-scale,
+    .reveal-left,
+    .reveal-right {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ========================
+   UTILITY CLASSES
+   ======================== */
+
+/* Animation utilities */
+.animate-none { animation: none !important; }
+.animate-spin { animation: spin 1s linear infinite; }
+.animate-ping { animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
+.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.animate-bounce { animation: bounce 1s infinite; }
+
+@keyframes ping {
+    75%, 100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(-25%);
+        animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+    50% {
+        transform: translateY(0);
+        animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+}
+
+/* Delay utilities */
+.animation-delay-100 { animation-delay: 100ms; }
+.animation-delay-200 { animation-delay: 200ms; }
+.animation-delay-300 { animation-delay: 300ms; }
+.animation-delay-400 { animation-delay: 400ms; }
+.animation-delay-500 { animation-delay: 500ms; }
+.animation-delay-700 { animation-delay: 700ms; }
+.animation-delay-1000 { animation-delay: 1000ms; }
+
+/* Duration utilities */
+.duration-75 { transition-duration: 75ms; animation-duration: 75ms; }
+.duration-100 { transition-duration: 100ms; animation-duration: 100ms; }
+.duration-150 { transition-duration: 150ms; animation-duration: 150ms; }
+.duration-200 { transition-duration: 200ms; animation-duration: 200ms; }
+.duration-300 { transition-duration: 300ms; animation-duration: 300ms; }
+.duration-500 { transition-duration: 500ms; animation-duration: 500ms; }
+.duration-700 { transition-duration: 700ms; animation-duration: 700ms; }
+.duration-1000 { transition-duration: 1000ms; animation-duration: 1000ms; }
+
+/* Easing utilities */
+.ease-linear { transition-timing-function: linear; animation-timing-function: linear; }
+.ease-in { transition-timing-function: cubic-bezier(0.4, 0, 1, 1); animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }
+.ease-out { transition-timing-function: cubic-bezier(0, 0, 0.2, 1); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+.ease-in-out { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+.ease-spring { transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }

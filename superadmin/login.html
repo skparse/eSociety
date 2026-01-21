@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#1e1b4b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Super Admin">
-    <title>Super Admin Login - Society Maintenance</title>
+    <title>Super Admin - eSociety</title>
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="../manifest.json">
@@ -16,46 +16,355 @@
     <link rel="icon" type="image/svg+xml" href="../icons/icon.svg">
     <link rel="apple-touch-icon" href="../icons/icon-192.png">
 
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/login-enhanced.css">
+    <link rel="stylesheet" href="../css/themes.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <script src="../js/theme.js"></script>
+
+    <style>
+        /* Superadmin specific overrides - Darker theme */
+        .login-page.superadmin {
+            background: var(--slate-900);
+        }
+
+        .login-page.superadmin::before {
+            background:
+                radial-gradient(at 40% 20%, var(--primary-950) 0px, transparent 50%),
+                radial-gradient(at 80% 0%, var(--accent-900) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, var(--primary-900) 0px, transparent 50%);
+            opacity: 0.8;
+        }
+
+        /* Brand side - Deep purple gradient */
+        .login-page.superadmin .login-brand {
+            background: linear-gradient(135deg, var(--primary-950) 0%, var(--slate-950) 100%);
+        }
+
+        .login-page.superadmin .login-brand::before {
+            background:
+                radial-gradient(ellipse at 20% 80%, rgba(99, 102, 241, 0.25) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(251, 191, 36, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 40%, rgba(129, 140, 248, 0.15) 0%, transparent 40%);
+        }
+
+        /* Gold accented logo for admin */
+        .login-page.superadmin .login-brand-logo {
+            background: linear-gradient(135deg, var(--accent-500) 0%, var(--accent-700) 100%);
+            box-shadow: 0 20px 40px rgba(251, 191, 36, 0.3);
+        }
+
+        .login-page.superadmin .login-mobile-logo-icon {
+            background: linear-gradient(135deg, var(--accent-500) 0%, var(--accent-700) 100%);
+            box-shadow: var(--shadow-lg), 0 4px 20px rgba(251, 191, 36, 0.3);
+        }
+
+        /* Shield icon styling */
+        .admin-shield {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 28px;
+            height: 28px;
+            background: var(--slate-900);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--accent-500);
+        }
+
+        .admin-shield svg {
+            width: 14px;
+            height: 14px;
+            color: var(--accent-400);
+        }
+
+        /* Trust badges - Admin specific */
+        .login-page.superadmin .trust-badge-value {
+            color: var(--accent-400);
+        }
+
+        /* Card accent line - Gold */
+        .login-page.superadmin .login-card-enhanced::before {
+            background: linear-gradient(90deg, var(--accent-500) 0%, var(--accent-600) 100%);
+        }
+
+        /* Admin badge styling */
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-4);
+            background: linear-gradient(135deg, var(--accent-100) 0%, var(--accent-200) 100%);
+            border: 1px solid var(--accent-300);
+            border-radius: var(--radius-full);
+            font-size: var(--text-sm);
+            color: var(--accent-800);
+            font-weight: 600;
+            margin-top: var(--space-4);
+        }
+
+        .admin-badge svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Form side background for superadmin */
+        .login-page.superadmin .login-form-container {
+            background: var(--slate-900);
+        }
+
+        /* Submit button - Gold accent */
+        .login-page.superadmin .login-submit {
+            background: linear-gradient(135deg, var(--accent-500) 0%, var(--accent-600) 100%);
+            color: var(--slate-900);
+        }
+
+        .login-page.superadmin .login-submit:hover:not(:disabled) {
+            box-shadow: var(--shadow-lg), 0 8px 25px rgba(251, 191, 36, 0.4);
+        }
+
+        /* Security notice */
+        .security-notice {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-4);
+            background: var(--slate-50);
+            border: 1px solid var(--slate-200);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-5);
+        }
+
+        .security-notice-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-100);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .security-notice-icon svg {
+            width: 20px;
+            height: 20px;
+            color: var(--primary-600);
+        }
+
+        .security-notice-text {
+            font-size: var(--text-sm);
+            color: var(--slate-600);
+            line-height: 1.5;
+        }
+
+        .security-notice-text strong {
+            color: var(--slate-800);
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 1024px) {
+            .login-page.superadmin .login-form-container {
+                background: var(--slate-50);
+            }
+        }
+    </style>
 </head>
-<body>
-    <!-- Login View -->
-    <div id="login-view" class="login-container">
-        <div class="login-card">
-            <div class="login-logo">
-                <div style="width: 60px; height: 60px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+<body class="grain-texture">
+    <!-- Login Page Container -->
+    <div class="login-page superadmin" id="login-view">
+
+        <!-- Brand Side (Left Panel) -->
+        <div class="login-brand">
+            <div class="login-brand-content">
+                <!-- Animated Logo with Shield -->
+                <div class="login-brand-logo" style="position: relative;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
                         <path d="M2 17l10 5 10-5"></path>
                         <path d="M2 12l10 5 10-5"></path>
                     </svg>
+                    <div class="admin-shield">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
                 </div>
-                <h1>Super Admin</h1>
-                <p>Society Management System</p>
+
+                <h1 class="login-brand-title">eSociety</h1>
+                <p class="login-brand-subtitle">
+                    Super Admin Portal<br>
+                    Manage all societies, users, and system configurations from a centralized dashboard.
+                </p>
+
+                <!-- Trust Badges -->
+                <div class="login-trust-badges">
+                    <div class="trust-badge">
+                        <div class="trust-badge-value">Full</div>
+                        <div class="trust-badge-label">Access</div>
+                    </div>
+                    <div class="trust-badge">
+                        <div class="trust-badge-value">Multi</div>
+                        <div class="trust-badge-label">Society</div>
+                    </div>
+                    <div class="trust-badge">
+                        <div class="trust-badge-value">Secure</div>
+                        <div class="trust-badge-label">Portal</div>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <!-- Login Form -->
-            <form id="superadmin-login-form" class="login-form">
-                <div class="form-group">
-                    <label for="super-username" class="form-label">Username</label>
-                    <input type="text" id="super-username" name="super-username" class="form-control" placeholder="Enter username" required autocomplete="username">
-                </div>
-
-                <div class="form-group">
-                    <label for="super-password" class="form-label">Password</label>
-                    <input type="password" id="super-password" name="super-password" class="form-control" placeholder="Enter password" required autocomplete="current-password">
-                </div>
-
-                <div id="super-login-error" class="alert alert-danger d-none"></div>
-
-                <button type="submit" class="btn btn-primary btn-lg" id="super-login-btn">
-                    <span id="super-login-btn-text">Sign In</span>
-                    <span id="super-login-btn-spinner" class="spinner spinner-sm d-none"></span>
+        <!-- Form Side (Right Panel) -->
+        <div class="login-form-container">
+            <!-- Theme Toggle -->
+            <div style="position: absolute; top: 1rem; right: 1rem; z-index: 10;">
+                <button class="theme-toggle" onclick="ThemeManager.toggle()" title="Toggle theme">
+                    <svg class="theme-icon-light" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="theme-icon-dark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
                 </button>
-            </form>
+            </div>
+            <div class="login-card-enhanced">
 
-            <div class="login-link">
-                <a href="../index.html">Back to Home</a>
+                <!-- Mobile Logo (visible only on small screens) -->
+                <div class="login-mobile-logo">
+                    <div class="login-mobile-logo-icon" style="position: relative;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <div style="font-family: var(--font-display); font-size: var(--text-xl); font-weight: 600; color: var(--slate-900);">
+                        eSociety
+                    </div>
+                </div>
+
+                <!-- Card Header -->
+                <div class="login-card-header">
+                    <h2 class="login-card-title">Super Admin Access</h2>
+                    <p class="login-card-description">Sign in to the administration portal</p>
+
+                    <!-- Admin Badge -->
+                    <div class="admin-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <span>Protected Access</span>
+                    </div>
+                </div>
+
+                <!-- Security Notice -->
+                <div class="security-notice">
+                    <div class="security-notice-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <div class="security-notice-text">
+                        <strong>Restricted Area</strong><br>
+                        This portal is for authorized administrators only. All access attempts are logged.
+                    </div>
+                </div>
+
+                <form id="superadmin-login-form" class="login-form-enhanced">
+                    <!-- Username Field -->
+                    <div class="login-form-group">
+                        <label for="super-username" class="login-form-label">Username</label>
+                        <div style="position: relative;">
+                            <svg class="login-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="top: calc(50% + 12px);">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <input
+                                type="text"
+                                id="super-username"
+                                name="super-username"
+                                class="login-form-input"
+                                placeholder="Enter admin username"
+                                required
+                                autocomplete="username"
+                                autocapitalize="none"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="login-form-group">
+                        <label for="super-password" class="login-form-label">Password</label>
+                        <div style="position: relative;">
+                            <svg class="login-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="top: calc(50% + 12px);">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <input
+                                type="password"
+                                id="super-password"
+                                name="super-password"
+                                class="login-form-input"
+                                placeholder="Enter admin password"
+                                required
+                                autocomplete="current-password"
+                            >
+                            <button type="button" class="password-toggle" onclick="togglePassword()" aria-label="Toggle password visibility">
+                                <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg id="eye-off-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="super-login-error" class="login-error" style="display: none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span id="super-login-error-text"></span>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="login-submit" id="super-login-btn">
+                        <span id="super-login-btn-text">Sign In as Admin</span>
+                        <span id="super-login-btn-spinner" class="login-spinner" style="display: none;"></span>
+                    </button>
+                </form>
+
+                <!-- Card Footer -->
+                <div class="login-card-footer">
+                    <p class="login-footer-text">
+                        <a href="../index.html" class="login-footer-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                            Back to Home
+                        </a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -75,12 +384,32 @@
     <script src="../js/auth.js"></script>
     <script src="../js/mobile.js"></script>
     <script>
+        // Toggle password visibility
+        function togglePassword() {
+            const input = document.getElementById('super-password');
+            const eyeIcon = document.getElementById('eye-icon');
+            const eyeOffIcon = document.getElementById('eye-off-icon');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeIcon.style.display = 'none';
+                eyeOffIcon.style.display = 'block';
+            } else {
+                input.type = 'password';
+                eyeIcon.style.display = 'block';
+                eyeOffIcon.style.display = 'none';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Check if already logged in as superadmin
             if (auth.isLoggedIn() && auth.isSuperadmin()) {
                 window.location.href = 'dashboard.html';
                 return;
             }
+
+            // Focus on username field
+            document.getElementById('super-username').focus();
 
             // Handle form submission
             document.getElementById('superadmin-login-form').addEventListener('submit', handleSuperadminLogin);
@@ -92,17 +421,18 @@
             const username = document.getElementById('super-username').value.trim();
             const password = document.getElementById('super-password').value;
             const errorDiv = document.getElementById('super-login-error');
+            const errorText = document.getElementById('super-login-error-text');
             const loginBtn = document.getElementById('super-login-btn');
             const btnText = document.getElementById('super-login-btn-text');
             const btnSpinner = document.getElementById('super-login-btn-spinner');
 
             // Clear previous error
-            errorDiv.classList.add('d-none');
+            errorDiv.style.display = 'none';
 
             // Show loading state
             loginBtn.disabled = true;
-            btnText.textContent = 'Signing in...';
-            btnSpinner.classList.remove('d-none');
+            btnText.textContent = 'Authenticating...';
+            btnSpinner.style.display = 'block';
 
             try {
                 const result = await auth.superadminLogin(username, password);
@@ -113,22 +443,22 @@
                         window.location.href = 'dashboard.html';
                     }, 500);
                 } else {
-                    errorDiv.textContent = result.message;
-                    errorDiv.classList.remove('d-none');
-                    resetButton(loginBtn, btnText, btnSpinner, 'Sign In');
+                    errorText.textContent = result.message;
+                    errorDiv.style.display = 'flex';
+                    resetButton(loginBtn, btnText, btnSpinner, 'Sign In as Admin');
                 }
             } catch (error) {
                 console.error('Superadmin login error:', error);
-                errorDiv.textContent = error.message || 'An error occurred. Please try again.';
-                errorDiv.classList.remove('d-none');
-                resetButton(loginBtn, btnText, btnSpinner, 'Sign In');
+                errorText.textContent = error.message || 'An error occurred. Please try again.';
+                errorDiv.style.display = 'flex';
+                resetButton(loginBtn, btnText, btnSpinner, 'Sign In as Admin');
             }
         }
 
         function resetButton(btn, textEl, spinnerEl, text) {
             btn.disabled = false;
             textEl.textContent = text;
-            spinnerEl.classList.add('d-none');
+            spinnerEl.style.display = 'none';
         }
 
         // Register Service Worker for PWA
