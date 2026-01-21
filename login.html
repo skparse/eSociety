@@ -139,6 +139,31 @@
                     </a>
                 </div>
 
+                <!-- Connection Error Message (hidden by default) -->
+                <div id="connection-error" class="no-society-enhanced" style="display: none;">
+                    <div class="error-icon warning">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </div>
+                    <h2 class="error-title">Connection Error</h2>
+                    <p class="error-description">
+                        Unable to connect to the server. Please check your internet connection and try again.
+                    </p>
+                    <p class="error-description" style="margin-top: 0.5rem; font-size: 0.875rem;">
+                        Society: <strong id="connection-error-society"></strong>
+                    </p>
+                    <button onclick="retryConnection()" class="btn btn-primary" style="margin-top: 1rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"></polyline>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                        </svg>
+                        Retry Connection
+                    </button>
+                </div>
+
                 <!-- Login Form Container -->
                 <div id="login-container" style="display: none;">
                     <!-- Card Header -->
@@ -210,6 +235,14 @@
                             </div>
                         </div>
 
+                        <!-- Remember Me Checkbox -->
+                        <div class="login-form-group" style="flex-direction: row; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" id="remember-me" name="remember-me" style="width: auto; margin: 0;">
+                            <label for="remember-me" class="login-form-label" style="margin-bottom: 0; font-weight: 400; cursor: pointer;">
+                                Keep me signed in for 30 days
+                            </label>
+                        </div>
+
                         <!-- Error Message -->
                         <div id="login-error" class="login-error" style="display: none;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -257,6 +290,8 @@
         let societyValidated = false;
         let validatedSocietyName = '';
         let societyFromUrl = false;
+        let storedSocietyCode = null;
+        let connectionFailed = false;
 
         // Toggle password visibility
         function togglePassword() {
@@ -328,8 +363,9 @@
             }
 
             if (societyCode) {
+                storedSocietyCode = societyCode.toUpperCase();
                 const societyInput = document.getElementById('society-code');
-                societyInput.value = societyCode.toUpperCase();
+                societyInput.value = storedSocietyCode;
 
                 document.getElementById('login-container').style.display = 'block';
                 document.getElementById('no-society').style.display = 'none';
@@ -342,9 +378,17 @@
                             document.getElementById('society-badge-name').textContent = validatedSocietyName;
                         }
                         document.getElementById('username').focus();
+                    } else if (connectionFailed) {
+                        // Network error - show retry option, don't clear stored code
+                        document.getElementById('login-container').style.display = 'none';
+                        document.getElementById('connection-error').style.display = 'block';
+                        document.getElementById('connection-error-society').textContent = storedSocietyCode;
                     } else {
-                        localStorage.removeItem('last_society_code');
-                        localStorage.removeItem('last_society_encoded');
+                        // Invalid society code - clear only if URL was wrong
+                        if (societyFromUrl) {
+                            localStorage.removeItem('last_society_code');
+                            localStorage.removeItem('last_society_encoded');
+                        }
                         document.getElementById('login-container').style.display = 'none';
                         document.getElementById('no-society').style.display = 'block';
                     }
@@ -358,6 +402,7 @@
 
         async function validateSocietyCode() {
             const societyCode = document.getElementById('society-code').value.trim().toUpperCase();
+            connectionFailed = false;
 
             if (!societyCode || societyCode.length < 3) {
                 societyValidated = false;
@@ -370,11 +415,44 @@
                 if (result.success && result.valid) {
                     societyValidated = true;
                     validatedSocietyName = result.societyName;
+                    connectionFailed = false;
                 } else {
                     societyValidated = false;
+                    connectionFailed = false; // Valid response, but society not found
                 }
             } catch (error) {
+                console.error('Validation error:', error);
                 societyValidated = false;
+                connectionFailed = true; // Network or server error
+            }
+        }
+
+        // Retry connection after failure
+        async function retryConnection() {
+            document.getElementById('connection-error').style.display = 'none';
+            document.getElementById('login-container').style.display = 'block';
+
+            // Reset state
+            connectionFailed = false;
+            societyValidated = false;
+
+            // Try validation again
+            await validateSocietyCode();
+
+            if (societyValidated) {
+                if (validatedSocietyName) {
+                    document.getElementById('society-badge').style.display = 'inline-flex';
+                    document.getElementById('society-badge-name').textContent = validatedSocietyName;
+                }
+                document.getElementById('username').focus();
+                Utils.showToast('Connected successfully!', 'success');
+            } else if (connectionFailed) {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('connection-error').style.display = 'block';
+                Utils.showToast('Still unable to connect. Please try again.', 'error');
+            } else {
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('no-society').style.display = 'block';
             }
         }
 
@@ -384,6 +462,7 @@
             const societyCode = document.getElementById('society-code').value.trim().toUpperCase();
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
             const errorDiv = document.getElementById('login-error');
             const errorText = document.getElementById('login-error-text');
             const loginBtn = document.getElementById('login-btn');
@@ -396,7 +475,11 @@
             if (!societyValidated) {
                 await validateSocietyCode();
                 if (!societyValidated) {
-                    errorText.textContent = 'Invalid society. Please use the correct login link.';
+                    if (connectionFailed) {
+                        errorText.textContent = 'Unable to connect. Please check your internet connection.';
+                    } else {
+                        errorText.textContent = 'Invalid society. Please use the correct login link.';
+                    }
                     errorDiv.style.display = 'flex';
                     return;
                 }
@@ -408,7 +491,7 @@
             btnSpinner.style.display = 'block';
 
             try {
-                const result = await auth.login(societyCode, username, password, validatedSocietyName);
+                const result = await auth.login(societyCode, username, password, validatedSocietyName, rememberMe);
 
                 if (result.success) {
                     Utils.showToast('Login successful!', 'success');

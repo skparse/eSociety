@@ -8,6 +8,7 @@ class Auth {
         this.sessionKey = CONFIG.STORAGE_KEYS.SESSION;
         this.userKey = CONFIG.STORAGE_KEYS.USER;
         this.sessionTimeout = CONFIG.APP.SESSION_TIMEOUT;
+        this.extendedSessionTimeout = 30 * 24 * 60 * 60 * 1000; // 30 days for "Remember Me"
     }
 
     /**
@@ -40,8 +41,9 @@ class Auth {
      * @param {string} username - Username
      * @param {string} password - Password
      * @param {string} [knownSocietyName] - Optional pre-validated society name
+     * @param {boolean} [rememberMe] - Whether to use extended session (30 days)
      */
-    async login(societyId, username, password, knownSocietyName = null) {
+    async login(societyId, username, password, knownSocietyName = null, rememberMe = false) {
         try {
             // Set society context first
             setCurrentSociety(societyId.toUpperCase());
@@ -80,6 +82,9 @@ class Auth {
             // Update society with name
             setCurrentSociety(societyId.toUpperCase(), societyName);
 
+            // Determine session timeout based on rememberMe
+            const timeout = rememberMe ? this.extendedSessionTimeout : this.sessionTimeout;
+
             // Create session
             const session = {
                 userId: user.id,
@@ -87,7 +92,8 @@ class Auth {
                 societyId: societyId.toUpperCase(),
                 societyName: societyName,
                 loginTime: Date.now(),
-                expiresAt: Date.now() + this.sessionTimeout
+                expiresAt: Date.now() + timeout,
+                rememberMe: rememberMe
             };
 
             // Save session and user info
@@ -215,7 +221,9 @@ class Auth {
     refreshSession() {
         const session = this.getSession();
         if (session) {
-            session.expiresAt = Date.now() + this.sessionTimeout;
+            // Use extended timeout if rememberMe was set
+            const timeout = session.rememberMe ? this.extendedSessionTimeout : this.sessionTimeout;
+            session.expiresAt = Date.now() + timeout;
             localStorage.setItem(this.sessionKey, JSON.stringify(session));
         }
     }
@@ -261,6 +269,14 @@ class Auth {
     }
 
     /**
+     * Encode society code for URL (simple obfuscation)
+     */
+    encodeSocietyCode(code) {
+        const reversed = code.split('').reverse().join('');
+        return btoa(reversed);
+    }
+
+    /**
      * Require authentication - redirect if not logged in
      */
     requireAuth(requiredRole = null) {
@@ -271,8 +287,18 @@ class Auth {
             if (requiredRole === 'superadmin') {
                 window.location.href = baseUrl + '/superadmin/login.html';
             } else {
-                // Other pages redirect to main login (but need society code)
-                window.location.href = baseUrl + '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+                // Try to get society code from localStorage for redirect
+                const societyCode = localStorage.getItem(CONFIG.STORAGE_KEYS.SOCIETY_ID) ||
+                                    localStorage.getItem('last_society_code');
+                let redirectUrl = baseUrl + '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+
+                // Include society code in redirect URL if available
+                if (societyCode) {
+                    const encoded = this.encodeSocietyCode(societyCode);
+                    redirectUrl += '&s=' + encodeURIComponent(encoded);
+                }
+
+                window.location.href = redirectUrl;
             }
             return false;
         }
