@@ -3,6 +3,7 @@
  */
 
 let flatsData = [];
+let tenantsData = [];
 let masterData = {};
 let filteredFlats = [];
 
@@ -39,8 +40,9 @@ async function loadData() {
     Utils.showLoading('Loading flats...');
 
     try {
-        [flatsData, masterData] = await Promise.all([
+        [flatsData, tenantsData, masterData] = await Promise.all([
             storage.getFlats(),
+            storage.getTenants(),
             storage.getMasterData()
         ]);
 
@@ -139,6 +141,34 @@ function renderFlatsTable() {
         const building = (masterData.buildings || []).find(b => b.id === flat.buildingId);
         const flatType = (masterData.flatTypes || []).find(t => t.id === flat.flatTypeId);
 
+        // Get occupancy type and badge styling
+        const occupancyType = flat.occupancyType || (flat.isOccupied !== false ? 'owner' : 'vacant');
+        let occupancyBadge = '';
+        let occupancyLabel = '';
+
+        if (flat.isActive === false) {
+            occupancyBadge = 'badge-secondary';
+            occupancyLabel = 'Inactive';
+        } else {
+            switch (occupancyType) {
+                case 'owner':
+                    occupancyBadge = 'badge-success';
+                    occupancyLabel = 'Owner';
+                    break;
+                case 'tenant':
+                    occupancyBadge = 'badge-warning';
+                    occupancyLabel = 'Tenant';
+                    break;
+                case 'vacant':
+                    occupancyBadge = 'badge-secondary';
+                    occupancyLabel = 'Vacant';
+                    break;
+            }
+        }
+
+        // Check if flat has tenant history
+        const hasTenantHistory = tenantsData.some(t => t.flatId === flat.id);
+
         return `
             <tr>
                 <td><strong>${Utils.escapeHtml(flat.flatNo)}</strong></td>
@@ -148,13 +178,12 @@ function renderFlatsTable() {
                 <td>${Utils.escapeHtml(flat.ownerName || '-')}</td>
                 <td>${flat.ownerPhone || '-'}</td>
                 <td>
-                    <span class="badge ${flat.isActive !== false ? 'badge-success' : 'badge-secondary'}">
-                        ${flat.isActive !== false ? (flat.isOccupied ? 'Occupied' : 'Vacant') : 'Inactive'}
-                    </span>
+                    <span class="badge ${occupancyBadge}">${occupancyLabel}</span>
                 </td>
                 <td class="action-buttons">
-                    <button class="btn btn-sm btn-outline-primary" onclick="editFlat('${flat.id}')">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteFlat('${flat.id}')">Delete</button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editFlat('${flat.id}')" title="Edit">Edit</button>
+                    ${hasTenantHistory ? `<button class="btn btn-sm btn-outline-secondary" onclick="showTenantHistory('${flat.id}')" title="Tenant History">📋</button>` : ''}
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteFlat('${flat.id}')" title="Delete">Delete</button>
                 </td>
             </tr>
         `;
@@ -175,6 +204,10 @@ function openFlatModal(flat = null) {
     const form = document.getElementById('flat-form');
     form.reset();
 
+    // Reset tenant section
+    const tenantSection = document.getElementById('tenant-section');
+    tenantSection.style.display = 'none';
+
     if (flat) {
         document.getElementById('flat-modal-title').textContent = 'Edit Flat';
         form.id.value = flat.id;
@@ -187,18 +220,51 @@ function openFlatModal(flat = null) {
         form.ownerEmail.value = flat.ownerEmail || '';
         form.twoWheelerCount.value = flat.twoWheelerCount || 0;
         form.fourWheelerCount.value = flat.fourWheelerCount || 0;
-        form.isOccupied.checked = flat.isOccupied !== false;
+
+        // Handle occupancy type (with backward compatibility for isOccupied)
+        const occupancyType = flat.occupancyType || (flat.isOccupied !== false ? 'owner' : 'vacant');
+        form.occupancyType.value = occupancyType;
         form.isActive.checked = flat.isActive !== false;
+
+        // If tenant occupied, load current tenant details
+        if (occupancyType === 'tenant') {
+            tenantSection.style.display = 'block';
+            const currentTenant = tenantsData.find(t => t.flatId === flat.id && t.isActive);
+            if (currentTenant) {
+                form.currentTenantId.value = currentTenant.id;
+                form.tenantName.value = currentTenant.tenantName || '';
+                form.tenantPhone.value = currentTenant.tenantPhone || '';
+                form.tenantEmail.value = currentTenant.tenantEmail || '';
+                form.leaseStartDate.value = currentTenant.leaseStartDate || '';
+                form.monthlyRent.value = currentTenant.monthlyRent || '';
+                form.securityDeposit.value = currentTenant.securityDeposit || '';
+            }
+        }
     } else {
         document.getElementById('flat-modal-title').textContent = 'Add Flat';
         form.id.value = '';
         form.twoWheelerCount.value = 0;
         form.fourWheelerCount.value = 0;
-        form.isOccupied.checked = true;
+        form.occupancyType.value = 'owner';
         form.isActive.checked = true;
+        form.currentTenantId.value = '';
     }
 
     Utils.openModal('flat-modal');
+}
+
+/**
+ * Handle occupancy type change
+ */
+function onOccupancyTypeChange() {
+    const occupancyType = document.querySelector('#flat-form [name="occupancyType"]').value;
+    const tenantSection = document.getElementById('tenant-section');
+
+    if (occupancyType === 'tenant') {
+        tenantSection.style.display = 'block';
+    } else {
+        tenantSection.style.display = 'none';
+    }
 }
 
 function editFlat(id) {
@@ -211,6 +277,7 @@ function editFlat(id) {
 async function saveFlat() {
     const form = document.getElementById('flat-form');
     const id = form.id.value;
+    const occupancyType = form.occupancyType.value;
 
     // Validate
     if (!form.flatNo.value.trim()) {
@@ -234,6 +301,12 @@ async function saveFlat() {
         return;
     }
 
+    // Validate tenant details if tenant occupied
+    if (occupancyType === 'tenant' && !form.tenantName.value.trim()) {
+        Utils.showToast('Please enter tenant name', 'error');
+        return;
+    }
+
     const flat = {
         id: id || Utils.generateId(),
         flatNo: form.flatNo.value.trim(),
@@ -245,7 +318,7 @@ async function saveFlat() {
         ownerEmail: form.ownerEmail.value.trim(),
         twoWheelerCount: parseInt(form.twoWheelerCount.value) || 0,
         fourWheelerCount: parseInt(form.fourWheelerCount.value) || 0,
-        isOccupied: form.isOccupied.checked,
+        occupancyType: occupancyType,
         isActive: form.isActive.checked,
         createdAt: id ? undefined : new Date().toISOString()
     };
@@ -265,6 +338,57 @@ async function saveFlat() {
     Utils.showLoading('Saving...');
 
     try {
+        // Handle tenant data
+        if (occupancyType === 'tenant') {
+            const currentTenantId = form.currentTenantId.value;
+            const existingTenant = currentTenantId ? tenantsData.find(t => t.id === currentTenantId) : null;
+
+            const tenantData = {
+                id: currentTenantId || Utils.generateId(),
+                flatId: flat.id,
+                tenantName: form.tenantName.value.trim(),
+                tenantPhone: form.tenantPhone.value.trim(),
+                tenantEmail: form.tenantEmail.value.trim(),
+                leaseStartDate: form.leaseStartDate.value || new Date().toISOString().split('T')[0],
+                leaseEndDate: '',
+                monthlyRent: parseFloat(form.monthlyRent.value) || 0,
+                securityDeposit: parseFloat(form.securityDeposit.value) || 0,
+                isActive: true,
+                createdAt: existingTenant ? existingTenant.createdAt : new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            if (existingTenant) {
+                // Update existing tenant
+                const tenantIndex = tenantsData.findIndex(t => t.id === currentTenantId);
+                if (tenantIndex !== -1) {
+                    tenantsData[tenantIndex] = tenantData;
+                }
+            } else {
+                // Deactivate any existing active tenant for this flat
+                tenantsData.forEach(t => {
+                    if (t.flatId === flat.id && t.isActive) {
+                        t.isActive = false;
+                        t.leaseEndDate = new Date().toISOString().split('T')[0];
+                        t.updatedAt = new Date().toISOString();
+                    }
+                });
+                // Add new tenant
+                tenantsData.push(tenantData);
+            }
+        } else {
+            // If changing from tenant to owner/vacant, deactivate current tenant
+            const currentActiveTenant = tenantsData.find(t => t.flatId === flat.id && t.isActive);
+            if (currentActiveTenant) {
+                const tenantIndex = tenantsData.findIndex(t => t.id === currentActiveTenant.id);
+                if (tenantIndex !== -1) {
+                    tenantsData[tenantIndex].isActive = false;
+                    tenantsData[tenantIndex].leaseEndDate = new Date().toISOString().split('T')[0];
+                    tenantsData[tenantIndex].updatedAt = new Date().toISOString();
+                }
+            }
+        }
+
         if (id) {
             // Update existing
             const index = flatsData.findIndex(f => f.id === id);
@@ -277,7 +401,12 @@ async function saveFlat() {
             flatsData.push(flat);
         }
 
-        await storage.saveFlats(flatsData);
+        // Save both flats and tenants
+        await Promise.all([
+            storage.saveFlats(flatsData),
+            storage.saveTenants(tenantsData)
+        ]);
+
         filterFlats();
         closeModal('flat-modal');
         Utils.showToast('Flat saved successfully', 'success');
@@ -329,4 +458,63 @@ function toggleSidebar() {
 function handleLogout() {
     auth.logout();
     window.location.href = '../index.html';
+}
+
+/**
+ * Show tenant history for a flat
+ */
+function showTenantHistory(flatId) {
+    const flat = flatsData.find(f => f.id === flatId);
+    if (!flat) return;
+
+    // Get all tenants for this flat
+    const flatTenants = tenantsData
+        .filter(t => t.flatId === flatId)
+        .sort((a, b) => new Date(b.leaseStartDate || 0) - new Date(a.leaseStartDate || 0));
+
+    document.getElementById('tenant-history-title').textContent = `Tenant History - ${flat.flatNo}`;
+
+    if (flatTenants.length === 0) {
+        document.getElementById('tenant-history-content').innerHTML = `
+            <p class="text-center text-muted">No tenant history for this flat.</p>
+        `;
+    } else {
+        document.getElementById('tenant-history-content').innerHTML = `
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Tenant Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Lease Period</th>
+                            <th>Rent</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${flatTenants.map(tenant => `
+                            <tr>
+                                <td><strong>${Utils.escapeHtml(tenant.tenantName || '-')}</strong></td>
+                                <td>${Utils.escapeHtml(tenant.tenantPhone || '-')}</td>
+                                <td>${Utils.escapeHtml(tenant.tenantEmail || '-')}</td>
+                                <td>
+                                    ${tenant.leaseStartDate ? Utils.formatDate(tenant.leaseStartDate) : '-'}
+                                    ${tenant.leaseEndDate ? ` to ${Utils.formatDate(tenant.leaseEndDate)}` : ' - Present'}
+                                </td>
+                                <td>${tenant.monthlyRent ? Utils.formatCurrency(tenant.monthlyRent) : '-'}</td>
+                                <td>
+                                    <span class="badge ${tenant.isActive ? 'badge-success' : 'badge-secondary'}">
+                                        ${tenant.isActive ? 'Current' : 'Past'}
+                                    </span>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    Utils.openModal('tenant-history-modal');
 }

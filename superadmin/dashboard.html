@@ -852,17 +852,54 @@
         </div>
     </div>
 
+    <!-- Reset Data Confirmation Modal -->
+    <div class="modal" id="reset-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Reset Society Data</h3>
+                <button class="modal-close" onclick="closeResetModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to reset all data for society <strong id="reset-society-name"></strong>?</p>
+                <div style="background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+                    <p style="color: var(--danger-400); margin: 0 0 0.5rem 0;"><strong>⚠️ Warning: This action cannot be undone!</strong></p>
+                    <p style="color: var(--slate-400); margin: 0; font-size: 0.9rem;">This will permanently delete:</p>
+                    <ul style="color: var(--slate-400); margin: 0.5rem 0 0 1.5rem; font-size: 0.9rem;">
+                        <li>All flats data</li>
+                        <li>All bills</li>
+                        <li>All payments</li>
+                        <li>All member users (admin will be preserved)</li>
+                        <li>Master data (buildings, flat types, charges)</li>
+                    </ul>
+                </div>
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label class="form-label">Type the society code to confirm:</label>
+                    <input type="text" id="reset-confirm-code" class="form-control" placeholder="Enter society code" style="text-transform: uppercase;">
+                </div>
+                <div id="reset-error" class="alert alert-danger d-none"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeResetModal()">Cancel</button>
+                <button type="button" class="btn btn-danger" id="reset-btn" onclick="confirmReset()">
+                    <span id="reset-btn-text">Reset All Data</span>
+                    <span id="reset-btn-spinner" class="spinner spinner-sm d-none"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div id="toast-container" class="toast-container"></div>
 
-    <script src="../js/config.js"></script>
-    <script src="../js/utils.js"></script>
-    <script src="../js/storage.js"></script>
-    <script src="../js/auth.js"></script>
-    <script src="../js/mobile.js"></script>
+    <script src="../js/config.js?v=4"></script>
+    <script src="../js/utils.js?v=4"></script>
+    <script src="../js/storage.js?v=4"></script>
+    <script src="../js/auth.js?v=4"></script>
+    <script src="../js/mobile.js?v=4"></script>
     <script>
         let societies = [];
         let societyToDelete = null;
+        let societyToReset = null;
 
         // Encode society code for URL (obfuscation)
         function encodeSocietyCode(code) {
@@ -944,6 +981,12 @@
                                 </svg>
                             </button>
                             ${society.isActive ? `
+                            <button class="btn-icon" onclick="resetSociety('${society.id}')" title="Reset All Data" style="color: var(--warning-500);">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                                    <path d="M3 3v5h5"></path>
+                                </svg>
+                            </button>
                             <button class="btn-icon danger" onclick="deleteSociety('${society.id}')" title="Deactivate">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1137,6 +1180,64 @@
             } finally {
                 btn.disabled = false;
                 btnText.textContent = 'Deactivate';
+                btnSpinner.classList.add('d-none');
+            }
+        }
+
+        // Reset Society Data
+        function resetSociety(societyId) {
+            const society = societies.find(s => s.id === societyId);
+            if (!society) return;
+
+            societyToReset = societyId;
+            document.getElementById('reset-society-name').textContent = society.name + ' (' + society.id + ')';
+            document.getElementById('reset-confirm-code').value = '';
+            document.getElementById('reset-error').classList.add('d-none');
+            document.getElementById('reset-modal').classList.add('show');
+        }
+
+        function closeResetModal() {
+            document.getElementById('reset-modal').classList.remove('show');
+            societyToReset = null;
+        }
+
+        async function confirmReset() {
+            if (!societyToReset) return;
+
+            const confirmCode = document.getElementById('reset-confirm-code').value.trim().toUpperCase();
+            const errorDiv = document.getElementById('reset-error');
+            const btn = document.getElementById('reset-btn');
+            const btnText = document.getElementById('reset-btn-text');
+            const btnSpinner = document.getElementById('reset-btn-spinner');
+
+            // Verify confirmation code matches
+            if (confirmCode !== societyToReset) {
+                errorDiv.textContent = 'Society code does not match. Please type "' + societyToReset + '" to confirm.';
+                errorDiv.classList.remove('d-none');
+                return;
+            }
+
+            btn.disabled = true;
+            btnText.textContent = 'Resetting...';
+            btnSpinner.classList.remove('d-none');
+            errorDiv.classList.add('d-none');
+
+            try {
+                const result = await storage.resetSocietyData(societyToReset);
+
+                if (result.success) {
+                    Utils.showToast('Society data reset successfully!', 'success');
+                    closeResetModal();
+                    loadSocieties();
+                } else {
+                    throw new Error(result.error || 'Failed to reset society data');
+                }
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.classList.remove('d-none');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Reset All Data';
                 btnSpinner.classList.add('d-none');
             }
         }

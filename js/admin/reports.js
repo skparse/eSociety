@@ -6,6 +6,7 @@ let billsData = [];
 let paymentsData = [];
 let flatsData = [];
 let masterData = {};
+let settings = {};
 
 document.addEventListener('DOMContentLoaded', async function() {
     // Check authentication
@@ -55,15 +56,22 @@ async function loadData() {
     Utils.showLoading('Loading report data...');
 
     try {
-        [billsData, paymentsData, flatsData, masterData] = await Promise.all([
+        [billsData, paymentsData, flatsData, masterData, settings] = await Promise.all([
             storage.getBills(),
             storage.getPayments(),
             storage.getFlats(),
-            storage.getMasterData()
+            storage.getMasterData(),
+            storage.getSettings()
         ]);
 
         // Populate flat dropdown for ledger
         populateFlatDropdown();
+
+        // Populate building dropdown for fee position report
+        populateBuildingDropdown();
+
+        // Set default date for fee position report
+        document.getElementById('fee-position-date').value = new Date().toISOString().split('T')[0];
 
         // Generate outstanding report
         generateOutstandingReport();
@@ -74,6 +82,13 @@ async function loadData() {
     } finally {
         Utils.hideLoading();
     }
+}
+
+function populateBuildingDropdown() {
+    const select = document.getElementById('fee-position-building');
+    const buildings = (masterData.buildings || []).filter(b => b.isActive !== false);
+    select.innerHTML = '<option value="">All Buildings</option>' +
+        buildings.map(b => `<option value="${b.id}">${Utils.escapeHtml(b.name)}</option>`).join('');
 }
 
 function populateFlatDropdown() {
@@ -434,6 +449,411 @@ function exportLedgerReport() {
 
     Utils.exportToCSV(data, `ledger_${flat.flatNo}.csv`, ['Date', 'Description', 'Debit', 'Credit', 'Balance']);
     Utils.showToast('Report exported successfully', 'success');
+}
+
+// ==================== Fee Position Report (Gulmohar Style) ====================
+
+function generateFeePositionReport() {
+    const asOnDate = document.getElementById('fee-position-date').value;
+    const buildingFilter = document.getElementById('fee-position-building').value;
+    const thead = document.getElementById('fee-position-table-head');
+    const tbody = document.getElementById('fee-position-table-body');
+    const tfoot = document.getElementById('fee-position-table-foot');
+
+    if (!asOnDate) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Select a date to view report</td></tr>';
+        return;
+    }
+
+    // Update report header
+    document.getElementById('fee-position-society-name').textContent = settings.societyName || 'Society Name';
+    document.getElementById('fee-position-society-address').textContent = settings.address || '';
+    document.getElementById('fee-position-as-on-date').textContent = Utils.formatDate(asOnDate, 'long');
+
+    // Get all charge types
+    const chargeTypes = (masterData.chargeTypes || []).filter(c => c.isActive !== false);
+
+    // Build dynamic header with charge type columns
+    let headerHtml = `
+        <tr>
+            <th rowspan="2" style="vertical-align: middle;">SR No</th>
+            <th rowspan="2" style="vertical-align: middle;">Flat No</th>
+            <th rowspan="2" style="vertical-align: middle;">Owner Name</th>
+            ${chargeTypes.map(c => `<th style="font-size: 0.7rem; text-align: center;">${Utils.escapeHtml(c.name)}</th>`).join('')}
+            <th rowspan="2" style="vertical-align: middle;">Total</th>
+            <th rowspan="2" style="vertical-align: middle;">Interest</th>
+            <th rowspan="2" style="vertical-align: middle;">Penalty</th>
+            <th rowspan="2" style="vertical-align: middle;">Previous Balance</th>
+            <th rowspan="2" style="vertical-align: middle;">Balance</th>
+        </tr>
+    `;
+    thead.innerHTML = headerHtml;
+
+    // Filter flats by building
+    let filteredFlats = flatsData.filter(f => f.isActive !== false);
+    if (buildingFilter) {
+        filteredFlats = filteredFlats.filter(f => f.buildingId === buildingFilter);
+    }
+
+    // Group flats by building
+    const buildings = (masterData.buildings || []).filter(b => b.isActive !== false);
+    const flatsByBuilding = {};
+
+    filteredFlats.forEach(flat => {
+        const buildingId = flat.buildingId || 'unassigned';
+        if (!flatsByBuilding[buildingId]) {
+            flatsByBuilding[buildingId] = [];
+        }
+        flatsByBuilding[buildingId].push(flat);
+    });
+
+    // Sort flats within each building
+    Object.keys(flatsByBuilding).forEach(buildingId => {
+        flatsByBuilding[buildingId].sort((a, b) => {
+            // Extract numeric part for proper sorting
+            const numA = parseInt(a.flatNo.replace(/\D/g, '')) || 0;
+            const numB = parseInt(b.flatNo.replace(/\D/g, '')) || 0;
+            return numA - numB;
+        });
+    });
+
+    // Calculate fee position for each flat
+    const asOnDateObj = new Date(asOnDate);
+    asOnDateObj.setHours(23, 59, 59, 999);
+
+    let tableHtml = '';
+    let srNo = 0;
+    const columnTotals = {
+        charges: new Array(chargeTypes.length).fill(0),
+        total: 0,
+        interest: 0,
+        penalty: 0,
+        previousBalance: 0,
+        balance: 0
+    };
+
+    // Process each building
+    const buildingIds = buildingFilter ? [buildingFilter] : Object.keys(flatsByBuilding);
+
+    buildingIds.forEach(buildingId => {
+        const flats = flatsByBuilding[buildingId] || [];
+        if (flats.length === 0) return;
+
+        const building = buildings.find(b => b.id === buildingId);
+        const buildingName = building ? building.name : 'Unassigned';
+
+        // Building header row
+        const totalCols = chargeTypes.length + 8; // SR, Flat, Owner, charges..., Total, Interest, Penalty, Prev, Balance
+        tableHtml += `
+            <tr style="background: #e2e8f0; font-weight: bold;">
+                <td colspan="${totalCols}">${Utils.escapeHtml(buildingName)}</td>
+            </tr>
+        `;
+
+        let buildingTotals = {
+            charges: new Array(chargeTypes.length).fill(0),
+            total: 0,
+            interest: 0,
+            penalty: 0,
+            previousBalance: 0,
+            balance: 0
+        };
+
+        flats.forEach(flat => {
+            srNo++;
+
+            // Get bills for this flat up to the as-on date
+            const flatBills = billsData.filter(b =>
+                b.flatId === flat.id &&
+                new Date(b.generatedAt) <= asOnDateObj
+            );
+
+            // Get payments for this flat up to the as-on date
+            const flatPayments = paymentsData.filter(p =>
+                p.flatId === flat.id &&
+                new Date(p.paymentDate) <= asOnDateObj
+            );
+
+            // Calculate charge-wise totals from line items
+            const chargeAmounts = new Array(chargeTypes.length).fill(0);
+            let totalCharges = 0;
+            let interest = 0;
+            let penalty = 0;
+
+            flatBills.forEach(bill => {
+                (bill.lineItems || []).forEach(item => {
+                    const chargeIndex = chargeTypes.findIndex(c => c.id === item.chargeTypeId);
+                    if (chargeIndex !== -1) {
+                        chargeAmounts[chargeIndex] += item.amount;
+                    }
+                    totalCharges += item.amount;
+                });
+
+                // Add interest and penalty if present
+                interest += bill.interest || 0;
+                penalty += bill.penalty || 0;
+            });
+
+            // Calculate totals
+            const totalBilled = flatBills.reduce((sum, b) => sum + (b.grandTotal || 0), 0);
+            const totalPaid = flatPayments.reduce((sum, p) => sum + p.amount, 0);
+
+            // Previous balance is from older bills
+            const previousBalance = flatBills
+                .filter(b => b.previousDue && b.previousDue > 0)
+                .reduce((sum, b) => sum + b.previousDue, 0);
+
+            const balance = totalBilled - totalPaid;
+
+            // Update building totals
+            chargeAmounts.forEach((amt, i) => {
+                buildingTotals.charges[i] += amt;
+                columnTotals.charges[i] += amt;
+            });
+            buildingTotals.total += totalCharges;
+            buildingTotals.interest += interest;
+            buildingTotals.penalty += penalty;
+            buildingTotals.previousBalance += previousBalance;
+            buildingTotals.balance += balance;
+
+            columnTotals.total += totalCharges;
+            columnTotals.interest += interest;
+            columnTotals.penalty += penalty;
+            columnTotals.previousBalance += previousBalance;
+            columnTotals.balance += balance;
+
+            // Build row
+            tableHtml += `
+                <tr>
+                    <td>${srNo}</td>
+                    <td><strong>${Utils.escapeHtml(flat.flatNo)}</strong></td>
+                    <td>${Utils.escapeHtml(flat.ownerName || '-')}</td>
+                    ${chargeAmounts.map(amt => `<td class="amount text-right">${amt > 0 ? Utils.formatNumber(amt) : ''}</td>`).join('')}
+                    <td class="amount text-right">${Utils.formatNumber(totalCharges)}</td>
+                    <td class="amount text-right">${interest > 0 ? Utils.formatNumber(interest) : ''}</td>
+                    <td class="amount text-right">${penalty > 0 ? Utils.formatNumber(penalty) : ''}</td>
+                    <td class="amount text-right">${previousBalance > 0 ? Utils.formatNumber(previousBalance) : ''}</td>
+                    <td class="amount text-right ${balance > 0 ? 'text-danger' : 'text-success'}"><strong>${Utils.formatNumber(balance)}</strong></td>
+                </tr>
+            `;
+        });
+
+        // Building subtotal row
+        tableHtml += `
+            <tr style="background: #f1f5f9; font-weight: bold;">
+                <td colspan="3" class="text-right">${Utils.escapeHtml(buildingName)} Total:</td>
+                ${buildingTotals.charges.map(amt => `<td class="amount text-right">${Utils.formatNumber(amt)}</td>`).join('')}
+                <td class="amount text-right">${Utils.formatNumber(buildingTotals.total)}</td>
+                <td class="amount text-right">${Utils.formatNumber(buildingTotals.interest)}</td>
+                <td class="amount text-right">${Utils.formatNumber(buildingTotals.penalty)}</td>
+                <td class="amount text-right">${Utils.formatNumber(buildingTotals.previousBalance)}</td>
+                <td class="amount text-right">${Utils.formatNumber(buildingTotals.balance)}</td>
+            </tr>
+        `;
+    });
+
+    tbody.innerHTML = tableHtml || '<tr><td colspan="8" class="text-center text-muted">No data available</td></tr>';
+
+    // Grand total footer
+    tfoot.innerHTML = `
+        <tr style="background: #1e40af; color: white; font-weight: bold;">
+            <td colspan="3" class="text-right">Grand Total:</td>
+            ${columnTotals.charges.map(amt => `<td class="amount text-right">${Utils.formatNumber(amt)}</td>`).join('')}
+            <td class="amount text-right">${Utils.formatNumber(columnTotals.total)}</td>
+            <td class="amount text-right">${Utils.formatNumber(columnTotals.interest)}</td>
+            <td class="amount text-right">${Utils.formatNumber(columnTotals.penalty)}</td>
+            <td class="amount text-right">${Utils.formatNumber(columnTotals.previousBalance)}</td>
+            <td class="amount text-right">${Utils.formatNumber(columnTotals.balance)}</td>
+        </tr>
+    `;
+}
+
+function exportFeePositionReport() {
+    const asOnDate = document.getElementById('fee-position-date').value;
+    const buildingFilter = document.getElementById('fee-position-building').value;
+
+    if (!asOnDate) {
+        Utils.showToast('Please select a date', 'warning');
+        return;
+    }
+
+    const chargeTypes = (masterData.chargeTypes || []).filter(c => c.isActive !== false);
+    const asOnDateObj = new Date(asOnDate);
+    asOnDateObj.setHours(23, 59, 59, 999);
+
+    // Filter and process flats
+    let filteredFlats = flatsData.filter(f => f.isActive !== false);
+    if (buildingFilter) {
+        filteredFlats = filteredFlats.filter(f => f.buildingId === buildingFilter);
+    }
+
+    const buildings = (masterData.buildings || []).filter(b => b.isActive !== false);
+
+    const data = filteredFlats.map(flat => {
+        const building = buildings.find(b => b.id === flat.buildingId);
+
+        const flatBills = billsData.filter(b =>
+            b.flatId === flat.id &&
+            new Date(b.generatedAt) <= asOnDateObj
+        );
+
+        const flatPayments = paymentsData.filter(p =>
+            p.flatId === flat.id &&
+            new Date(p.paymentDate) <= asOnDateObj
+        );
+
+        const chargeAmounts = {};
+        let totalCharges = 0;
+        let interest = 0;
+        let penalty = 0;
+
+        chargeTypes.forEach(c => {
+            chargeAmounts[c.name] = 0;
+        });
+
+        flatBills.forEach(bill => {
+            (bill.lineItems || []).forEach(item => {
+                const chargeType = chargeTypes.find(c => c.id === item.chargeTypeId);
+                if (chargeType) {
+                    chargeAmounts[chargeType.name] += item.amount;
+                }
+                totalCharges += item.amount;
+            });
+            interest += bill.interest || 0;
+            penalty += bill.penalty || 0;
+        });
+
+        const totalBilled = flatBills.reduce((sum, b) => sum + (b.grandTotal || 0), 0);
+        const totalPaid = flatPayments.reduce((sum, p) => sum + p.amount, 0);
+        const previousBalance = flatBills.filter(b => b.previousDue > 0).reduce((sum, b) => sum + b.previousDue, 0);
+        const balance = totalBilled - totalPaid;
+
+        return {
+            'Building': building ? building.name : '',
+            'Flat No': flat.flatNo,
+            'Owner Name': flat.ownerName || '',
+            ...chargeAmounts,
+            'Total': totalCharges,
+            'Interest': interest,
+            'Penalty': penalty,
+            'Previous Balance': previousBalance,
+            'Balance': balance
+        };
+    });
+
+    const headers = ['Building', 'Flat No', 'Owner Name', ...chargeTypes.map(c => c.name), 'Total', 'Interest', 'Penalty', 'Previous Balance', 'Balance'];
+    Utils.exportToCSV(data, `fee_position_report_${asOnDate}.csv`, headers);
+    Utils.showToast('Report exported successfully', 'success');
+}
+
+function printFeePositionReport() {
+    const container = document.getElementById('fee-position-report-container');
+    if (!container) return;
+
+    // Show print header
+    document.getElementById('fee-position-header').style.display = 'block';
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Fee Position Report</title>
+            <style>
+                @page {
+                    size: A4 landscape;
+                    margin: 5mm;
+                }
+                * {
+                    box-sizing: border-box;
+                    margin: 0;
+                    padding: 0;
+                }
+                body {
+                    font-family: Arial, sans-serif;
+                    font-size: 7pt;
+                    padding: 2mm;
+                }
+                #fee-position-header {
+                    text-align: center;
+                    margin-bottom: 3mm;
+                    padding-bottom: 2mm;
+                    border-bottom: 0.5pt solid #000;
+                }
+                #fee-position-header h2 {
+                    font-size: 11pt;
+                    margin: 0 0 1mm 0;
+                }
+                #fee-position-header p {
+                    font-size: 8pt;
+                    margin: 0.5mm 0;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 5.5pt;
+                    table-layout: fixed;
+                }
+                th, td {
+                    border: 0.3pt solid #444;
+                    padding: 0.5mm 1mm;
+                    text-align: center;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    vertical-align: middle;
+                }
+                th {
+                    background: #d8d8d8 !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                    font-weight: bold;
+                    font-size: 5pt;
+                }
+                /* First 3 columns - Flat info */
+                td:nth-child(1), td:nth-child(2), td:nth-child(3),
+                th:nth-child(1), th:nth-child(2), th:nth-child(3) {
+                    text-align: left;
+                }
+                .amount, .text-right {
+                    text-align: right !important;
+                    font-family: 'Courier New', monospace;
+                    font-size: 5.5pt;
+                }
+                .text-danger { color: #b00; }
+                .text-success { color: #060; }
+                tfoot tr {
+                    background: #c0c0c0 !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                tfoot td {
+                    font-weight: bold;
+                    font-size: 5.5pt;
+                }
+                /* Make Sr column narrow */
+                th:first-child, td:first-child {
+                    width: 15px;
+                }
+            </style>
+        </head>
+        <body>
+            ${container.innerHTML}
+            <script>
+                window.onload = function() {
+                    setTimeout(function() {
+                        window.print();
+                        window.close();
+                    }, 100);
+                };
+            </script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+
+    // Hide print header again
+    document.getElementById('fee-position-header').style.display = 'none';
 }
 
 function toggleSidebar() {

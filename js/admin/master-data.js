@@ -31,6 +31,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Setup tab navigation
     setupTabs();
 
+    // Show Demo Data tab only for DEMO society
+    const demoTab = document.getElementById('demo-data-tab');
+    if (demoTab && getCurrentSocietyId() === 'DEMO') {
+        demoTab.style.display = '';
+    }
+
     // Load data
     await loadMasterData();
 
@@ -90,6 +96,24 @@ function populateSettingsForm() {
     form.billingDay.value = settings.billingDay || 1;
     form.dueDays.value = settings.dueDays || 15;
     form.lateFeePercent.value = settings.lateFeePercent || 2;
+
+    // NOC / Tenant settings
+    form.nocEnabled.checked = settings.nocEnabled || false;
+    form.nocAmount.value = settings.nocAmount || 0;
+    form.nocAmount.disabled = !settings.nocEnabled;
+    form.tenantParkingMultiplier.value = settings.tenantParkingMultiplier || 1;
+}
+
+/**
+ * Toggle NOC amount input based on checkbox
+ */
+function toggleNocAmount() {
+    const nocEnabled = document.getElementById('noc-enabled').checked;
+    const nocAmount = document.getElementById('noc-amount');
+    nocAmount.disabled = !nocEnabled;
+    if (!nocEnabled) {
+        nocAmount.value = 0;
+    }
 }
 
 async function saveSettings(e) {
@@ -105,7 +129,11 @@ async function saveSettings(e) {
         email: form.email.value.trim(),
         billingDay: parseInt(form.billingDay.value) || 1,
         dueDays: parseInt(form.dueDays.value) || 15,
-        lateFeePercent: parseFloat(form.lateFeePercent.value) || 0
+        lateFeePercent: parseFloat(form.lateFeePercent.value) || 0,
+        // NOC / Tenant settings
+        nocEnabled: form.nocEnabled.checked,
+        nocAmount: parseFloat(form.nocAmount.value) || 0,
+        tenantParkingMultiplier: parseFloat(form.tenantParkingMultiplier.value) || 1
     };
 
     Utils.showLoading('Saving settings...');

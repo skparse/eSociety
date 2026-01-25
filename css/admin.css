@@ -653,3 +653,166 @@
     font-size: 0.75rem;
     color: var(--gray-500);
 }
+
+/* Fee Position Report Styles */
+#fee-position-table {
+    font-size: 0.8125rem;
+}
+
+#fee-position-table th {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.4rem;
+    white-space: nowrap;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    text-align: center;
+}
+
+#fee-position-table td {
+    padding: 0.4rem;
+    border: 1px solid var(--gray-200);
+    font-size: 0.75rem;
+}
+
+#fee-position-table .amount {
+    font-family: var(--font-mono);
+    white-space: nowrap;
+}
+
+#fee-position-table tbody tr:hover {
+    background: var(--gray-50);
+}
+
+#fee-position-header {
+    display: none;
+}
+
+/* Gulmohar Bill Styles */
+.gulmohar-bill {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+}
+
+.gulmohar-bill .table {
+    margin-bottom: 0;
+}
+
+.gulmohar-bill .table th,
+.gulmohar-bill .table td {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e2e8f0;
+}
+
+.gulmohar-bill .text-right {
+    text-align: right;
+}
+
+.gulmohar-bill .text-center {
+    text-align: center;
+}
+
+.gulmohar-bill .amount {
+    font-family: var(--font-mono);
+}
+
+@media print {
+    #fee-position-header {
+        display: block !important;
+    }
+
+    #fee-position-table {
+        font-size: 8pt !important;
+    }
+
+    #fee-position-table th,
+    #fee-position-table td {
+        padding: 3px 4px !important;
+        font-size: 8pt !important;
+    }
+
+    .gulmohar-bill {
+        max-width: 100%;
+    }
+}
+
+/* Fee Position Report Print - Landscape A4 */
+@media print {
+    .fee-position-print {
+        /* Force landscape */
+        size: A4 landscape;
+    }
+
+    .fee-position-print body,
+    .fee-position-print .report-content {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 5mm !important;
+    }
+
+    .fee-position-print #fee-position-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 10px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #000;
+    }
+
+    .fee-position-print #fee-position-header h2 {
+        font-size: 14pt !important;
+        margin: 0 0 3px 0;
+    }
+
+    .fee-position-print #fee-position-header p {
+        font-size: 9pt !important;
+        margin: 2px 0;
+    }
+
+    .fee-position-print #fee-position-table {
+        width: 100% !important;
+        font-size: 6pt !important;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    .fee-position-print #fee-position-table th {
+        font-size: 6pt !important;
+        padding: 2px 1px !important;
+        white-space: nowrap;
+        background: #f0f0f0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        border: 0.5px solid #333 !important;
+        font-weight: bold;
+    }
+
+    .fee-position-print #fee-position-table td {
+        font-size: 6pt !important;
+        padding: 1px 2px !important;
+        border: 0.5px solid #666 !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .fee-position-print #fee-position-table .amount {
+        font-family: 'Courier New', monospace !important;
+        text-align: right;
+    }
+
+    .fee-position-print #fee-position-table tfoot tr {
+        background: #e0e0e0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        font-weight: bold;
+    }
+
+    /* Hide non-essential elements */
+    .fee-position-print .sidebar,
+    .fee-position-print .bottom-nav,
+    .fee-position-print .header,
+    .fee-position-print .btn,
+    .fee-position-print .no-print {
+        display: none !important;
+    }
+}

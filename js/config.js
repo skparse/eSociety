@@ -10,11 +10,14 @@
  */
 
 const CONFIG = {
+    // Storage Mode: 'api' for Google Apps Script, 'local' for localStorage (demo mode)
+    STORAGE_MODE: 'api', // Use 'api' for production, 'local' for demo mode (see demo.html)
+
     // Google Apps Script Configuration
     GOOGLE_SCRIPT: {
         // IMPORTANT: Paste your deployed Google Apps Script Web App URL here
         // Example: 'https://script.google.com/macros/s/AKfycbx.../exec'
-        WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbysAzQEfpPtdh-gtkSfWvbR7m2NmL2ji54yYC0YCrXXM3Qtiwx0PZumNZ8doSj6AiSh/exec'
+        WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbzKqWUqoiD575PDRm0m3AesJFTel7G9EZIjezX8LsATqFgMhQrlkvYjqHDmeFBuqmJ6/exec'
     },
 
     // Application Settings
@@ -58,12 +61,18 @@ const CONFIG = {
     },
 
     // Sheet Names (must match Apps Script)
+    // Note: MasterData is kept for backward compatibility - it maps to Buildings, FlatTypes, ChargeTypes
     SHEETS: {
         SETTINGS: 'Settings',
-        MASTER_DATA: 'MasterData',
+        BUILDINGS: 'Buildings',
+        FLAT_TYPES: 'FlatTypes',
+        CHARGE_TYPES: 'ChargeTypes',
+        MASTER_DATA: 'MasterData',  // Legacy name - backend splits to 3 sheets
         USERS: 'Users',
         FLATS: 'Flats',
+        TENANTS: 'Tenants',
         BILLS: 'Bills',
+        BILL_LINE_ITEMS: 'BillLineItems',
         PAYMENTS: 'Payments'
     }
 };
@@ -79,7 +88,12 @@ const INITIAL_DATA = {
         billingDay: 1,
         dueDays: 15,
         lateFeePercent: 2,
-        logo: ''
+        logo: '',
+        // Non-Occupancy Charges (for tenant-occupied flats)
+        nocEnabled: false,
+        nocAmount: 0,
+        // Tenant parking multiplier (1 = same as owner, 2 = double)
+        tenantParkingMultiplier: 1
     },
 
     masterData: {
@@ -147,6 +161,22 @@ function isSuperadminSession() {
     }
 }
 
+// Check if running in demo mode
+function isDemoMode() {
+    return localStorage.getItem('esociety_demo_mode') === 'true';
+}
+
+// Enable demo mode (used by demo.html)
+function enableDemoMode() {
+    localStorage.setItem('esociety_demo_mode', 'true');
+    localStorage.setItem(CONFIG.STORAGE_KEYS.SOCIETY_ID, 'DEMO');
+}
+
+// Disable demo mode
+function disableDemoMode() {
+    localStorage.removeItem('esociety_demo_mode');
+}
+
 // Export for module usage
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
@@ -157,6 +187,9 @@ if (typeof module !== 'undefined' && module.exports) {
         getCurrentSocietyName,
         setCurrentSociety,
         clearCurrentSociety,
-        isSuperadminSession
+        isSuperadminSession,
+        isDemoMode,
+        enableDemoMode,
+        disableDemoMode
     };
 }

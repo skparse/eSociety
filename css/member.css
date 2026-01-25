@@ -721,3 +721,40 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Gulmohar Bill Styles */
+.gulmohar-bill {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+}
+
+.gulmohar-bill .table {
+    margin-bottom: 0;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.gulmohar-bill .table th,
+.gulmohar-bill .table td {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e2e8f0;
+}
+
+.gulmohar-bill .text-right {
+    text-align: right;
+}
+
+.gulmohar-bill .text-center {
+    text-align: center;
+}
+
+.gulmohar-bill .amount {
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+@media print {
+    .gulmohar-bill {
+        max-width: 100%;
+    }
+}

@@ -1,11 +1,39 @@
 /**
  * Society Maintenance Billing System
  * Storage Module - Google Apps Script Integration (Multi-Tenant)
+ * Supports both API mode (Google Apps Script) and Local mode (localStorage)
  */
 
 class Storage {
     constructor() {
         this.sheets = CONFIG.SHEETS;
+        this.LOCAL_STORAGE_PREFIX = 'esociety_data_';
+    }
+
+    /**
+     * Check if using local storage mode
+     * Returns true if:
+     * - CONFIG.STORAGE_MODE is 'local', OR
+     * - Society ID is 'DEMO' (demo mode only applies to DEMO society)
+     */
+    get isLocalMode() {
+        // Config explicitly set to local mode
+        if (CONFIG.STORAGE_MODE === 'local') {
+            return true;
+        }
+
+        // Check if this is the DEMO society
+        const currentSociety = this.societyId || localStorage.getItem('society_id');
+        const isDemoSociety = currentSociety === 'DEMO';
+
+        // Only use local mode for DEMO society when demo flag is set
+        if (isDemoSociety) {
+            const demoModeFlag = localStorage.getItem('esociety_demo_mode') === 'true';
+            return demoModeFlag;
+        }
+
+        // For all other societies, use API mode
+        return false;
     }
 
     /**
@@ -19,7 +47,45 @@ class Storage {
      * Get current society ID
      */
     get societyId() {
-        return getCurrentSocietyId();
+        return getCurrentSocietyId() || 'demo';
+    }
+
+    /**
+     * Get localStorage key for a sheet
+     */
+    getLocalKey(sheetName) {
+        return this.LOCAL_STORAGE_PREFIX + (this.societyId || 'demo') + '_' + sheetName;
+    }
+
+    /**
+     * Read from localStorage
+     */
+    readLocal(sheetName) {
+        const key = this.getLocalKey(sheetName);
+        const data = localStorage.getItem(key);
+        if (data) {
+            try {
+                return JSON.parse(data);
+            } catch (e) {
+                console.error('Error parsing local data:', e);
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Write to localStorage
+     */
+    writeLocal(sheetName, data) {
+        const key = this.getLocalKey(sheetName);
+        try {
+            localStorage.setItem(key, JSON.stringify(data));
+            return { success: true };
+        } catch (e) {
+            console.error('Error writing local data:', e);
+            throw new Error('Failed to save data: ' + e.message);
+        }
     }
 
     /**
@@ -120,6 +186,17 @@ class Storage {
     }
 
     /**
+     * Reset all data for a society (superadmin only)
+     * Clears all sheets: flats, bills, payments, users (except admin), master data (except defaults)
+     */
+    async resetSocietyData(societyId) {
+        const url = `${this.webAppUrl}?action=resetSocietyData&societyId=${encodeURIComponent(societyId)}`;
+        const response = await fetch(url, { method: 'GET', redirect: 'follow' });
+        const text = await response.text();
+        return JSON.parse(text);
+    }
+
+    /**
      * Validate if a society exists
      */
     async validateSociety(societyId) {
@@ -145,6 +222,11 @@ class Storage {
      * Read data from a sheet
      */
     async readSheet(sheetName) {
+        // Use localStorage in local mode
+        if (this.isLocalMode) {
+            return this.readLocal(sheetName);
+        }
+
         if (!this.societyId) {
             throw new Error('No society selected');
         }
@@ -172,6 +254,11 @@ class Storage {
      * Write data to a sheet
      */
     async writeSheet(sheetName, data) {
+        // Use localStorage in local mode
+        if (this.isLocalMode) {
+            return this.writeLocal(sheetName, data);
+        }
+
         if (!this.societyId) {
             throw new Error('No society selected');
         }
@@ -188,6 +275,15 @@ class Storage {
      * Get system status for current society
      */
     async getStatus() {
+        if (this.isLocalMode) {
+            const settings = this.readLocal(this.sheets.SETTINGS);
+            return {
+                success: true,
+                initialized: !!settings,
+                mode: 'local'
+            };
+        }
+
         if (!this.societyId) {
             throw new Error('No society selected');
         }
@@ -198,6 +294,29 @@ class Storage {
      * Initialize society data
      */
     async initializeSystem(adminPassword) {
+        if (this.isLocalMode) {
+            // Initialize with default data in local mode
+            await this.saveSettings(INITIAL_DATA.settings);
+            await this.saveMasterData(INITIAL_DATA.masterData);
+            await this.saveUsers([{
+                id: 'user-admin',
+                username: 'admin',
+                password: await Utils.hashPassword(adminPassword),
+                role: 'admin',
+                flatId: null,
+                name: 'Administrator',
+                email: 'admin@society.com',
+                phone: '',
+                isActive: true,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            }]);
+            await this.saveFlats([]);
+            await this.saveBills([]);
+            await this.savePayments([]);
+            return { success: true, message: 'System initialized in local mode' };
+        }
+
         if (!this.societyId) {
             throw new Error('No society selected');
         }
@@ -274,10 +393,13 @@ class Storage {
     async getSettings() {
         try {
             const data = await this.readSheet(this.sheets.SETTINGS);
-            return data || INITIAL_DATA.settings;
+            if (!data || Object.keys(data).length === 0) {
+                return { ...INITIAL_DATA.settings };
+            }
+            return data;
         } catch (error) {
             console.error('Error getting settings:', error);
-            return INITIAL_DATA.settings;
+            return { ...INITIAL_DATA.settings };
         }
     }
 
@@ -294,10 +416,13 @@ class Storage {
     async getMasterData() {
         try {
             const data = await this.readSheet(this.sheets.MASTER_DATA);
-            return data || INITIAL_DATA.masterData;
+            if (!data || Object.keys(data).length === 0) {
+                return { ...INITIAL_DATA.masterData };
+            }
+            return data;
         } catch (error) {
             console.error('Error getting master data:', error);
-            return INITIAL_DATA.masterData;
+            return { ...INITIAL_DATA.masterData };
         }
     }
 
@@ -314,6 +439,7 @@ class Storage {
     async getUsers() {
         try {
             const data = await this.readSheet(this.sheets.USERS);
+            if (!data) return [];
             return Array.isArray(data) ? data : [];
         } catch (error) {
             console.error('Error getting users:', error);
@@ -346,6 +472,26 @@ class Storage {
      */
     async saveFlats(flats) {
         return await this.writeSheet(this.sheets.FLATS, flats);
+    }
+
+    /**
+     * Get all tenants
+     */
+    async getTenants() {
+        try {
+            const data = await this.readSheet(this.sheets.TENANTS);
+            return Array.isArray(data) ? data : [];
+        } catch (error) {
+            console.error('Error getting tenants:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Save tenants
+     */
+    async saveTenants(tenants) {
+        return await this.writeSheet(this.sheets.TENANTS, tenants);
     }
 
     /**
@@ -392,7 +538,21 @@ class Storage {
      * Check if system is configured
      */
     isConfigured() {
+        // Always configured in local mode
+        if (this.isLocalMode) {
+            return true;
+        }
         return isGoogleScriptConfigured();
+    }
+
+    /**
+     * Validate society (for local mode, always valid)
+     */
+    async validateSocietyLocal(societyId) {
+        if (this.isLocalMode) {
+            return { success: true, valid: true, societyName: 'Demo Society' };
+        }
+        return await this.validateSociety(societyId);
     }
 }
 

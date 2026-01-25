@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Login - eSociety</title>
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/design-system.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <script src="js/theme.js"></script>
+    <style>
+        .demo-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem;
+        }
+        .demo-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 420px;
+        }
+        .demo-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .demo-logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        .demo-logo svg {
+            width: 32px;
+            height: 32px;
+            color: white;
+        }
+        .demo-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 0.5rem;
+        }
+        .demo-subtitle {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+        .demo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #dcfce7;
+            color: #166534;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            box-sizing: border-box;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .form-input:read-only {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 0.875rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px -10px rgba(102, 126, 234, 0.5);
+        }
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .credentials-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .credentials-box h4 {
+            margin: 0 0 0.5rem;
+            font-size: 0.875rem;
+            color: #166534;
+        }
+        .credentials-box code {
+            display: block;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8125rem;
+            color: #1e293b;
+        }
+        .demo-features {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        .demo-features h4 {
+            font-size: 0.875rem;
+            color: #374151;
+            margin: 0 0 0.75rem;
+        }
+        .demo-features ul {
+            margin: 0;
+            padding: 0 0 0 1.25rem;
+            font-size: 0.8125rem;
+            color: #6b7280;
+        }
+        .demo-features li {
+            margin-bottom: 0.25rem;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-page">
+        <div class="demo-card">
+            <div class="demo-header">
+                <div class="demo-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </div>
+                <h1 class="demo-title">eSociety Demo</h1>
+                <p class="demo-subtitle">Try all features with sample data</p>
+            </div>
+
+            <div class="demo-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Local Demo Mode - No Server Required
+            </div>
+
+            <div class="credentials-box">
+                <h4>Demo Credentials</h4>
+                <code>
+                    <strong>Admin:</strong> admin / admin123<br>
+                    <strong>Members:</strong> a101, a202, b101 / admin123
+                </code>
+            </div>
+
+            <div class="error-message" id="error-message"></div>
+
+            <form id="demo-login-form">
+                <div class="form-group">
+                    <label class="form-label">Society Code</label>
+                    <input type="text" class="form-input" value="DEMO" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="username" value="admin" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="password" value="admin123" autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-primary" id="login-btn">
+                    <span class="spinner" id="spinner"></span>
+                    <span id="btn-text">Login to Demo</span>
+                </button>
+            </form>
+
+            <div class="demo-features">
+                <h4>Demo includes:</h4>
+                <ul>
+                    <li>26 sample flats across 4 buildings</li>
+                    <li>6 months of billing history</li>
+                    <li>12 charge types (Gulmohar format)</li>
+                    <li>Various payment scenarios</li>
+                </ul>
+            </div>
+
+            <a href="index.html" class="back-link">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        // Set demo mode flag BEFORE any other scripts load
+        // This flag persists across all pages and enables localStorage mode
+        localStorage.setItem('esociety_demo_mode', 'true');
+        localStorage.setItem('society_id', 'DEMO');
+    </script>
+    <script src="js/config.js?v=2"></script>
+    <script src="js/utils.js?v=2"></script>
+    <script src="js/storage.js?v=3"></script>
+    <script src="js/auth.js?v=2"></script>
+    <script src="js/demo-data.js?v=2"></script>
+    <script>
+        // Initialize demo on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Demo page loaded');
+
+            // Check if already logged in
+            if (auth.isLoggedIn()) {
+                redirectToDashboard();
+                return;
+            }
+
+            // Initialize default admin if needed
+            await initializeDemoAdmin();
+
+            // Focus username
+            document.getElementById('username').select();
+        });
+
+        async function initializeDemoAdmin() {
+            try {
+                const users = await storage.getUsers();
+                console.log('Existing users:', users ? users.length : 0);
+
+                if (!users || users.length === 0) {
+                    console.log('Creating default admin user...');
+
+                    const hashedPassword = await Utils.hashPassword('admin123');
+
+                    const defaultAdmin = {
+                        id: 'user-admin',
+                        username: 'admin',
+                        password: hashedPassword,
+                        role: 'admin',
+                        flatId: null,
+                        name: 'Administrator',
+                        email: 'admin@demo.local',
+                        phone: '',
+                        isActive: true,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+
+                    await storage.saveUsers([defaultAdmin]);
+                    await storage.saveSettings({
+                        societyName: 'Demo Society',
+                        address: 'Demo Mode - Local Storage',
+                        registrationNo: 'DEMO-001',
+                        phone: '',
+                        email: '',
+                        billingDay: 1,
+                        dueDays: 15,
+                        lateFeePercent: 2,
+                        logo: ''
+                    });
+
+                    console.log('Default admin created: admin / admin123');
+                }
+            } catch (error) {
+                console.error('Error initializing demo:', error);
+            }
+        }
+
+        // Handle login form
+        document.getElementById('demo-login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            const loginBtn = document.getElementById('login-btn');
+            const spinner = document.getElementById('spinner');
+            const btnText = document.getElementById('btn-text');
+
+            // Clear error
+            errorDiv.style.display = 'none';
+
+            // Show loading
+            loginBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            btnText.textContent = 'Logging in...';
+
+            try {
+                const result = await auth.login('DEMO', username, password, 'Demo Society', false);
+
+                if (result.success) {
+                    btnText.textContent = 'Success! Redirecting...';
+                    setTimeout(redirectToDashboard, 500);
+                } else {
+                    errorDiv.textContent = result.message || 'Invalid username or password';
+                    errorDiv.style.display = 'block';
+                    resetButton();
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.textContent = 'An error occurred. Please try again.';
+                errorDiv.style.display = 'block';
+                resetButton();
+            }
+        });
+
+        function resetButton() {
+            const loginBtn = document.getElementById('login-btn');
+            const spinner = document.getElementById('spinner');
+            const btnText = document.getElementById('btn-text');
+            loginBtn.disabled = false;
+            spinner.style.display = 'none';
+            btnText.textContent = 'Login to Demo';
+        }
+
+        function redirectToDashboard() {
+            if (auth.isAdmin()) {
+                window.location.href = 'admin/dashboard.html';
+            } else {
+                window.location.href = 'member/dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>

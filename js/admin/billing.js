@@ -241,6 +241,10 @@ async function generateBills() {
             const lineItems = [];
             let totalAmount = 0;
 
+            // Check if flat is tenant-occupied
+            const isTenantOccupied = flat.occupancyType === 'tenant';
+            const parkingMultiplier = isTenantOccupied ? (settings.tenantParkingMultiplier || 1) : 1;
+
             // Calculate charges
             for (const chargeType of chargeTypes) {
                 let amount = 0;
@@ -263,7 +267,13 @@ async function generateBills() {
                             description = `${chargeType.name} (${vehicleCount} vehicle${vehicleCount > 1 ? 's' : ''})`;
                         }
                     }
-                    amount = vehicleCount * chargeType.defaultAmount;
+                    // Apply tenant parking multiplier
+                    amount = vehicleCount * chargeType.defaultAmount * parkingMultiplier;
+
+                    // Update description if multiplier applied
+                    if (parkingMultiplier > 1 && vehicleCount > 0) {
+                        description += ` [${parkingMultiplier}x tenant rate]`;
+                    }
                 } else {
                     // Fixed charges
                     amount = chargeType.defaultAmount;
@@ -277,6 +287,16 @@ async function generateBills() {
                     });
                     totalAmount += amount;
                 }
+            }
+
+            // Add Non-Occupancy Charges (NOC) for tenant-occupied flats
+            if (isTenantOccupied && settings.nocEnabled && settings.nocAmount > 0) {
+                lineItems.push({
+                    chargeTypeId: 'noc',
+                    description: 'Non-Occupancy Charges (NOC)',
+                    amount: settings.nocAmount
+                });
+                totalAmount += settings.nocAmount;
             }
 
             // Calculate previous due
@@ -324,92 +344,181 @@ function viewBill(billId) {
     currentViewBill = bill;
     const flat = flatsData.find(f => f.id === bill.flatId);
     const building = flat ? (masterData.buildings || []).find(b => b.id === flat.buildingId) : null;
+    const chargeTypes = (masterData.chargeTypes || []).filter(c => c.isActive !== false);
+
+    // Build numbered line items (Gulmohar style)
+    let lineItemsHtml = '';
+    let srNo = 0;
+
+    // Map charge types to their amounts from bill line items
+    chargeTypes.forEach(chargeType => {
+        srNo++;
+        const lineItem = bill.lineItems.find(item => item.chargeTypeId === chargeType.id);
+        const amount = lineItem ? lineItem.amount : 0;
+
+        lineItemsHtml += `
+            <tr>
+                <td class="text-center">${srNo}.</td>
+                <td>${Utils.escapeHtml(chargeType.name)}</td>
+                <td class="text-right amount">${amount > 0 ? Utils.formatCurrency(amount) : '-'}</td>
+            </tr>
+        `;
+    });
+
+    // Add any line items that don't match known charge types
+    bill.lineItems.forEach(item => {
+        const hasChargeType = chargeTypes.some(c => c.id === item.chargeTypeId);
+        if (!hasChargeType) {
+            srNo++;
+            lineItemsHtml += `
+                <tr>
+                    <td class="text-center">${srNo}.</td>
+                    <td>${Utils.escapeHtml(item.description)}</td>
+                    <td class="text-right amount">${Utils.formatCurrency(item.amount)}</td>
+                </tr>
+            `;
+        }
+    });
 
     const content = document.getElementById('bill-detail-content');
     content.innerHTML = `
-        <div class="bill-preview" id="printable-bill">
-            <div class="bill-preview-header">
-                <div class="bill-preview-society">${Utils.escapeHtml(settings.societyName || 'Society Name')}</div>
-                <div class="bill-preview-address">${Utils.escapeHtml(settings.address || '')}</div>
-                <div class="mt-2"><strong>MAINTENANCE BILL</strong></div>
+        <div class="bill-preview gulmohar-bill" id="printable-bill">
+            <!-- Society Header -->
+            <div class="bill-preview-header" style="border: 2px solid #1e40af; padding: 15px; text-align: center; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                <div class="bill-preview-society" style="font-size: 1.25rem; font-weight: bold; color: #1e40af;">${Utils.escapeHtml(settings.societyName || 'Society Name')}</div>
+                ${settings.registrationNo ? `<div style="font-size: 0.75rem; color: #64748b;">Reg. No.: ${Utils.escapeHtml(settings.registrationNo)}</div>` : ''}
+                <div style="font-size: 0.8rem; color: #475569;">${Utils.escapeHtml(settings.address || '')}</div>
             </div>
 
-            <div class="bill-details mt-4">
+            <!-- Bill Info Row -->
+            <div style="display: flex; justify-content: space-between; border: 1px solid #e2e8f0; border-top: none; padding: 10px; background: #f8fafc;">
                 <div>
-                    <div class="bill-detail-item">
-                        <span class="bill-detail-label">Bill No:</span>
-                        <span class="bill-detail-value">${bill.billNo}</span>
-                    </div>
-                    <div class="bill-detail-item">
-                        <span class="bill-detail-label">Bill Date:</span>
-                        <span class="bill-detail-value">${Utils.formatDate(bill.generatedAt)}</span>
-                    </div>
-                    <div class="bill-detail-item">
-                        <span class="bill-detail-label">Due Date:</span>
-                        <span class="bill-detail-value">${Utils.formatDate(bill.dueDate)}</span>
-                    </div>
+                    <span style="font-size: 0.75rem; color: #64748b;">Bill No.</span>
+                    <strong style="display: block;">${bill.billNo}</strong>
                 </div>
-                <div>
-                    <div class="bill-detail-item">
-                        <span class="bill-detail-label">Flat No:</span>
-                        <span class="bill-detail-value">${flat ? Utils.escapeHtml(flat.flatNo) : '-'}</span>
-                    </div>
-                    <div class="bill-detail-item">
-                        <span class="bill-detail-label">Building:</span>
-                        <span class="bill-detail-value">${building ? Utils.escapeHtml(building.name) : '-'}</span>
-                    </div>
-                    <div class="bill-detail-item">
-                        <span class="bill-detail-label">Owner:</span>
-                        <span class="bill-detail-value">${flat ? Utils.escapeHtml(flat.ownerName) : '-'}</span>
-                    </div>
+                <div style="text-align: center;">
+                    <span style="font-size: 0.75rem; color: #64748b;">Date</span>
+                    <strong style="display: block;">${Utils.formatDate(bill.generatedAt)}</strong>
+                </div>
+                <div style="text-align: right;">
+                    <span style="font-size: 0.75rem; color: #64748b;">Due Date</span>
+                    <strong style="display: block;">${Utils.formatDate(bill.dueDate)}</strong>
                 </div>
             </div>
 
-            <table class="table mt-4">
+            <!-- Member Info -->
+            <div style="border: 1px solid #e2e8f0; border-top: none; padding: 10px;">
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div>
+                        <span style="font-size: 0.75rem; color: #64748b;">Flat No.</span>
+                        <strong style="display: block;">${flat ? Utils.escapeHtml(flat.flatNo) : '-'}</strong>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.75rem; color: #64748b;">Building</span>
+                        <strong style="display: block;">${building ? Utils.escapeHtml(building.name) : '-'}</strong>
+                    </div>
+                    <div style="flex: 1;">
+                        <span style="font-size: 0.75rem; color: #64748b;">Shri/Smt.</span>
+                        <strong style="display: block;">${flat ? Utils.escapeHtml(flat.ownerName) : '-'}</strong>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.75rem; color: #64748b;">For the Month</span>
+                        <strong style="display: block;">${Utils.getMonthName(bill.month)} ${bill.year}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bill Items Table -->
+            <table class="table mt-3" style="border: 1px solid #e2e8f0;">
                 <thead>
-                    <tr>
-                        <th>Description</th>
-                        <th class="text-right">Amount</th>
+                    <tr style="background: #1e40af; color: white;">
+                        <th style="width: 50px; text-align: center;">Sr. No.</th>
+                        <th>PARTICULARS</th>
+                        <th style="width: 120px; text-align: right;">Amount (Rs.)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${bill.lineItems.map(item => `
-                        <tr>
-                            <td>${Utils.escapeHtml(item.description)}</td>
-                            <td class="text-right amount">${Utils.formatCurrency(item.amount)}</td>
-                        </tr>
-                    `).join('')}
-                    <tr>
-                        <td><strong>Current Month Total</strong></td>
-                        <td class="text-right amount"><strong>${Utils.formatCurrency(bill.totalAmount)}</strong></td>
+                    ${lineItemsHtml}
+                    <!-- Sub-Total -->
+                    <tr style="background: #f1f5f9; font-weight: bold;">
+                        <td></td>
+                        <td>Sub-Total</td>
+                        <td class="text-right amount">${Utils.formatCurrency(bill.totalAmount)}</td>
                     </tr>
+                    <!-- Arrears Section -->
                     ${bill.previousDue > 0 ? `
                         <tr>
-                            <td>Previous Due</td>
+                            <td></td>
+                            <td>Add: Arrears, if any</td>
                             <td class="text-right amount text-danger">${Utils.formatCurrency(bill.previousDue)}</td>
                         </tr>
                     ` : ''}
-                    <tr style="background: var(--primary); color: white;">
-                        <td><strong>Grand Total</strong></td>
-                        <td class="text-right amount"><strong>${Utils.formatCurrency(bill.grandTotal)}</strong></td>
+                    ${bill.interest > 0 ? `
+                        <tr>
+                            <td></td>
+                            <td style="padding-left: 30px;">Interest on Arrears</td>
+                            <td class="text-right amount">${Utils.formatCurrency(bill.interest)}</td>
+                        </tr>
+                    ` : ''}
+                    ${bill.penalty > 0 ? `
+                        <tr>
+                            <td></td>
+                            <td style="padding-left: 30px;">Penalty</td>
+                            <td class="text-right amount">${Utils.formatCurrency(bill.penalty)}</td>
+                        </tr>
+                    ` : ''}
+                    <!-- Grand Total -->
+                    <tr style="background: #1e40af; color: white; font-weight: bold;">
+                        <td></td>
+                        <td>Grand Total</td>
+                        <td class="text-right amount" style="font-size: 1.1rem;">${Utils.formatCurrency(bill.grandTotal)}</td>
                     </tr>
                     ${bill.paidAmount > 0 ? `
-                        <tr>
+                        <tr style="background: #dcfce7;">
+                            <td></td>
                             <td>Amount Paid</td>
                             <td class="text-right amount text-success">${Utils.formatCurrency(bill.paidAmount)}</td>
                         </tr>
-                        <tr>
-                            <td><strong>Balance Due</strong></td>
-                            <td class="text-right amount text-danger"><strong>${Utils.formatCurrency(bill.grandTotal - bill.paidAmount)}</strong></td>
+                        <tr style="background: #fee2e2; font-weight: bold;">
+                            <td></td>
+                            <td>Balance Due</td>
+                            <td class="text-right amount text-danger">${Utils.formatCurrency(bill.grandTotal - bill.paidAmount)}</td>
                         </tr>
                     ` : ''}
                 </tbody>
             </table>
 
-            <div class="mt-3 text-muted" style="font-size: 0.8125rem;">
-                <p>Please pay before the due date to avoid late fee charges.</p>
-                ${settings.phone ? `<p>For queries contact: ${settings.phone}</p>` : ''}
+            <!-- Footer Notes -->
+            <div style="margin-top: 15px; padding: 10px; border: 1px solid #e2e8f0; background: #fffbeb; font-size: 0.75rem;">
+                <p style="margin: 0 0 5px 0;"><strong>Note:</strong></p>
+                <ol style="margin: 0; padding-left: 20px; color: #475569;">
+                    <li>Interest of 2% per annum is applicable for late payments.</li>
+                    <li>Payments after due date should be intimated immediately.</li>
+                    <li>Any objection about this bill should be entertained within one month.</li>
+                    <li>Please issue Crossed Cheque in favour of the Society.</li>
+                </ol>
             </div>
+
+            <!-- Signature Section -->
+            <div style="display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px;">
+                <div style="text-align: center;">
+                    <div style="border-top: 1px solid #000; width: 150px; padding-top: 5px; font-size: 0.75rem;">
+                        Member Signature
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="border-top: 1px solid #000; width: 200px; padding-top: 5px; font-size: 0.75rem;">
+                        For ${Utils.escapeHtml(settings.societyName || 'Society')}<br>
+                        <span style="font-size: 0.7rem; color: #64748b;">Chairman/Secretary/Treasurer</span>
+                    </div>
+                </div>
+            </div>
+
+            ${settings.phone ? `
+                <div style="text-align: center; margin-top: 15px; font-size: 0.75rem; color: #64748b;">
+                    For queries contact: ${Utils.escapeHtml(settings.phone)}
+                </div>
+            ` : ''}
         </div>
     `;
 

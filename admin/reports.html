@@ -10,10 +10,10 @@
     <link rel="manifest" href="../manifest.json">
     <link rel="icon" type="image/svg+xml" href="../icons/icon.svg">
     <link rel="apple-touch-icon" href="../icons/icon-192.png">
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/design-system.css">
-    <link rel="stylesheet" href="../css/admin.css">
-    <link rel="stylesheet" href="../css/admin-enhanced.css">
+    <link rel="stylesheet" href="../css/style.css?v=2">
+    <link rel="stylesheet" href="../css/design-system.css?v=2">
+    <link rel="stylesheet" href="../css/admin.css?v=2">
+    <link rel="stylesheet" href="../css/admin-enhanced.css?v=2">
     <link rel="stylesheet" href="../css/themes.css">
     <link rel="stylesheet" href="../css/animations.css">
     <script src="../js/theme.js"></script>
@@ -172,6 +172,7 @@
                 <!-- Report Type Tabs -->
                 <div class="master-data-tabs mb-4">
                     <button class="master-data-tab active" data-tab="outstanding">Outstanding Report</button>
+                    <button class="master-data-tab" data-tab="fee-position">Fee Position Report</button>
                     <button class="master-data-tab" data-tab="collection">Collection Report</button>
                     <button class="master-data-tab" data-tab="ledger">Flat Ledger</button>
                 </div>
@@ -205,6 +206,65 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fee Position Report (Gulmohar Style) -->
+                <div class="tab-content" id="tab-fee-position">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4>Society Maintenance Fee Position Report</h4>
+                            <div>
+                                <button class="btn btn-outline-primary btn-sm" onclick="printFeePositionReport()">Print</button>
+                                <button class="btn btn-outline-primary btn-sm ml-2" onclick="exportFeePositionReport()">Export CSV</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="report-filters mb-3">
+                                <div class="form-group">
+                                    <label class="form-label">As on Date</label>
+                                    <input type="date" class="form-control" id="fee-position-date" onchange="generateFeePositionReport()">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Building/Wing</label>
+                                    <select class="form-select" id="fee-position-building" onchange="generateFeePositionReport()">
+                                        <option value="">All Buildings</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="fee-position-report-container">
+                                <div class="report-header text-center mb-4 print-only" id="fee-position-header">
+                                    <h3 id="fee-position-society-name">Society Name</h3>
+                                    <p id="fee-position-society-address"></p>
+                                    <h4>Society Maintenance Fee Position as on <span id="fee-position-as-on-date"></span></h4>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-sm" id="fee-position-table">
+                                        <thead id="fee-position-table-head">
+                                            <tr>
+                                                <th>SR No</th>
+                                                <th>Flat No</th>
+                                                <th>Owner Name</th>
+                                                <th>Total</th>
+                                                <th>Interest</th>
+                                                <th>Penalty</th>
+                                                <th>Previous Balance</th>
+                                                <th>Balance</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="fee-position-table-body">
+                                            <tr>
+                                                <td colspan="8" class="text-center text-muted">Loading...</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot id="fee-position-table-foot">
+                                        </tfoot>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -378,11 +438,11 @@
         </a>
     </nav>
 
-    <script src="../js/config.js"></script>
-    <script src="../js/utils.js"></script>
-    <script src="../js/storage.js"></script>
-    <script src="../js/auth.js"></script>
-    <script src="../js/admin/reports.js"></script>
-    <script src="../js/mobile.js"></script>
+    <script src="../js/config.js?v=2"></script>
+    <script src="../js/utils.js?v=2"></script>
+    <script src="../js/storage.js?v=3"></script>
+    <script src="../js/auth.js?v=2"></script>
+    <script src="../js/admin/reports.js?v=3"></script>
+    <script src="../js/mobile.js?v=2"></script>
 </body>
 </html>

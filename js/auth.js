@@ -63,6 +63,7 @@ class Auth {
 
             // Verify password
             const hashedPassword = await Utils.hashPassword(password);
+
             if (user.password !== hashedPassword) {
                 clearCurrentSociety();
                 return { success: false, message: 'Invalid username or password' };
@@ -167,6 +168,8 @@ class Auth {
     logout() {
         localStorage.removeItem(this.sessionKey);
         localStorage.removeItem(this.userKey);
+        // Clear demo mode flag so user can switch to live mode
+        localStorage.removeItem('esociety_demo_mode');
         clearCurrentSociety();
         storage.invalidateAllCache();
     }
