@@ -10,13 +10,29 @@
 html, body {
     overflow-x: hidden;
     height: 100%;
+    /* Support for PWA safe areas */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* PWA standalone mode viewport fix */
+@supports (-webkit-touch-callout: none) {
+    html, body {
+        min-height: -webkit-fill-available;
+    }
 }
 
 .admin-layout {
     display: flex;
     min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for PWA */
     overflow: hidden;
     width: 100%;
+}
+
+@supports (-webkit-touch-callout: none) {
+    .admin-layout {
+        min-height: -webkit-fill-available;
+    }
 }
 
 /* ========================
@@ -29,12 +45,18 @@ html, body {
     top: 0;
     left: 0;
     height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for PWA */
+    max-height: -webkit-fill-available; /* iOS PWA fix */
     overflow-y: auto;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
     z-index: 100;
     display: flex;
     flex-direction: column;
     transition: transform 0.3s ease;
+    /* PWA safe area support */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Sidebar scrollbar */
@@ -105,6 +127,9 @@ html, body {
     padding: var(--space-4) 0;
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    min-height: 0; /* Important for flex child scrolling */
 }
 
 .nav-section {
@@ -182,6 +207,13 @@ html, body {
     padding: var(--space-5) var(--space-6);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     flex-shrink: 0;
+    /* Ensure user section stays at bottom in PWA */
+    margin-top: auto;
+    background: inherit;
+    position: sticky;
+    bottom: 0;
+    /* Add extra padding for PWA safe area */
+    padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom));
 }
 
 .sidebar-user-info {
@@ -249,12 +281,16 @@ html, body {
 .main-content {
     margin-left: 260px;
     min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for PWA */
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
     width: calc(100% - 260px);
+    /* PWA safe area support */
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Main content scrollbar */
@@ -280,7 +316,7 @@ html, body {
     padding: var(--space-4) var(--space-6);
     position: sticky;
     top: 0;
-    z-index: 50;
+    z-index: 1002; /* Above sidebar overlay (999) and sidebar (1001) */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -642,6 +678,10 @@ html, body {
     right: 0;
     z-index: 1000;
     padding-bottom: env(safe-area-inset-bottom);
+    background: var(--white);
+    border-top: 1px solid var(--gray-200);
+    /* Ensure bottom nav is clickable in PWA */
+    -webkit-tap-highlight-color: transparent;
 }
 
 .bottom-nav-item {
@@ -710,18 +750,59 @@ html, body {
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
-        position: fixed;
-        z-index: 1000;
-        width: 260px;
+        position: fixed !important;
+        z-index: 1001 !important; /* Above bottom nav */
+        width: 260px !important;
+        top: 0 !important;
+        /* Use bottom positioning to stop above the bottom nav (80px for nav + extra buffer) */
+        bottom: 80px !important;
+        height: auto !important;
+        max-height: none !important;
+        /* Sidebar itself doesn't scroll - only nav does */
+        overflow: hidden !important;
+        /* Remove any bottom padding */
+        padding-bottom: 0 !important;
     }
 
     .sidebar.open {
         transform: translateX(0);
     }
 
+    /* Header stays at top */
+    .sidebar .sidebar-header {
+        flex-shrink: 0 !important;
+    }
+
+    /* Navigation scrolls independently */
+    .sidebar .sidebar-nav {
+        flex: 1 1 auto !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        -webkit-overflow-scrolling: touch;
+        min-height: 0 !important;
+    }
+
+    /* User section always visible at bottom of sidebar - never scrolls */
+    .sidebar .sidebar-user {
+        flex-shrink: 0 !important;
+        padding: 12px 16px !important;
+        margin-top: 0 !important;
+        position: relative !important;
+        bottom: auto !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    /* Make logout button more compact on mobile */
+    .sidebar .sidebar-logout {
+        padding: 10px 12px !important;
+        margin-top: 8px !important;
+    }
+
     .main-content {
         margin-left: 0;
         width: 100%;
+        min-height: 100vh;
+        min-height: 100dvh;
     }
 
     .menu-toggle {
@@ -855,5 +936,116 @@ html, body {
 
     .stats-grid {
         grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ========================
+   PWA STANDALONE MODE
+   ======================== */
+
+/* PWA standalone mode specific fixes */
+@media all and (display-mode: standalone) {
+    html, body {
+        /* Prevent overscroll bounce */
+        overscroll-behavior-y: none;
+        /* Use dynamic viewport height */
+        height: 100dvh;
+        max-height: -webkit-fill-available;
+    }
+
+    .admin-layout {
+        min-height: 100dvh;
+        max-height: -webkit-fill-available;
+        height: 100%;
+    }
+
+    .main-content {
+        min-height: 100dvh;
+        max-height: -webkit-fill-available;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Ensure bottom nav doesn't overlap content */
+    .content {
+        padding-bottom: calc(var(--space-6) + 80px + env(safe-area-inset-bottom));
+    }
+}
+
+/* PWA + Mobile combined - sidebar must not overlap bottom nav */
+@media all and (display-mode: standalone) and (max-width: 768px) {
+    .sidebar {
+        /* Use bottom positioning - account for bottom nav + safe area */
+        top: 0 !important;
+        bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+        height: auto !important;
+        max-height: none !important;
+        /* Sidebar itself doesn't scroll - only nav does */
+        overflow: hidden !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Header stays at top */
+    .sidebar .sidebar-header {
+        flex-shrink: 0 !important;
+    }
+
+    /* Make sidebar-nav scrollable in PWA mobile */
+    .sidebar .sidebar-nav {
+        flex: 1 1 auto !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        -webkit-overflow-scrolling: touch;
+        min-height: 0 !important;
+    }
+
+    /* Keep user/logout section always visible at bottom */
+    .sidebar .sidebar-user {
+        flex-shrink: 0 !important;
+        position: relative !important;
+        bottom: auto !important;
+        background: inherit;
+        padding: 12px 16px !important;
+        margin-top: 0 !important;
+    }
+}
+
+/* iOS specific PWA fixes */
+@supports (-webkit-touch-callout: none) {
+    @media all and (display-mode: standalone) {
+        /* Fix for iOS PWA status bar area */
+        .top-bar {
+            padding-top: calc(var(--space-4) + env(safe-area-inset-top));
+        }
+    }
+
+    /* iOS + Mobile + PWA */
+    @media all and (display-mode: standalone) and (max-width: 768px) {
+        .sidebar {
+            /* Use bottom positioning for iOS - account for bottom nav + safe area */
+            top: 0 !important;
+            bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+            height: auto !important;
+            max-height: none !important;
+            overflow: hidden !important;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: 0 !important;
+        }
+
+        .sidebar .sidebar-header {
+            flex-shrink: 0 !important;
+        }
+
+        .sidebar .sidebar-nav {
+            flex: 1 1 auto !important;
+            overflow-y: auto !important;
+            min-height: 0 !important;
+        }
+
+        .sidebar .sidebar-user {
+            flex-shrink: 0 !important;
+            padding: 12px 16px !important;
+            margin-top: 0 !important;
+        }
     }
 }

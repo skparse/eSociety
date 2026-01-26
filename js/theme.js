@@ -183,4 +183,33 @@ const ThemeManager = {
 // Full initialization on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
     ThemeManager.init();
+
+    // Add touch event support for theme toggle button
+    const themeToggle = document.querySelector('.theme-toggle');
+    if (themeToggle) {
+        let lastToggle = 0;
+        const debounceTime = 300; // Prevent double toggle within 300ms
+
+        const handleToggle = (e) => {
+            const now = Date.now();
+            if (now - lastToggle < debounceTime) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
+            lastToggle = now;
+            e.preventDefault();
+            e.stopPropagation();
+            ThemeManager.toggle();
+        };
+
+        // Remove inline onclick to prevent double-firing
+        themeToggle.removeAttribute('onclick');
+
+        // Use touchend for more reliable mobile interaction
+        themeToggle.addEventListener('touchend', handleToggle, { passive: false });
+
+        // Also ensure click works for non-touch devices
+        themeToggle.addEventListener('click', handleToggle);
+    }
 });

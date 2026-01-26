@@ -657,6 +657,12 @@ body {
     font-size: var(--text-sm);
     cursor: pointer;
     transition: all var(--transition-fast);
+    /* Ensure clickable on mobile/PWA */
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    touch-action: manipulation;
 }
 
 .theme-toggle:hover {

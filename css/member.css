@@ -5,8 +5,37 @@
 /* Member Layout */
 .member-layout {
     min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for PWA */
     display: flex;
     flex-direction: column;
+}
+
+/* PWA standalone mode fixes for member portal */
+@supports (-webkit-touch-callout: none) {
+    .member-layout {
+        min-height: -webkit-fill-available;
+    }
+}
+
+@media all and (display-mode: standalone) {
+    .member-layout {
+        min-height: 100dvh;
+        max-height: -webkit-fill-available;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .member-header {
+        /* Account for iOS status bar */
+        padding-top: env(safe-area-inset-top);
+    }
+
+    .member-content {
+        /* Account for safe areas */
+        padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }
 
 /* Member Header */
