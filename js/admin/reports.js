@@ -4,6 +4,7 @@
 
 let billsData = [];
 let paymentsData = [];
+let expensesData = [];
 let flatsData = [];
 let masterData = {};
 let settings = {};
@@ -56,9 +57,10 @@ async function loadData() {
     Utils.showLoading('Loading report data...');
 
     try {
-        [billsData, paymentsData, flatsData, masterData, settings] = await Promise.all([
+        [billsData, paymentsData, expensesData, flatsData, masterData, settings] = await Promise.all([
             storage.getBills(),
             storage.getPayments(),
+            storage.getExpenses(),
             storage.getFlats(),
             storage.getMasterData(),
             storage.getSettings()
@@ -69,6 +71,9 @@ async function loadData() {
 
         // Populate building dropdown for fee position report
         populateBuildingDropdown();
+
+        // Populate financial year dropdown for income/expense report
+        populateFinancialYearDropdown();
 
         // Set default date for fee position report
         document.getElementById('fee-position-date').value = new Date().toISOString().split('T')[0];
@@ -854,6 +859,397 @@ function printFeePositionReport() {
 
     // Hide print header again
     document.getElementById('fee-position-header').style.display = 'none';
+}
+
+// ==================== Income & Expense Report ====================
+
+function populateFinancialYearDropdown() {
+    const select = document.getElementById('income-expense-fy');
+    if (!select) return;
+
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    // Determine current financial year (April to March)
+    let currentFYStart = currentMonth >= 3 ? currentYear : currentYear - 1;
+
+    // Generate last 5 financial years
+    const options = [];
+    for (let i = 0; i < 5; i++) {
+        const fyStart = currentFYStart - i;
+        const fyEnd = fyStart + 1;
+        options.push(`<option value="${fyStart}">${fyStart}-${fyEnd} (Apr ${fyStart} - Mar ${fyEnd})</option>`);
+    }
+
+    select.innerHTML = options.join('');
+
+    // Auto-generate report for current FY
+    generateIncomeExpenseReport();
+}
+
+function getFinancialYearDates(fyStartYear) {
+    return {
+        start: new Date(fyStartYear, 3, 1), // April 1st
+        end: new Date(fyStartYear + 1, 2, 31, 23, 59, 59, 999) // March 31st
+    };
+}
+
+function generateIncomeExpenseReport() {
+    const fySelect = document.getElementById('income-expense-fy');
+    if (!fySelect || !fySelect.value) return;
+
+    const fyStartYear = parseInt(fySelect.value);
+    const { start: fyStart, end: fyEnd } = getFinancialYearDates(fyStartYear);
+
+    // Update header
+    document.getElementById('ie-society-name').textContent = settings.societyName || 'Society Name';
+    document.getElementById('ie-society-address').textContent = settings.address || '';
+    document.getElementById('ie-period').textContent = `Financial Year: April ${fyStartYear} - March ${fyStartYear + 1}`;
+
+    // Filter payments (income) within FY
+    const fyPayments = paymentsData.filter(p => {
+        const paymentDate = new Date(p.paymentDate);
+        return paymentDate >= fyStart && paymentDate <= fyEnd;
+    }).sort((a, b) => new Date(a.paymentDate) - new Date(b.paymentDate));
+
+    // Filter expenses within FY
+    const fyExpenses = (expensesData || []).filter(e => {
+        const expenseDate = new Date(e.date);
+        return expenseDate >= fyStart && expenseDate <= fyEnd;
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Calculate totals
+    const totalIncome = fyPayments.reduce((sum, p) => sum + p.amount, 0);
+    const totalExpense = fyExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const netBalance = totalIncome - totalExpense;
+
+    // Income by payment mode
+    const incomeByMode = { cash: 0, cheque: 0, upi: 0, bank_transfer: 0 };
+    fyPayments.forEach(p => {
+        incomeByMode[p.paymentMode] = (incomeByMode[p.paymentMode] || 0) + p.amount;
+    });
+
+    // Expenses by category
+    const expensesByCategory = {};
+    const categories = CONFIG.EXPENSE_CATEGORIES || [];
+    categories.forEach(c => { expensesByCategory[c.id] = { name: c.name, amount: 0 }; });
+    fyExpenses.forEach(e => {
+        if (expensesByCategory[e.category]) {
+            expensesByCategory[e.category].amount += e.amount;
+        }
+    });
+
+    // Render ledger body (side by side)
+    const maxRows = Math.max(fyPayments.length, fyExpenses.length);
+    let ledgerHtml = '';
+
+    for (let i = 0; i < maxRows; i++) {
+        const payment = fyPayments[i];
+        const expense = fyExpenses[i];
+
+        const flat = payment ? flatsData.find(f => f.id === payment.flatId) : null;
+
+        ledgerHtml += `
+            <div class="ledger-row">
+                <div class="ledger-col income-col">
+                    <div class="ledger-cell cell-date">${payment ? Utils.formatDate(payment.paymentDate) : ''}</div>
+                    <div class="ledger-cell cell-desc">${payment ? `${payment.receiptNo} - ${flat ? Utils.escapeHtml(flat.flatNo) : 'N/A'}` : ''}</div>
+                    <div class="ledger-cell cell-amount">${payment ? Utils.formatCurrency(payment.amount) : ''}</div>
+                </div>
+                <div class="ledger-col expense-col">
+                    <div class="ledger-cell cell-date">${expense ? Utils.formatDate(expense.date) : ''}</div>
+                    <div class="ledger-cell cell-desc">${expense ? Utils.escapeHtml(expense.description) : ''}</div>
+                    <div class="ledger-cell cell-amount">${expense ? Utils.formatCurrency(expense.amount) : ''}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    if (maxRows === 0) {
+        ledgerHtml = `
+            <div class="ledger-row">
+                <div class="ledger-col income-col">
+                    <div class="ledger-cell text-center text-muted" style="flex: 1;">No income recorded</div>
+                </div>
+                <div class="ledger-col expense-col">
+                    <div class="ledger-cell text-center text-muted" style="flex: 1;">No expenses recorded</div>
+                </div>
+            </div>
+        `;
+    }
+
+    document.getElementById('income-expense-body').innerHTML = ledgerHtml;
+
+    // Update totals
+    document.getElementById('ie-total-income').textContent = Utils.formatCurrency(totalIncome);
+    document.getElementById('ie-total-expense').textContent = Utils.formatCurrency(totalExpense);
+
+    // Update summary
+    document.getElementById('ie-summary-income').textContent = Utils.formatCurrency(totalIncome);
+    document.getElementById('ie-summary-expense').textContent = Utils.formatCurrency(totalExpense);
+
+    const netBalanceEl = document.getElementById('ie-net-balance');
+    const netBalanceRow = document.getElementById('ie-net-balance-row');
+    const isSurplus = netBalance >= 0;
+
+    netBalanceEl.textContent = Utils.formatCurrency(Math.abs(netBalance)) + (isSurplus ? ' (Surplus)' : ' (Deficit)');
+    netBalanceRow.className = 'summary-row summary-net ' + (isSurplus ? 'surplus' : 'deficit');
+
+    // Render income by mode
+    const modeLabels = { cash: 'Cash', cheque: 'Cheque', upi: 'UPI', bank_transfer: 'Bank Transfer' };
+    document.getElementById('ie-income-by-mode').innerHTML = Object.entries(incomeByMode)
+        .filter(([_, amt]) => amt > 0)
+        .map(([mode, amt]) => `
+            <tr>
+                <td>${modeLabels[mode] || mode}</td>
+                <td class="text-right amount">${Utils.formatCurrency(amt)}</td>
+            </tr>
+        `).join('') || '<tr><td colspan="2" class="text-center text-muted">No income</td></tr>';
+
+    // Render expenses by category
+    document.getElementById('ie-expenses-by-category').innerHTML = Object.values(expensesByCategory)
+        .filter(c => c.amount > 0)
+        .sort((a, b) => b.amount - a.amount)
+        .map(c => `
+            <tr>
+                <td>${Utils.escapeHtml(c.name)}</td>
+                <td class="text-right amount">${Utils.formatCurrency(c.amount)}</td>
+            </tr>
+        `).join('') || '<tr><td colspan="2" class="text-center text-muted">No expenses</td></tr>';
+}
+
+function exportIncomeExpenseReport() {
+    const fySelect = document.getElementById('income-expense-fy');
+    if (!fySelect || !fySelect.value) {
+        Utils.showToast('Please select a financial year', 'warning');
+        return;
+    }
+
+    const fyStartYear = parseInt(fySelect.value);
+    const { start: fyStart, end: fyEnd } = getFinancialYearDates(fyStartYear);
+
+    // Combine income and expenses into single list
+    const entries = [];
+
+    // Add payments (income)
+    paymentsData.filter(p => {
+        const date = new Date(p.paymentDate);
+        return date >= fyStart && date <= fyEnd;
+    }).forEach(p => {
+        const flat = flatsData.find(f => f.id === p.flatId);
+        entries.push({
+            'Date': Utils.formatDate(p.paymentDate),
+            'Type': 'Income',
+            'Description': `${p.receiptNo} - ${flat ? flat.flatNo : 'N/A'}`,
+            'Category': p.paymentMode,
+            'Income': p.amount,
+            'Expense': ''
+        });
+    });
+
+    // Add expenses
+    (expensesData || []).filter(e => {
+        const date = new Date(e.date);
+        return date >= fyStart && date <= fyEnd;
+    }).forEach(e => {
+        const categories = CONFIG.EXPENSE_CATEGORIES || [];
+        const category = categories.find(c => c.id === e.category);
+        entries.push({
+            'Date': Utils.formatDate(e.date),
+            'Type': 'Expense',
+            'Description': e.description,
+            'Category': category ? category.name : e.category,
+            'Income': '',
+            'Expense': e.amount
+        });
+    });
+
+    // Sort by date
+    entries.sort((a, b) => {
+        const dateA = new Date(a.Date.split('/').reverse().join('-'));
+        const dateB = new Date(b.Date.split('/').reverse().join('-'));
+        return dateA - dateB;
+    });
+
+    // Add totals row
+    const totalIncome = entries.reduce((sum, e) => sum + (e.Income || 0), 0);
+    const totalExpense = entries.reduce((sum, e) => sum + (e.Expense || 0), 0);
+    entries.push({
+        'Date': '',
+        'Type': 'TOTAL',
+        'Description': '',
+        'Category': '',
+        'Income': totalIncome,
+        'Expense': totalExpense
+    });
+    entries.push({
+        'Date': '',
+        'Type': 'NET BALANCE',
+        'Description': totalIncome >= totalExpense ? 'Surplus' : 'Deficit',
+        'Category': '',
+        'Income': '',
+        'Expense': totalIncome - totalExpense
+    });
+
+    Utils.exportToCSV(entries, `income_expense_FY${fyStartYear}-${fyStartYear + 1}.csv`,
+        ['Date', 'Type', 'Description', 'Category', 'Income', 'Expense']);
+    Utils.showToast('Report exported successfully', 'success');
+}
+
+function printIncomeExpenseReport() {
+    const container = document.getElementById('income-expense-report-container');
+    if (!container) return;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Income & Expense Statement</title>
+            <style>
+                @page {
+                    size: A4 portrait;
+                    margin: 10mm;
+                }
+                * {
+                    box-sizing: border-box;
+                    margin: 0;
+                    padding: 0;
+                }
+                body {
+                    font-family: Arial, sans-serif;
+                    font-size: 10pt;
+                    padding: 5mm;
+                }
+                .report-header {
+                    text-align: center;
+                    margin-bottom: 5mm;
+                    padding-bottom: 3mm;
+                    border-bottom: 1pt solid #000;
+                }
+                .report-header h3 {
+                    font-size: 14pt;
+                    margin-bottom: 2mm;
+                }
+                .report-header h4 {
+                    font-size: 12pt;
+                    margin: 2mm 0;
+                }
+                .report-header p {
+                    font-size: 9pt;
+                    color: #666;
+                }
+                .income-expense-ledger {
+                    border: 1pt solid #000;
+                    margin-bottom: 5mm;
+                }
+                .ledger-row {
+                    display: flex;
+                }
+                .ledger-col {
+                    flex: 1;
+                    display: flex;
+                    border-right: 1pt solid #000;
+                }
+                .ledger-col:last-child {
+                    border-right: none;
+                }
+                .ledger-cell {
+                    padding: 2mm;
+                    border-bottom: 0.5pt solid #ccc;
+                    font-size: 8pt;
+                }
+                .cell-date { width: 22mm; flex-shrink: 0; }
+                .cell-desc { flex: 1; }
+                .cell-amount { width: 25mm; flex-shrink: 0; text-align: right; font-family: monospace; }
+                .ledger-header {
+                    font-weight: bold;
+                    background: #eee !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .ledger-header .income-col {
+                    background: rgba(22, 163, 74, 0.2) !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .ledger-header .expense-col {
+                    background: rgba(220, 38, 38, 0.2) !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .ledger-footer .income-total {
+                    background: #16a34a !important;
+                    color: white !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .ledger-footer .expense-total {
+                    background: #dc2626 !important;
+                    color: white !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .ledger-footer .ledger-cell {
+                    border-bottom: none;
+                    font-weight: bold;
+                }
+                .ledger-body {
+                    max-height: none !important;
+                    overflow: visible !important;
+                }
+                .financial-summary {
+                    max-width: 300px;
+                    margin: 5mm auto;
+                }
+                .summary-box {
+                    border: 1pt solid #000;
+                    padding: 3mm;
+                }
+                .summary-row {
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 1.5mm 0;
+                    border-bottom: 0.5pt solid #ccc;
+                }
+                .summary-row:last-child { border-bottom: none; }
+                .summary-net {
+                    font-weight: bold;
+                    font-size: 11pt;
+                    margin-top: 2mm;
+                    padding-top: 2mm;
+                    border-top: 1pt solid #000;
+                }
+                .surplus { background: rgba(22, 163, 74, 0.2) !important; padding: 2mm !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                .deficit { background: rgba(220, 38, 38, 0.2) !important; padding: 2mm !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                .text-success { color: #16a34a; }
+                .text-danger { color: #dc2626; }
+                .category-summary { margin-top: 5mm; page-break-inside: avoid; }
+                .category-summary h5 { font-size: 10pt; margin-bottom: 2mm; }
+                .row { display: flex; gap: 5mm; }
+                .col-md-6 { flex: 1; }
+                table { width: 100%; border-collapse: collapse; font-size: 8pt; }
+                table th, table td { border: 0.5pt solid #ccc; padding: 1.5mm 2mm; }
+                table th { background: #eee; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                .text-right { text-align: right; }
+                .amount { font-family: monospace; }
+            </style>
+        </head>
+        <body>
+            ${container.innerHTML}
+            <script>
+                window.onload = function() {
+                    setTimeout(function() {
+                        window.print();
+                        window.close();
+                    }, 100);
+                };
+            </script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
 }
 
 function toggleSidebar() {

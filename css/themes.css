@@ -584,19 +584,26 @@ body {
    DARK THEME - MODALS
    ======================== */
 
-[data-theme="dark"] .modal-backdrop,
+[data-theme="dark"] .modal-backdrop {
+    background: rgba(0, 0, 0, 0.85) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
 [data-theme="dark"] .modal {
-    background: rgba(0, 0, 0, 0.8);
+    background: var(--slate-800) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-xl), 0 0 60px rgba(0, 0, 0, 0.5);
 }
 
 [data-theme="dark"] .modal-content {
-    background: var(--slate-800);
+    background: var(--slate-800) !important;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="dark"] .modal-header {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
 }
 
 [data-theme="dark"] .modal-header h3,
@@ -607,11 +614,131 @@ body {
 
 [data-theme="dark"] .modal-body {
     color: var(--slate-300);
+    background: var(--slate-800) !important;
 }
 
 [data-theme="dark"] .modal-footer {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: var(--slate-800) !important;
+}
+
+/* Dark theme mobile full-screen modal */
+@media (max-width: 768px) {
+    [data-theme="dark"] .modal {
+        background: var(--slate-900) !important;
+    }
+
+    [data-theme="dark"] .modal-header {
+        background: var(--slate-800) !important;
+    }
+
+    [data-theme="dark"] .modal-body {
+        background: var(--slate-900) !important;
+    }
+
+    [data-theme="dark"] .modal-footer {
+        background: var(--slate-800) !important;
+    }
+}
+
+/* Dark Modal Form Elements */
+[data-theme="dark"] .modal .form-control,
+[data-theme="dark"] .modal .form-select {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+[data-theme="dark"] .modal .form-control:focus,
+[data-theme="dark"] .modal .form-select:focus {
+    border-color: var(--primary-500) !important;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2) !important;
+}
+
+[data-theme="dark"] .modal .form-control::placeholder {
+    color: var(--slate-500) !important;
+}
+
+[data-theme="dark"] .modal .form-label {
+    color: var(--slate-300) !important;
+}
+
+[data-theme="dark"] .modal input[type="file"] {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 2px dashed rgba(255, 255, 255, 0.15) !important;
+    color: var(--slate-300) !important;
+}
+
+[data-theme="dark"] .modal input[type="file"]:hover {
+    border-color: var(--primary-400) !important;
+    background: rgba(99, 102, 241, 0.1) !important;
+}
+
+[data-theme="dark"] .modal input[type="file"]::file-selector-button {
+    background: var(--primary-600);
+    color: white;
+    border: none;
+}
+
+[data-theme="dark"] .modal .input-group-text {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+    border-right: none !important;
+    color: var(--slate-400) !important;
+}
+
+[data-theme="dark"] .modal .form-text,
+[data-theme="dark"] .modal .fy-date-hint {
+    color: var(--slate-500) !important;
+}
+
+[data-theme="dark"] .modal .receipt-preview {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .modal .existing-receipt {
+    background: rgba(99, 102, 241, 0.1) !important;
+    border: 1px solid rgba(99, 102, 241, 0.3) !important;
+}
+
+/* Dark Modal Form Sections */
+[data-theme="dark"] .modal .form-section {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .modal .form-section-title {
+    color: var(--slate-200) !important;
+    border-bottom-color: var(--primary-400) !important;
+}
+
+/* Dark Modal Checkboxes */
+[data-theme="dark"] .modal .form-check-input {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme="dark"] .modal .form-check-input:checked {
+    background-color: var(--primary-500) !important;
+    border-color: var(--primary-500) !important;
+}
+
+[data-theme="dark"] .modal .form-check-label {
+    color: var(--slate-300) !important;
+}
+
+/* Dark Modal Payment Bill Info */
+[data-theme="dark"] .modal .payment-bill-info {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .modal .payment-bill-info span {
+    color: var(--slate-400) !important;
+}
+
+[data-theme="dark"] .modal .payment-bill-info strong {
+    color: var(--slate-200) !important;
 }
 
 /* ========================
@@ -1202,19 +1329,26 @@ body {
 }
 
 /* Light Theme - Modals */
-[data-theme="light"] .modal-backdrop,
+[data-theme="light"] .modal-backdrop {
+    background: rgba(15, 23, 42, 0.75) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
 [data-theme="light"] .modal {
-    background: rgba(15, 23, 42, 0.5);
+    background: white !important;
+    border: 1px solid var(--slate-200);
+    box-shadow: var(--shadow-xl), 0 0 60px rgba(0, 0, 0, 0.2);
 }
 
 [data-theme="light"] .modal-content {
-    background: white;
+    background: white !important;
     border: 1px solid var(--slate-200);
 }
 
 [data-theme="light"] .modal-header {
-    border-bottom: 1px solid var(--slate-200);
-    background: var(--slate-50);
+    border-bottom: 1px solid var(--slate-200) !important;
+    background: var(--slate-50) !important;
 }
 
 [data-theme="light"] .modal-header h3,
@@ -1225,11 +1359,131 @@ body {
 
 [data-theme="light"] .modal-body {
     color: var(--slate-700);
+    background: white !important;
 }
 
 [data-theme="light"] .modal-footer {
-    border-top: 1px solid var(--slate-200);
-    background: var(--slate-50);
+    border-top: 1px solid var(--slate-200) !important;
+    background: var(--slate-50) !important;
+}
+
+/* Light theme mobile full-screen modal */
+@media (max-width: 768px) {
+    [data-theme="light"] .modal {
+        background: white !important;
+    }
+
+    [data-theme="light"] .modal-header {
+        background: var(--slate-50) !important;
+    }
+
+    [data-theme="light"] .modal-body {
+        background: white !important;
+    }
+
+    [data-theme="light"] .modal-footer {
+        background: var(--slate-50) !important;
+    }
+}
+
+/* Light Modal Form Elements */
+[data-theme="light"] .modal .form-control,
+[data-theme="light"] .modal .form-select {
+    background: white !important;
+    border: 2px solid var(--slate-200) !important;
+    color: var(--slate-900) !important;
+}
+
+[data-theme="light"] .modal .form-control:focus,
+[data-theme="light"] .modal .form-select:focus {
+    border-color: var(--primary-500) !important;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1) !important;
+}
+
+[data-theme="light"] .modal .form-control::placeholder {
+    color: var(--slate-400) !important;
+}
+
+[data-theme="light"] .modal .form-label {
+    color: var(--slate-700) !important;
+}
+
+[data-theme="light"] .modal input[type="file"] {
+    background: var(--slate-50) !important;
+    border: 2px dashed var(--slate-300) !important;
+    color: var(--slate-700) !important;
+}
+
+[data-theme="light"] .modal input[type="file"]:hover {
+    border-color: var(--primary-400) !important;
+    background: var(--primary-50) !important;
+}
+
+[data-theme="light"] .modal input[type="file"]::file-selector-button {
+    background: var(--primary-600);
+    color: white;
+    border: none;
+}
+
+[data-theme="light"] .modal .input-group-text {
+    background: var(--slate-100) !important;
+    border: 2px solid var(--slate-200) !important;
+    border-right: none !important;
+    color: var(--slate-600) !important;
+}
+
+[data-theme="light"] .modal .form-text,
+[data-theme="light"] .modal .fy-date-hint {
+    color: var(--slate-500) !important;
+}
+
+[data-theme="light"] .modal .receipt-preview {
+    background: var(--slate-50) !important;
+    border: 2px solid var(--slate-200) !important;
+}
+
+[data-theme="light"] .modal .existing-receipt {
+    background: var(--primary-50) !important;
+    border: 1px solid var(--primary-200) !important;
+}
+
+/* Light Modal Form Sections */
+[data-theme="light"] .modal .form-section {
+    border-bottom-color: var(--slate-200) !important;
+}
+
+[data-theme="light"] .modal .form-section-title {
+    color: var(--slate-800) !important;
+    border-bottom-color: var(--primary-500) !important;
+}
+
+/* Light Modal Checkboxes */
+[data-theme="light"] .modal .form-check-input {
+    border-color: var(--slate-300) !important;
+    background: white !important;
+}
+
+[data-theme="light"] .modal .form-check-input:checked {
+    background-color: var(--primary-600) !important;
+    border-color: var(--primary-600) !important;
+}
+
+[data-theme="light"] .modal .form-check-label {
+    color: var(--slate-700) !important;
+}
+
+/* Light Modal Payment Bill Info */
+[data-theme="light"] .modal .payment-bill-info {
+    background: var(--slate-50) !important;
+    border: 1px solid var(--slate-200) !important;
+}
+
+[data-theme="light"] .modal .payment-bill-info span {
+    color: var(--slate-600) !important;
+}
+
+[data-theme="light"] .modal .payment-bill-info strong {
+    color: var(--slate-900) !important;
 }
 
 /* Light Theme - Alerts & Badges */

@@ -1,0 +1,48 @@
+# Backend / Server-side code (Google Apps Script)
+# This file contains API keys, credentials setup, and server configuration
+# Do not commit to public repositories
+google-apps-script.js
+
+# Documentation for backend (contains sensitive setup instructions)
+docs/BACKEND_EXPENSE_RECEIPT_UPLOAD.md
+
+# Environment and configuration
+.env
+.env.local
+.env.*.local
+config.local.js
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node modules (if using npm for any tooling)
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Log files
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# PWA service worker cache (generated)
+sw-precache-config.js

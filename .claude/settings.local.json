@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(del \"C:\\\\Playground\\\\eSociety\\\\docs\\\\BACKEND_EXPENSE_RECEIPT_UPLOAD.md\")"
+    ]
+  }
+}

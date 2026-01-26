@@ -282,6 +282,78 @@ const DemoData = {
         return bills;
     },
 
+    // Generate Expenses for demonstration
+    generateExpenses: function() {
+        const expenses = [];
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+
+        // Sample expenses covering 6 months
+        const expenseTemplates = [
+            { category: 'maintenance', description: 'Lift maintenance service', paidTo: 'Schindler India Pvt Ltd', amountRange: [3000, 5000] },
+            { category: 'maintenance', description: 'Plumbing repair - Common area', paidTo: 'Rajesh Plumbing Services', amountRange: [1500, 4000] },
+            { category: 'repairs', description: 'Water tank repair', paidTo: 'Tank Repair Contractors', amountRange: [8000, 15000] },
+            { category: 'repairs', description: 'Compound wall repair', paidTo: 'Gupta Construction', amountRange: [5000, 12000] },
+            { category: 'utilities', description: 'Common area electricity bill', paidTo: 'MSEDCL', amountRange: [12000, 20000] },
+            { category: 'utilities', description: 'Water supply tanker', paidTo: 'Mumbai Water Supply', amountRange: [3000, 6000] },
+            { category: 'salary', description: 'Security guard salary', paidTo: 'Securitas India', amountRange: [25000, 35000] },
+            { category: 'salary', description: 'Housekeeping staff salary', paidTo: 'Clean India Services', amountRange: [15000, 20000] },
+            { category: 'security', description: 'CCTV maintenance', paidTo: 'SecureTech Solutions', amountRange: [2000, 4000] },
+            { category: 'cleaning', description: 'Water tank cleaning', paidTo: 'AquaClean Services', amountRange: [3000, 5000] },
+            { category: 'cleaning', description: 'Pest control treatment', paidTo: 'Pest Control India', amountRange: [2500, 4000] },
+            { category: 'administration', description: 'Accounting software renewal', paidTo: 'TallyPrime', amountRange: [8000, 12000] },
+            { category: 'administration', description: 'Stationery and printing', paidTo: 'Office Mart', amountRange: [1000, 2000] },
+            { category: 'insurance', description: 'Society insurance premium', paidTo: 'LIC of India', amountRange: [15000, 25000] },
+            { category: 'legal', description: 'Legal consultation fee', paidTo: 'Advocate S.K. Sharma', amountRange: [5000, 10000] },
+            { category: 'miscellaneous', description: 'Garden maintenance', paidTo: 'Green Gardens', amountRange: [2000, 4000] },
+            { category: 'miscellaneous', description: 'Festival decoration', paidTo: 'Deco World', amountRange: [5000, 10000] }
+        ];
+
+        const paymentModes = ['cash', 'cheque', 'upi', 'bank_transfer'];
+        let receiptCounter = 1;
+
+        // Generate expenses for last 6 months
+        for (let monthOffset = 5; monthOffset >= 0; monthOffset--) {
+            const expenseMonth = new Date(currentYear, currentMonth - monthOffset, 1);
+
+            // Each month has 3-6 random expenses
+            const numExpenses = 3 + Math.floor(Math.random() * 4);
+
+            for (let i = 0; i < numExpenses; i++) {
+                const template = expenseTemplates[Math.floor(Math.random() * expenseTemplates.length)];
+                const amount = Math.floor(template.amountRange[0] + Math.random() * (template.amountRange[1] - template.amountRange[0]));
+
+                // Random date within the month
+                const day = Math.floor(Math.random() * 28) + 1;
+                const expenseDate = new Date(expenseMonth.getFullYear(), expenseMonth.getMonth(), day);
+
+                expenses.push({
+                    id: `exp-${Date.now()}-${receiptCounter}`,
+                    date: expenseDate.toISOString(),
+                    category: template.category,
+                    description: template.description,
+                    amount: amount,
+                    paidTo: template.paidTo,
+                    receiptNumber: `EXP-${expenseMonth.getFullYear()}-${String(expenseMonth.getMonth() + 1).padStart(2, '0')}-${String(receiptCounter).padStart(3, '0')}`,
+                    paymentMode: paymentModes[Math.floor(Math.random() * paymentModes.length)],
+                    notes: '',
+                    createdAt: expenseDate.toISOString(),
+                    createdBy: 'user-admin',
+                    updatedAt: expenseDate.toISOString(),
+                    updatedBy: 'user-admin'
+                });
+
+                receiptCounter++;
+            }
+        }
+
+        // Sort by date
+        expenses.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        return expenses;
+    },
+
     // Generate Payments based on bills
     generatePayments: function(bills) {
         const payments = [];
@@ -356,6 +428,7 @@ async function loadDemoData() {
         const users = await DemoData.generateUsers();
         const bills = DemoData.generateBills();
         const payments = DemoData.generatePayments(bills);
+        const expenses = DemoData.generateExpenses();
 
         const masterData = {
             buildings: DemoData.buildings,
@@ -382,6 +455,9 @@ async function loadDemoData() {
         Utils.showLoading('Saving payments...');
         await storage.savePayments(payments);
 
+        Utils.showLoading('Saving expenses...');
+        await storage.saveExpenses(expenses);
+
         Utils.hideLoading();
 
         // Show summary
@@ -396,6 +472,7 @@ async function loadDemoData() {
         console.log(`Users: ${users.length}`);
         console.log(`Bills: ${bills.length}`);
         console.log(`Payments: ${payments.length}`);
+        console.log(`Expenses: ${expenses.length}`);
         console.log('='.repeat(50));
         console.log('LOGIN CREDENTIALS:');
         console.log('Admin Login: admin / admin123');

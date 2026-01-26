@@ -40,6 +40,141 @@
         [data-theme="light"] .sidebar-user-role {
             color: #64748b !important;
         }
+
+        /* Income & Expense Report Styles */
+        .income-expense-ledger {
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        .ledger-row {
+            display: flex;
+        }
+        .ledger-col {
+            flex: 1;
+            display: flex;
+            border-right: 1px solid var(--gray-300);
+        }
+        .ledger-col:last-child {
+            border-right: none;
+        }
+        .ledger-cell {
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .ledger-cell.cell-date {
+            width: 90px;
+            flex-shrink: 0;
+        }
+        .ledger-cell.cell-desc {
+            flex: 1;
+        }
+        .ledger-cell.cell-amount {
+            width: 120px;
+            flex-shrink: 0;
+            text-align: right;
+            font-family: var(--font-mono);
+        }
+        .ledger-header {
+            background: var(--gray-100);
+            font-weight: 600;
+        }
+        .ledger-header .income-col {
+            background: rgba(22, 163, 74, 0.1);
+            border-bottom: 2px solid var(--success);
+        }
+        .ledger-header .expense-col {
+            background: rgba(220, 38, 38, 0.1);
+            border-bottom: 2px solid var(--danger);
+        }
+        .ledger-body {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .ledger-body .income-col {
+            background: rgba(22, 163, 74, 0.03);
+        }
+        .ledger-body .expense-col {
+            background: rgba(220, 38, 38, 0.03);
+        }
+        .ledger-footer .income-total {
+            background: var(--success);
+            color: white;
+        }
+        .ledger-footer .expense-total {
+            background: var(--danger);
+            color: white;
+        }
+        .ledger-footer .ledger-cell {
+            border-bottom: none;
+            font-weight: 600;
+        }
+        .financial-summary {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .summary-box {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 1rem;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+        .summary-net {
+            font-size: 1.25rem;
+            font-weight: 700;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+            border-top: 2px solid var(--gray-300);
+        }
+        .summary-net.surplus {
+            background: rgba(22, 163, 74, 0.1);
+            margin: 0.5rem -1rem -1rem;
+            padding: 1rem;
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+        .summary-net.surplus span:last-child {
+            color: var(--success);
+        }
+        .summary-net.deficit {
+            background: rgba(220, 38, 38, 0.1);
+            margin: 0.5rem -1rem -1rem;
+            padding: 1rem;
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+        .summary-net.deficit span:last-child {
+            color: var(--danger);
+        }
+        .category-summary h5 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: var(--gray-700);
+        }
+        .category-summary .table {
+            font-size: 0.875rem;
+        }
+        @media print {
+            .income-expense-ledger {
+                border: 1px solid #000;
+            }
+            .ledger-body {
+                max-height: none;
+                overflow: visible;
+            }
+            .summary-net.surplus,
+            .summary-net.deficit {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
     </style>
 </head>
 <body class="grain-texture">
@@ -89,7 +224,7 @@
                 </div>
 
                 <div class="nav-section">
-                    <div class="nav-section-title">Billing</div>
+                    <div class="nav-section-title">Finance</div>
                     <div class="nav-item">
                         <a href="billing.html" class="nav-link">
                             <span class="nav-link-icon">📄</span>
@@ -100,6 +235,12 @@
                         <a href="payments.html" class="nav-link">
                             <span class="nav-link-icon">💰</span>
                             <span class="nav-link-text">Payments</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="expenses.html" class="nav-link">
+                            <span class="nav-link-icon">💸</span>
+                            <span class="nav-link-text">Expenses</span>
                         </a>
                     </div>
                 </div>
@@ -175,6 +316,7 @@
                     <button class="master-data-tab" data-tab="fee-position">Fee Position Report</button>
                     <button class="master-data-tab" data-tab="collection">Collection Report</button>
                     <button class="master-data-tab" data-tab="ledger">Flat Ledger</button>
+                    <button class="master-data-tab" data-tab="income-expense">Income & Expense</button>
                 </div>
 
                 <!-- Outstanding Report -->
@@ -368,6 +510,130 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Income & Expense Report -->
+                <div class="tab-content" id="tab-income-expense">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4>Income & Expense Statement</h4>
+                            <div>
+                                <button class="btn btn-outline-primary btn-sm" onclick="printIncomeExpenseReport()">Print</button>
+                                <button class="btn btn-outline-primary btn-sm ml-2" onclick="exportIncomeExpenseReport()">Export CSV</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="report-filters mb-4">
+                                <div class="form-group">
+                                    <label class="form-label">Financial Year</label>
+                                    <select class="form-select" id="income-expense-fy" onchange="generateIncomeExpenseReport()">
+                                        <!-- Options will be populated dynamically -->
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Report Header (for print) -->
+                            <div id="income-expense-report-container">
+                                <div class="report-header text-center mb-4" id="income-expense-header">
+                                    <h3 id="ie-society-name">Society Name</h3>
+                                    <p id="ie-society-address" class="text-muted"></p>
+                                    <h4>Income & Expense Statement</h4>
+                                    <p id="ie-period" class="text-muted">Financial Year: April 2024 - March 2025</p>
+                                </div>
+
+                                <!-- Two-Column Ledger Layout -->
+                                <div class="income-expense-ledger">
+                                    <div class="ledger-row ledger-header">
+                                        <div class="ledger-col income-col">
+                                            <div class="ledger-cell cell-date">Date</div>
+                                            <div class="ledger-cell cell-desc">Particulars</div>
+                                            <div class="ledger-cell cell-amount">Amount</div>
+                                        </div>
+                                        <div class="ledger-col expense-col">
+                                            <div class="ledger-cell cell-date">Date</div>
+                                            <div class="ledger-cell cell-desc">Particulars</div>
+                                            <div class="ledger-cell cell-amount">Amount</div>
+                                        </div>
+                                    </div>
+                                    <div class="ledger-body" id="income-expense-body">
+                                        <!-- Data rows will be populated by JS -->
+                                        <div class="ledger-row">
+                                            <div class="ledger-col income-col">
+                                                <div class="ledger-cell cell-date text-center text-muted" colspan="3">Loading...</div>
+                                            </div>
+                                            <div class="ledger-col expense-col">
+                                                <div class="ledger-cell cell-date text-center text-muted" colspan="3"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ledger-row ledger-footer">
+                                        <div class="ledger-col income-col income-total">
+                                            <div class="ledger-cell cell-date"></div>
+                                            <div class="ledger-cell cell-desc"><strong>Total Income</strong></div>
+                                            <div class="ledger-cell cell-amount" id="ie-total-income">₹ 0</div>
+                                        </div>
+                                        <div class="ledger-col expense-col expense-total">
+                                            <div class="ledger-cell cell-date"></div>
+                                            <div class="ledger-cell cell-desc"><strong>Total Expenses</strong></div>
+                                            <div class="ledger-cell cell-amount" id="ie-total-expense">₹ 0</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Financial Summary -->
+                                <div class="financial-summary mt-4">
+                                    <div class="summary-box">
+                                        <div class="summary-row">
+                                            <span>Total Income (A)</span>
+                                            <span id="ie-summary-income" class="text-success">₹ 0</span>
+                                        </div>
+                                        <div class="summary-row">
+                                            <span>Total Expenses (B)</span>
+                                            <span id="ie-summary-expense" class="text-danger">₹ 0</span>
+                                        </div>
+                                        <div class="summary-row summary-net" id="ie-net-balance-row">
+                                            <span>Net Balance (A - B)</span>
+                                            <span id="ie-net-balance">₹ 0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Category-wise Summary -->
+                                <div class="category-summary mt-4">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h5>Income by Payment Mode</h5>
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Payment Mode</th>
+                                                        <th class="text-right">Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="ie-income-by-mode">
+                                                    <tr><td colspan="2" class="text-center text-muted">Loading...</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5>Expenses by Category</h5>
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Category</th>
+                                                        <th class="text-right">Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="ie-expenses-by-category">
+                                                    <tr><td colspan="2" class="text-center text-muted">Loading...</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

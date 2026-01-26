@@ -73,8 +73,23 @@ const CONFIG = {
         TENANTS: 'Tenants',
         BILLS: 'Bills',
         BILL_LINE_ITEMS: 'BillLineItems',
-        PAYMENTS: 'Payments'
-    }
+        PAYMENTS: 'Payments',
+        EXPENSES: 'Expenses'
+    },
+
+    // Expense Categories for society expense tracking
+    EXPENSE_CATEGORIES: [
+        { id: 'maintenance', name: 'Maintenance' },
+        { id: 'repairs', name: 'Repairs' },
+        { id: 'utilities', name: 'Utilities (Electricity/Water)' },
+        { id: 'salary', name: 'Staff Salary' },
+        { id: 'security', name: 'Security' },
+        { id: 'cleaning', name: 'Cleaning' },
+        { id: 'administration', name: 'Administration' },
+        { id: 'insurance', name: 'Insurance' },
+        { id: 'legal', name: 'Legal' },
+        { id: 'miscellaneous', name: 'Miscellaneous' }
+    ]
 };
 
 // Initial Data Templates
@@ -116,7 +131,8 @@ const INITIAL_DATA = {
     users: [],
     flats: [],
     bills: [],
-    payments: []
+    payments: [],
+    expenses: []
 };
 
 // Helper to check if Google Script is configured

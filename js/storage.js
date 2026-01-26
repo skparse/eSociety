@@ -535,6 +535,106 @@ class Storage {
     }
 
     /**
+     * Get all expenses
+     */
+    async getExpenses() {
+        try {
+            const data = await this.readSheet(this.sheets.EXPENSES);
+            return Array.isArray(data) ? data : [];
+        } catch (error) {
+            console.error('Error getting expenses:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Save expenses
+     */
+    async saveExpenses(expenses) {
+        return await this.writeSheet(this.sheets.EXPENSES, expenses);
+    }
+
+    /**
+     * Upload expense receipt image to Google Drive
+     * @param {File} file - The image file to upload
+     * @param {string} fyFolder - Financial year folder name (e.g., "FY2024-2025")
+     * @param {string} fileName - The filename to use for storage
+     * @returns {Object} - { success: boolean, fileUrl?: string, fileId?: string, error?: string }
+     */
+    async uploadExpenseReceipt(file, fyFolder, fileName) {
+        // In local/demo mode, store as base64 data URL
+        if (this.isLocalMode) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    resolve({
+                        success: true,
+                        fileUrl: e.target.result, // Data URL
+                        fileId: 'local_' + Date.now()
+                    });
+                };
+                reader.onerror = function() {
+                    resolve({
+                        success: false,
+                        error: 'Failed to read file'
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // API mode - upload to Google Drive
+        if (!this.societyId) {
+            return { success: false, error: 'No society selected' };
+        }
+
+        try {
+            // Convert file to base64
+            const base64Data = await this.fileToBase64(file);
+
+            // Make API call to upload
+            const result = await this.apiCall('uploadExpenseReceipt', null, {
+                fyFolder: fyFolder,
+                fileName: fileName,
+                mimeType: file.type,
+                base64Data: base64Data
+            });
+
+            return {
+                success: true,
+                fileUrl: result.fileUrl,
+                fileId: result.fileId
+            };
+        } catch (error) {
+            console.error('Error uploading receipt:', error);
+            return {
+                success: false,
+                error: error.message || 'Upload failed'
+            };
+        }
+    }
+
+    /**
+     * Convert a File object to base64 string
+     * @param {File} file - The file to convert
+     * @returns {Promise<string>} - Base64 encoded string (without data URL prefix)
+     */
+    fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
+                const base64 = e.target.result.split(',')[1];
+                resolve(base64);
+            };
+            reader.onerror = function(error) {
+                reject(error);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    /**
      * Check if system is configured
      */
     isConfigured() {
