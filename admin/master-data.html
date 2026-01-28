@@ -344,7 +344,6 @@
                     <button class="master-data-tab" data-tab="flatTypes">Flat Types</button>
                     <button class="master-data-tab" data-tab="chargeTypes">Charge Types</button>
                     <button class="master-data-tab" data-tab="import">Import Data</button>
-                    <button class="master-data-tab" data-tab="demo" id="demo-data-tab" style="display: none;">Demo Data</button>
                 </div>
 
                 <!-- Society Settings Tab -->
@@ -648,77 +647,6 @@
                     </div>
                 </div>
 
-                <!-- Demo Data Tab -->
-                <div class="card tab-content" id="tab-demo">
-                    <div class="card-header">
-                        <h4>Load Demo Data</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="template-info" style="background: rgba(234, 179, 8, 0.15); border-color: rgba(234, 179, 8, 0.3); color: #fbbf24;">
-                            <strong style="color: #fbbf24;">Warning:</strong>
-                            Loading demo data will <strong>replace all existing data</strong> including flats, members, bills, and payments.
-                            This is intended for demonstration and testing purposes only.
-                        </div>
-
-                        <div style="margin-bottom: 2rem;">
-                            <h5 style="margin-bottom: 1rem;">Demo Society: Shree Sai Gulmohar Co-op Hsg. Soc. Ltd.</h5>
-                            <p style="color: var(--slate-400); margin-bottom: 1rem;">
-                                This demo dataset includes a complete society setup with realistic data to showcase all features:
-                            </p>
-
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-                                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.1);">
-                                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary-400);">4</div>
-                                    <div style="font-size: 0.875rem; color: var(--slate-400);">Buildings (A, B, C Wings + Shops)</div>
-                                </div>
-                                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.1);">
-                                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary-400);">26</div>
-                                    <div style="font-size: 0.875rem; color: var(--slate-400);">Flats (1BHK, 2BHK, 3BHK, Shops, Penthouse)</div>
-                                </div>
-                                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.1);">
-                                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary-400);">12</div>
-                                    <div style="font-size: 0.875rem; color: var(--slate-400);">Charge Types (Gulmohar Style)</div>
-                                </div>
-                                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.1);">
-                                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary-400);">6</div>
-                                    <div style="font-size: 0.875rem; color: var(--slate-400);">Months of Billing History</div>
-                                </div>
-                            </div>
-
-                            <h6 style="margin-bottom: 0.5rem;">Scenarios Covered:</h6>
-                            <ul style="color: var(--slate-400); font-size: 0.875rem; padding-left: 1.5rem;">
-                                <li>Different flat types with varying areas</li>
-                                <li>Occupied and vacant flats</li>
-                                <li>Flats with different vehicle counts (2-wheelers, 4-wheelers)</li>
-                                <li>Bills with various statuses: Paid, Partially Paid, Pending</li>
-                                <li>Overdue bills with interest and penalties</li>
-                                <li>Multiple payment modes: Cash, Cheque, UPI, Bank Transfer</li>
-                                <li>Member portal accounts for selected flats</li>
-                            </ul>
-                        </div>
-
-                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                            <button class="btn btn-primary btn-lg" onclick="loadDemoData()">
-                                Load Demo Data
-                            </button>
-                            <button class="btn btn-outline-secondary" onclick="showDemoStats()">
-                                Preview Statistics
-                            </button>
-                        </div>
-
-                        <div style="margin-top: 2rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.1);">
-                            <h6 style="margin-bottom: 0.5rem;">Login Credentials (after loading demo data):</h6>
-                            <p style="color: var(--slate-400); font-size: 0.875rem; margin-bottom: 0.5rem;">
-                                Use these credentials to login:
-                            </p>
-                            <code style="display: block; background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.8125rem;">
-                                Admin Login: admin / admin123<br><br>
-                                Member Logins: a101, a202, b101, b202, c101, c201<br>
-                                Password: admin123
-                            </code>
-                        </div>
-                    </div>
-                </div>
             </div>
         </main>
     </div>

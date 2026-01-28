@@ -7,13 +7,13 @@
  */
 
 const DemoData = {
-    // Society Settings - Gulmohar Style
+    // Society Settings - Demo Data
     settings: {
-        societyName: "Shree Sai Gulmohar Co-op Hsg. Soc. Ltd.",
-        registrationNo: "NBOM/CIDCO/HSG(TC)/5627/JTR/Year 2014-2015",
-        address: "Plot No. 146/147/148, Sector - 10, New Panvel, Navi Mumbai - 410 206",
-        phone: "022-27468520",
-        email: "gulmohar.society@gmail.com",
+        societyName: "Sunshine Heights Co-op Hsg. Soc. Ltd.",
+        registrationNo: "DEMO/HSG/2024/001",
+        address: "Plot No. 123, Sector 5, Demo City - 400001",
+        phone: "022-12345678",
+        email: "demo@example.com",
         billingDay: 1,
         dueDays: 15,
         lateFeePercent: 2,
@@ -22,10 +22,10 @@ const DemoData = {
 
     // Buildings - Multiple Wings
     buildings: [
-        { id: "bld-1", name: "A-Wing", totalFloors: 10, address: "A Wing, Gulmohar Society", isActive: true },
-        { id: "bld-2", name: "B-Wing", totalFloors: 10, address: "B Wing, Gulmohar Society", isActive: true },
-        { id: "bld-3", name: "C-Wing", totalFloors: 8, address: "C Wing, Gulmohar Society", isActive: true },
-        { id: "bld-4", name: "Shops", totalFloors: 2, address: "Commercial Block, Gulmohar Society", isActive: true }
+        { id: "bld-1", name: "A-Wing", totalFloors: 10, address: "A Wing, Sunshine Heights", isActive: true },
+        { id: "bld-2", name: "B-Wing", totalFloors: 10, address: "B Wing, Sunshine Heights", isActive: true },
+        { id: "bld-3", name: "C-Wing", totalFloors: 8, address: "C Wing, Sunshine Heights", isActive: true },
+        { id: "bld-4", name: "Shops", totalFloors: 2, address: "Commercial Block, Sunshine Heights", isActive: true }
     ],
 
     // Flat Types
@@ -37,7 +37,7 @@ const DemoData = {
         { id: "ft-5", name: "Penthouse", defaultArea: 1500, isActive: true }
     ],
 
-    // Charge Types - Gulmohar Receipt Style (12 charge types)
+    // Charge Types - Standard Receipt Style (12 charge types)
     chargeTypes: [
         { id: "ct-1", name: "Service Charges", calculationType: "per_sqft", defaultAmount: 3.00, isMonthly: true, isActive: true },
         { id: "ct-2", name: "Property Tax", calculationType: "per_sqft", defaultAmount: 0.50, isMonthly: true, isActive: true },
@@ -56,38 +56,38 @@ const DemoData = {
     // Sample Flats covering all scenarios
     flats: [
         // A-Wing Flats
-        { id: "flat-a001", flatNo: "A-001", buildingId: "bld-1", flatTypeId: "ft-1", area: 432, ownerName: "Dr. Balwant Mane", ownerPhone: "9876543210", ownerEmail: "balwant.mane@gmail.com", twoWheelerCount: 1, fourWheelerCount: 0, isOccupied: true, isActive: true },
-        { id: "flat-a002", flatNo: "A-002", buildingId: "bld-1", flatTypeId: "ft-1", area: 432, ownerName: "Mr. Harish Patil", ownerPhone: "9876543211", ownerEmail: "harish.patil@gmail.com", twoWheelerCount: 0, fourWheelerCount: 1, isOccupied: true, isActive: true },
-        { id: "flat-a101", flatNo: "A-101", buildingId: "bld-1", flatTypeId: "ft-2", area: 650, ownerName: "Mrs. Julie Varghese", ownerPhone: "9876543212", ownerEmail: "julie.v@gmail.com", twoWheelerCount: 1, fourWheelerCount: 1, isOccupied: true, isActive: true },
-        { id: "flat-a102", flatNo: "A-102", buildingId: "bld-1", flatTypeId: "ft-2", area: 650, ownerName: "Mr. Sapale", ownerPhone: "9876543213", ownerEmail: "sapale@yahoo.com", twoWheelerCount: 0, fourWheelerCount: 2, isOccupied: true, isActive: true },
-        { id: "flat-a103", flatNo: "A-103", buildingId: "bld-1", flatTypeId: "ft-1", area: 432, ownerName: "Mr. Dinesh Bole", ownerPhone: "9876543214", ownerEmail: "dinesh.bole@gmail.com", twoWheelerCount: 2, fourWheelerCount: 0, isOccupied: true, isActive: true },
-        { id: "flat-a201", flatNo: "A-201", buildingId: "bld-1", flatTypeId: "ft-3", area: 950, ownerName: "Mr. B. S. Patil", ownerPhone: "9876543215", ownerEmail: "bs.patil@gmail.com", twoWheelerCount: 0, fourWheelerCount: 1, isOccupied: true, isActive: true },
-        { id: "flat-a202", flatNo: "A-202", buildingId: "bld-1", flatTypeId: "ft-2", area: 650, ownerName: "Mr. R. K. Singh", ownerPhone: "9876543216", ownerEmail: "rk.singh@gmail.com", twoWheelerCount: 1, fourWheelerCount: 1, isOccupied: true, isActive: true },
-        { id: "flat-a203", flatNo: "A-203", buildingId: "bld-1", flatTypeId: "ft-2", area: 650, ownerName: "Mr. Satyajeet Ingle", ownerPhone: "9876543217", ownerEmail: "satyajeet@gmail.com", twoWheelerCount: 0, fourWheelerCount: 1, isOccupied: true, isActive: true },
-        { id: "flat-a301", flatNo: "A-301", buildingId: "bld-1", flatTypeId: "ft-3", area: 950, ownerName: "Mr. Suresh Jadhav", ownerPhone: "9876543218", ownerEmail: "suresh.j@gmail.com", twoWheelerCount: 2, fourWheelerCount: 2, isOccupied: true, isActive: true },
-        { id: "flat-a302", flatNo: "A-302", buildingId: "bld-1", flatTypeId: "ft-2", area: 650, ownerName: "Mr. Akbar Sheikh", ownerPhone: "9876543219", ownerEmail: "akbar.s@gmail.com", twoWheelerCount: 0, fourWheelerCount: 0, isOccupied: true, isActive: true },
+        { id: "flat-a001", flatNo: "A-001", buildingId: "bld-1", flatTypeId: "ft-1", area: 432, ownerName: "Amit Verma", ownerPhone: "9876543210", ownerEmail: "amit.verma@example.com", twoWheelerCount: 1, fourWheelerCount: 0, isOccupied: true, isActive: true },
+        { id: "flat-a002", flatNo: "A-002", buildingId: "bld-1", flatTypeId: "ft-1", area: 432, ownerName: "Sneha Kapoor", ownerPhone: "9876543211", ownerEmail: "sneha.k@example.com", twoWheelerCount: 0, fourWheelerCount: 1, isOccupied: true, isActive: true },
+        { id: "flat-a101", flatNo: "A-101", buildingId: "bld-1", flatTypeId: "ft-2", area: 650, ownerName: "Rahul Mehta", ownerPhone: "9876543212", ownerEmail: "rahul.m@example.com", twoWheelerCount: 1, fourWheelerCount: 1, isOccupied: true, isActive: true },
+        { id: "flat-a102", flatNo: "A-102", buildingId: "bld-1", flatTypeId: "ft-2", area: 650, ownerName: "Pooja Reddy", ownerPhone: "9876543213", ownerEmail: "pooja.r@example.com", twoWheelerCount: 0, fourWheelerCount: 2, isOccupied: true, isActive: true },
+        { id: "flat-a103", flatNo: "A-103", buildingId: "bld-1", flatTypeId: "ft-1", area: 432, ownerName: "Vikram Iyer", ownerPhone: "9876543214", ownerEmail: "vikram.i@example.com", twoWheelerCount: 2, fourWheelerCount: 0, isOccupied: true, isActive: true },
+        { id: "flat-a201", flatNo: "A-201", buildingId: "bld-1", flatTypeId: "ft-3", area: 950, ownerName: "Neha Gupta", ownerPhone: "9876543215", ownerEmail: "neha.g@example.com", twoWheelerCount: 0, fourWheelerCount: 1, isOccupied: true, isActive: true },
+        { id: "flat-a202", flatNo: "A-202", buildingId: "bld-1", flatTypeId: "ft-2", area: 650, ownerName: "Arjun Nair", ownerPhone: "9876543216", ownerEmail: "arjun.n@example.com", twoWheelerCount: 1, fourWheelerCount: 1, isOccupied: true, isActive: true },
+        { id: "flat-a203", flatNo: "A-203", buildingId: "bld-1", flatTypeId: "ft-2", area: 650, ownerName: "Kavita Joshi", ownerPhone: "9876543217", ownerEmail: "kavita.j@example.com", twoWheelerCount: 0, fourWheelerCount: 1, isOccupied: true, isActive: true },
+        { id: "flat-a301", flatNo: "A-301", buildingId: "bld-1", flatTypeId: "ft-3", area: 950, ownerName: "Sanjay Pillai", ownerPhone: "9876543218", ownerEmail: "sanjay.p@example.com", twoWheelerCount: 2, fourWheelerCount: 2, isOccupied: true, isActive: true },
+        { id: "flat-a302", flatNo: "A-302", buildingId: "bld-1", flatTypeId: "ft-2", area: 650, ownerName: "Meera Krishnan", ownerPhone: "9876543219", ownerEmail: "meera.k@example.com", twoWheelerCount: 0, fourWheelerCount: 0, isOccupied: true, isActive: true },
 
         // B-Wing Flats
-        { id: "flat-b001", flatNo: "B-001", buildingId: "bld-2", flatTypeId: "ft-1", area: 432, ownerName: "Mr. Kiran Kapse", ownerPhone: "9876543220", ownerEmail: "kiran.kapse@gmail.com", twoWheelerCount: 1, fourWheelerCount: 0, isOccupied: true, isActive: true },
-        { id: "flat-b002", flatNo: "B-002", buildingId: "bld-2", flatTypeId: "ft-1", area: 432, ownerName: "Manoj Chavan", ownerPhone: "9876543221", ownerEmail: "manoj.c@gmail.com", twoWheelerCount: 0, fourWheelerCount: 1, isOccupied: true, isActive: true },
-        { id: "flat-b101", flatNo: "B-101", buildingId: "bld-2", flatTypeId: "ft-2", area: 650, ownerName: "Mr. Tanvir Malik", ownerPhone: "9876543222", ownerEmail: "tanvir.m@gmail.com", twoWheelerCount: 1, fourWheelerCount: 0, isOccupied: true, isActive: true },
-        { id: "flat-b102", flatNo: "B-102", buildingId: "bld-2", flatTypeId: "ft-2", area: 650, ownerName: "Mr. Sujata Kashinath Jadhav", ownerPhone: "9876543223", ownerEmail: "sujata.j@gmail.com", twoWheelerCount: 0, fourWheelerCount: 1, isOccupied: true, isActive: true },
-        { id: "flat-b103", flatNo: "B-103", buildingId: "bld-2", flatTypeId: "ft-1", area: 432, ownerName: "Mr. P. Haridas", ownerPhone: "9876543224", ownerEmail: "p.haridas@gmail.com", twoWheelerCount: 2, fourWheelerCount: 1, isOccupied: true, isActive: true },
-        { id: "flat-b201", flatNo: "B-201", buildingId: "bld-2", flatTypeId: "ft-3", area: 950, ownerName: "Mr. Chandran Nair", ownerPhone: "9876543225", ownerEmail: "chandran.n@gmail.com", twoWheelerCount: 0, fourWheelerCount: 2, isOccupied: true, isActive: true },
-        { id: "flat-b202", flatNo: "B-202", buildingId: "bld-2", flatTypeId: "ft-2", area: 650, ownerName: "Mr. Satish Parse", ownerPhone: "9876543226", ownerEmail: "satish.parse@gmail.com", twoWheelerCount: 1, fourWheelerCount: 1, isOccupied: true, isActive: true },
-        { id: "flat-b203", flatNo: "B-203", buildingId: "bld-2", flatTypeId: "ft-2", area: 650, ownerName: "Mr. N. C. Singh", ownerPhone: "9876543227", ownerEmail: "nc.singh@gmail.com", twoWheelerCount: 0, fourWheelerCount: 0, isOccupied: false, isActive: true }, // Vacant flat
-        { id: "flat-b301", flatNo: "B-301", buildingId: "bld-2", flatTypeId: "ft-5", area: 1500, ownerName: "Mr. Atul Khare", ownerPhone: "9876543228", ownerEmail: "atul.khare@gmail.com", twoWheelerCount: 1, fourWheelerCount: 2, isOccupied: true, isActive: true },
+        { id: "flat-b001", flatNo: "B-001", buildingId: "bld-2", flatTypeId: "ft-1", area: 432, ownerName: "Rohit Saxena", ownerPhone: "9876543220", ownerEmail: "rohit.s@example.com", twoWheelerCount: 1, fourWheelerCount: 0, isOccupied: true, isActive: true },
+        { id: "flat-b002", flatNo: "B-002", buildingId: "bld-2", flatTypeId: "ft-1", area: 432, ownerName: "Anjali Menon", ownerPhone: "9876543221", ownerEmail: "anjali.m@example.com", twoWheelerCount: 0, fourWheelerCount: 1, isOccupied: true, isActive: true },
+        { id: "flat-b101", flatNo: "B-101", buildingId: "bld-2", flatTypeId: "ft-2", area: 650, ownerName: "Deepak Tiwari", ownerPhone: "9876543222", ownerEmail: "deepak.t@example.com", twoWheelerCount: 1, fourWheelerCount: 0, isOccupied: true, isActive: true },
+        { id: "flat-b102", flatNo: "B-102", buildingId: "bld-2", flatTypeId: "ft-2", area: 650, ownerName: "Sunita Rao", ownerPhone: "9876543223", ownerEmail: "sunita.r@example.com", twoWheelerCount: 0, fourWheelerCount: 1, isOccupied: true, isActive: true },
+        { id: "flat-b103", flatNo: "B-103", buildingId: "bld-2", flatTypeId: "ft-1", area: 432, ownerName: "Prakash Hegde", ownerPhone: "9876543224", ownerEmail: "prakash.h@example.com", twoWheelerCount: 2, fourWheelerCount: 1, isOccupied: true, isActive: true },
+        { id: "flat-b201", flatNo: "B-201", buildingId: "bld-2", flatTypeId: "ft-3", area: 950, ownerName: "Lakshmi Venkat", ownerPhone: "9876543225", ownerEmail: "lakshmi.v@example.com", twoWheelerCount: 0, fourWheelerCount: 2, isOccupied: true, isActive: true },
+        { id: "flat-b202", flatNo: "B-202", buildingId: "bld-2", flatTypeId: "ft-2", area: 650, ownerName: "Manish Agarwal", ownerPhone: "9876543226", ownerEmail: "manish.a@example.com", twoWheelerCount: 1, fourWheelerCount: 1, isOccupied: true, isActive: true },
+        { id: "flat-b203", flatNo: "B-203", buildingId: "bld-2", flatTypeId: "ft-2", area: 650, ownerName: "Ritu Bansal", ownerPhone: "9876543227", ownerEmail: "ritu.b@example.com", twoWheelerCount: 0, fourWheelerCount: 0, isOccupied: false, isActive: true }, // Vacant flat
+        { id: "flat-b301", flatNo: "B-301", buildingId: "bld-2", flatTypeId: "ft-5", area: 1500, ownerName: "Anil Kulkarni", ownerPhone: "9876543228", ownerEmail: "anil.k@example.com", twoWheelerCount: 1, fourWheelerCount: 2, isOccupied: true, isActive: true },
 
         // C-Wing Flats
-        { id: "flat-c101", flatNo: "C-101", buildingId: "bld-3", flatTypeId: "ft-2", area: 650, ownerName: "Mrs. Priya Sharma", ownerPhone: "9876543229", ownerEmail: "priya.s@gmail.com", twoWheelerCount: 1, fourWheelerCount: 1, isOccupied: true, isActive: true },
-        { id: "flat-c102", flatNo: "C-102", buildingId: "bld-3", flatTypeId: "ft-2", area: 650, ownerName: "Mr. Rajesh Kumar", ownerPhone: "9876543230", ownerEmail: "rajesh.k@gmail.com", twoWheelerCount: 0, fourWheelerCount: 1, isOccupied: true, isActive: true },
-        { id: "flat-c201", flatNo: "C-201", buildingId: "bld-3", flatTypeId: "ft-3", area: 950, ownerName: "Dr. Anita Desai", ownerPhone: "9876543231", ownerEmail: "anita.d@gmail.com", twoWheelerCount: 0, fourWheelerCount: 2, isOccupied: true, isActive: true },
-        { id: "flat-c202", flatNo: "C-202", buildingId: "bld-3", flatTypeId: "ft-1", area: 432, ownerName: "Mr. Vikas Rao", ownerPhone: "9876543232", ownerEmail: "vikas.rao@gmail.com", twoWheelerCount: 2, fourWheelerCount: 0, isOccupied: true, isActive: true },
+        { id: "flat-c101", flatNo: "C-101", buildingId: "bld-3", flatTypeId: "ft-2", area: 650, ownerName: "Divya Malhotra", ownerPhone: "9876543229", ownerEmail: "divya.m@example.com", twoWheelerCount: 1, fourWheelerCount: 1, isOccupied: true, isActive: true },
+        { id: "flat-c102", flatNo: "C-102", buildingId: "bld-3", flatTypeId: "ft-2", area: 650, ownerName: "Suresh Nambiar", ownerPhone: "9876543230", ownerEmail: "suresh.n@example.com", twoWheelerCount: 0, fourWheelerCount: 1, isOccupied: true, isActive: true },
+        { id: "flat-c201", flatNo: "C-201", buildingId: "bld-3", flatTypeId: "ft-3", area: 950, ownerName: "Preeti Choudhary", ownerPhone: "9876543231", ownerEmail: "preeti.c@example.com", twoWheelerCount: 0, fourWheelerCount: 2, isOccupied: true, isActive: true },
+        { id: "flat-c202", flatNo: "C-202", buildingId: "bld-3", flatTypeId: "ft-1", area: 432, ownerName: "Karthik Subramanian", ownerPhone: "9876543232", ownerEmail: "karthik.s@example.com", twoWheelerCount: 2, fourWheelerCount: 0, isOccupied: true, isActive: true },
 
         // Shops
-        { id: "shop-001", flatNo: "Shop-01", buildingId: "bld-4", flatTypeId: "ft-4", area: 200, ownerName: "M/s Sharma Traders", ownerPhone: "9876543233", ownerEmail: "sharma.traders@gmail.com", twoWheelerCount: 0, fourWheelerCount: 0, isOccupied: true, isActive: true },
-        { id: "shop-002", flatNo: "Shop-02", buildingId: "bld-4", flatTypeId: "ft-4", area: 250, ownerName: "M/s Fresh Mart", ownerPhone: "9876543234", ownerEmail: "freshmart@gmail.com", twoWheelerCount: 0, fourWheelerCount: 1, isOccupied: true, isActive: true },
-        { id: "shop-003", flatNo: "Shop-03", buildingId: "bld-4", flatTypeId: "ft-4", area: 180, ownerName: "M/s Quick Services", ownerPhone: "9876543235", ownerEmail: "quickservices@gmail.com", twoWheelerCount: 0, fourWheelerCount: 0, isOccupied: false, isActive: true } // Vacant shop
+        { id: "shop-001", flatNo: "Shop-01", buildingId: "bld-4", flatTypeId: "ft-4", area: 200, ownerName: "M/s City Mart", ownerPhone: "9876543233", ownerEmail: "citymart@example.com", twoWheelerCount: 0, fourWheelerCount: 0, isOccupied: true, isActive: true },
+        { id: "shop-002", flatNo: "Shop-02", buildingId: "bld-4", flatTypeId: "ft-4", area: 250, ownerName: "M/s Daily Needs", ownerPhone: "9876543234", ownerEmail: "dailyneeds@example.com", twoWheelerCount: 0, fourWheelerCount: 1, isOccupied: true, isActive: true },
+        { id: "shop-003", flatNo: "Shop-03", buildingId: "bld-4", flatTypeId: "ft-4", area: 180, ownerName: "M/s Express Services", ownerPhone: "9876543235", ownerEmail: "express@example.com", twoWheelerCount: 0, fourWheelerCount: 0, isOccupied: false, isActive: true } // Vacant shop
     ],
 
     // Generate Users (passwords will be hashed during load)
@@ -104,7 +104,7 @@ const DemoData = {
                 role: "admin",
                 flatId: null,
                 name: "Administrator",
-                email: "admin@gulmohar.com",
+                email: "admin@example.com",
                 phone: "9876500000",
                 isActive: true,
                 createdAt: new Date().toISOString(),
@@ -291,23 +291,23 @@ const DemoData = {
 
         // Sample expenses covering 6 months
         const expenseTemplates = [
-            { category: 'maintenance', description: 'Lift maintenance service', paidTo: 'Schindler India Pvt Ltd', amountRange: [3000, 5000] },
-            { category: 'maintenance', description: 'Plumbing repair - Common area', paidTo: 'Rajesh Plumbing Services', amountRange: [1500, 4000] },
-            { category: 'repairs', description: 'Water tank repair', paidTo: 'Tank Repair Contractors', amountRange: [8000, 15000] },
-            { category: 'repairs', description: 'Compound wall repair', paidTo: 'Gupta Construction', amountRange: [5000, 12000] },
-            { category: 'utilities', description: 'Common area electricity bill', paidTo: 'MSEDCL', amountRange: [12000, 20000] },
-            { category: 'utilities', description: 'Water supply tanker', paidTo: 'Mumbai Water Supply', amountRange: [3000, 6000] },
-            { category: 'salary', description: 'Security guard salary', paidTo: 'Securitas India', amountRange: [25000, 35000] },
-            { category: 'salary', description: 'Housekeeping staff salary', paidTo: 'Clean India Services', amountRange: [15000, 20000] },
-            { category: 'security', description: 'CCTV maintenance', paidTo: 'SecureTech Solutions', amountRange: [2000, 4000] },
-            { category: 'cleaning', description: 'Water tank cleaning', paidTo: 'AquaClean Services', amountRange: [3000, 5000] },
-            { category: 'cleaning', description: 'Pest control treatment', paidTo: 'Pest Control India', amountRange: [2500, 4000] },
-            { category: 'administration', description: 'Accounting software renewal', paidTo: 'TallyPrime', amountRange: [8000, 12000] },
-            { category: 'administration', description: 'Stationery and printing', paidTo: 'Office Mart', amountRange: [1000, 2000] },
-            { category: 'insurance', description: 'Society insurance premium', paidTo: 'LIC of India', amountRange: [15000, 25000] },
-            { category: 'legal', description: 'Legal consultation fee', paidTo: 'Advocate S.K. Sharma', amountRange: [5000, 10000] },
-            { category: 'miscellaneous', description: 'Garden maintenance', paidTo: 'Green Gardens', amountRange: [2000, 4000] },
-            { category: 'miscellaneous', description: 'Festival decoration', paidTo: 'Deco World', amountRange: [5000, 10000] }
+            { category: 'maintenance', description: 'Lift maintenance service', paidTo: 'ABC Elevators Pvt Ltd', amountRange: [3000, 5000] },
+            { category: 'maintenance', description: 'Plumbing repair - Common area', paidTo: 'City Plumbing Services', amountRange: [1500, 4000] },
+            { category: 'repairs', description: 'Water tank repair', paidTo: 'Metro Tank Contractors', amountRange: [8000, 15000] },
+            { category: 'repairs', description: 'Compound wall repair', paidTo: 'Urban Construction Co', amountRange: [5000, 12000] },
+            { category: 'utilities', description: 'Common area electricity bill', paidTo: 'State Electricity Board', amountRange: [12000, 20000] },
+            { category: 'utilities', description: 'Water supply tanker', paidTo: 'City Water Supply', amountRange: [3000, 6000] },
+            { category: 'salary', description: 'Security guard salary', paidTo: 'SafeGuard Services', amountRange: [25000, 35000] },
+            { category: 'salary', description: 'Housekeeping staff salary', paidTo: 'CleanPro Services', amountRange: [15000, 20000] },
+            { category: 'security', description: 'CCTV maintenance', paidTo: 'TechSecure Solutions', amountRange: [2000, 4000] },
+            { category: 'cleaning', description: 'Water tank cleaning', paidTo: 'PureWater Services', amountRange: [3000, 5000] },
+            { category: 'cleaning', description: 'Pest control treatment', paidTo: 'BugFree Services', amountRange: [2500, 4000] },
+            { category: 'administration', description: 'Accounting software renewal', paidTo: 'AccountPro Software', amountRange: [8000, 12000] },
+            { category: 'administration', description: 'Stationery and printing', paidTo: 'PrintHub Supplies', amountRange: [1000, 2000] },
+            { category: 'insurance', description: 'Society insurance premium', paidTo: 'National Insurance Co', amountRange: [15000, 25000] },
+            { category: 'legal', description: 'Legal consultation fee', paidTo: 'Legal Associates', amountRange: [5000, 10000] },
+            { category: 'miscellaneous', description: 'Garden maintenance', paidTo: 'GreenScape Gardens', amountRange: [2000, 4000] },
+            { category: 'miscellaneous', description: 'Festival decoration', paidTo: 'DecorPro Events', amountRange: [5000, 10000] }
         ];
 
         const paymentModes = ['cash', 'cheque', 'upi', 'bank_transfer'];
@@ -527,6 +527,76 @@ function showDemoStats() {
     console.log('='.repeat(50));
 }
 
+// Check if demo data is already loaded
+async function isDemoDataLoaded() {
+    try {
+        const flats = await storage.getFlats();
+        const bills = await storage.getBills();
+        // Consider demo data loaded if we have more than 5 flats and some bills
+        return flats && flats.length > 5 && bills && bills.length > 0;
+    } catch (error) {
+        console.error('Error checking demo data:', error);
+        return false;
+    }
+}
+
+// Silent version that auto-loads demo data without confirmation (for first-time demo login)
+async function loadDemoDataSilent() {
+    // SAFETY CHECK: Only allow demo data loading for DEMO society
+    const currentSociety = getCurrentSocietyId();
+    if (currentSociety && currentSociety !== 'DEMO') {
+        console.log('Not a DEMO society, skipping auto-load');
+        return false;
+    }
+
+    // Check if demo data is already loaded
+    const alreadyLoaded = await isDemoDataLoaded();
+    if (alreadyLoaded) {
+        console.log('Demo data already loaded, skipping auto-load');
+        return true;
+    }
+
+    console.log('Auto-loading demo data for first-time demo login...');
+
+    try {
+        Utils.showLoading('Loading demo data...');
+
+        // Generate all data
+        const users = await DemoData.generateUsers();
+        const bills = DemoData.generateBills();
+        const payments = DemoData.generatePayments(bills);
+        const expenses = DemoData.generateExpenses();
+
+        const masterData = {
+            buildings: DemoData.buildings,
+            flatTypes: DemoData.flatTypes,
+            chargeTypes: DemoData.chargeTypes
+        };
+
+        // Save all data
+        await storage.saveSettings(DemoData.settings);
+        await storage.saveMasterData(masterData);
+        await storage.saveUsers(users);
+        await storage.saveFlats(DemoData.flats);
+        await storage.saveBills(bills);
+        await storage.savePayments(payments);
+        await storage.saveExpenses(expenses);
+
+        Utils.hideLoading();
+
+        console.log('Demo data auto-loaded successfully!');
+        console.log(`Flats: ${DemoData.flats.length}, Bills: ${bills.length}, Payments: ${payments.length}`);
+
+        return true;
+
+    } catch (error) {
+        console.error('Error auto-loading demo data:', error);
+        Utils.hideLoading();
+        return false;
+    }
+}
+
 console.log('Demo Data module loaded. Available functions:');
 console.log('  - loadDemoData() : Load all demo data (replaces existing data)');
+console.log('  - loadDemoDataSilent() : Auto-load demo data if not already loaded');
 console.log('  - showDemoStats() : Show statistics of demo data');

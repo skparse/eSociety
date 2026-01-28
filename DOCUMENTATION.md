@@ -86,7 +86,8 @@ Use the admin credentials you set during society creation.
 
 ```
 eSociety/
-├── index.html                 # Login page
+├── index.html                 # Login page (multi-society)
+├── demo.html                  # Demo mode login
 ├── google-apps-script.js      # Backend script (deploy to Google)
 ├── admin/
 │   ├── dashboard.html         # Admin dashboard
@@ -94,22 +95,29 @@ eSociety/
 │   ├── flats.html             # Flat management
 │   ├── billing.html           # Bill generation
 │   ├── payments.html          # Payment recording
+│   ├── expenses.html          # Expense tracking
 │   ├── master-data.html       # Master data settings
-│   └── reports.html           # Reports
+│   └── reports.html           # Reports (outstanding, collection, ledger, income/expense)
 ├── member/
 │   ├── dashboard.html         # Member dashboard
 │   ├── bills.html             # View bills
 │   └── payments.html          # Payment history
+├── superadmin/
+│   ├── login.html             # Super admin login
+│   └── dashboard.html         # Society management
 ├── css/
 │   ├── style.css              # Main styles
 │   ├── admin.css              # Admin styles
+│   ├── admin-enhanced.css     # Enhanced UI styles
 │   ├── member.css             # Member styles
+│   ├── themes.css             # Light/dark themes
 │   └── print.css              # Print styles
 ├── js/
 │   ├── config.js              # Configuration
 │   ├── storage.js             # API integration
 │   ├── auth.js                # Authentication
 │   ├── utils.js               # Utilities
+│   ├── demo-data.js           # Demo sample data
 │   ├── admin/                 # Admin scripts
 │   └── member/                # Member scripts
 ├── docs/
@@ -231,6 +239,23 @@ eSociety/
 }
 ```
 
+### Expenses
+```javascript
+{
+  id: "uuid",
+  receiptNo: "EXP-2024-01-001",
+  date: "ISO_date",
+  category: "maintenance" | "repairs" | "utilities" | "salary" | "security" | "cleaning" | "administration" | "insurance" | "legal" | "miscellaneous",
+  description: "string",
+  amount: number,
+  paidTo: "string",
+  paymentMode: "cash" | "cheque" | "upi" | "bank_transfer",
+  referenceNo: "string",
+  remarks: "string",
+  createdAt: "ISO_date"
+}
+```
+
 ---
 
 ## Google Sheets Structure
@@ -245,6 +270,7 @@ A Google Sheet named "Society Maintenance Data" is created with these sheets:
 | Flats | All flat information |
 | Bills | Generated maintenance bills |
 | Payments | Payment records |
+| Expenses | Society expense records |
 
 Each sheet stores JSON data in cell A1.
 
@@ -274,18 +300,30 @@ POST ?action=init
 ## Features
 
 ### Admin Features
-1. **Dashboard** - Stats, quick actions
+1. **Dashboard** - Stats, quick actions, outstanding summary
 2. **Member Management** - CRUD, link to flats
 3. **Flat Management** - CRUD with building/type
-4. **Master Data** - Buildings, types, charges
+4. **Master Data** - Buildings, types, charges, bulk import
 5. **Billing** - Generate, view, print bills
 6. **Payments** - Record, receipts
-7. **Reports** - Outstanding, collection, ledger
+7. **Expenses** - Track society expenses by category
+8. **Reports** - Outstanding, collection, fee position, flat ledger, income & expense
 
 ### Member Features
-1. **Dashboard** - Outstanding amount
-2. **Bills** - View and print
+1. **Dashboard** - Outstanding amount, flat info
+2. **Bills** - View and print with detailed breakdown
 3. **Payments** - History and receipts
+
+### Demo Mode
+- Access via `demo.html` - no backend setup required
+- Sample data auto-loads on first login
+- 26 flats, 6 months billing history, expense records
+- Credentials: Admin (`admin/admin123`), Members (`a101/admin123`, etc.)
+
+### Themes
+- Light and Dark mode support
+- Follows system preference by default
+- Toggle in settings
 
 ---
 
@@ -357,7 +395,7 @@ If you modify the Apps Script:
 - Google Apps Script quota: 6 min execution time
 - ~20,000 calls/day (more than enough)
 - Data size: Google Sheets limit (~5M cells)
-- Single society per installation
+- Requires internet connection (no offline data sync)
 
 ---
 
@@ -386,6 +424,16 @@ console.log('Session:', localStorage.getItem('society_session'));
 ---
 
 ## Version History
+
+- **v2.0.0** - Enhanced UI & Features
+  - Multi-tenant architecture with Super Admin
+  - Demo mode with auto-loaded sample data
+  - Expense tracking module
+  - Income & Expense report
+  - Light/Dark theme support
+  - PWA enhancements (bottom nav, mobile gestures)
+  - Fee position report
+  - Responsive design improvements
 
 - **v1.1.0** - Google Sheets backend
   - Replaced JSONBin.io with Google Apps Script

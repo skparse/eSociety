@@ -78,8 +78,10 @@ async function loadData() {
         // Set default date for fee position report
         document.getElementById('fee-position-date').value = new Date().toISOString().split('T')[0];
 
-        // Generate outstanding report
+        // Generate all reports with default values
         generateOutstandingReport();
+        generateFeePositionReport();
+        generateCollectionReport();
 
     } catch (error) {
         console.error('Error loading data:', error);

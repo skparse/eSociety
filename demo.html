@@ -247,7 +247,7 @@
                 <ul>
                     <li>26 sample flats across 4 buildings</li>
                     <li>6 months of billing history</li>
-                    <li>12 charge types (Gulmohar format)</li>
+                    <li>12 charge types</li>
                     <li>Various payment scenarios</li>
                 </ul>
             </div>
@@ -352,6 +352,11 @@
                 const result = await auth.login('DEMO', username, password, 'Demo Society', false);
 
                 if (result.success) {
+                    btnText.textContent = 'Loading demo data...';
+
+                    // Auto-load demo data on first login
+                    await loadDemoDataSilent();
+
                     btnText.textContent = 'Success! Redirecting...';
                     setTimeout(redirectToDashboard, 500);
                 } else {

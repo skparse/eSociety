@@ -16,7 +16,8 @@ A modern, cloud-based Society Maintenance Billing System built as a Progressive 
 - **Master Data** - Manage buildings, flat types, charge types, and society settings
 - **Billing** - Generate monthly bills (individual or bulk), view and print bills
 - **Payments** - Record payments, generate receipts, partial payment support
-- **Reports** - Outstanding report, collection report, flat-wise ledger with CSV export
+- **Expenses** - Track society expenses by category with payment mode tracking
+- **Reports** - Outstanding, collection, fee position, flat ledger, income & expense reports
 - **Bulk Import** - Import buildings, flats, and members via CSV files
 
 ### Member Portal
@@ -38,6 +39,18 @@ A modern, cloud-based Society Maintenance Billing System built as a Progressive 
 - **Offline Support** - Service worker caching for offline access
 - **Responsive Design** - Mobile-first, works on all devices
 - **Fast Loading** - Optimized caching strategy
+- **Bottom Navigation** - Mobile-friendly navigation on small screens
+
+### Demo Mode
+- **Try Before Setup** - Explore all features without Google Apps Script setup
+- **Auto-loaded Sample Data** - 26 flats, 6 months of billing history, expenses
+- **Demo Credentials** - Admin: `admin/admin123`, Members: `a101/admin123`, etc.
+- **Local Storage** - Demo data stored in browser, no backend required
+
+### Themes
+- **Light Mode** - Clean, bright interface for daytime use
+- **Dark Mode** - Eye-friendly dark theme for low-light environments
+- **System Preference** - Automatically follows OS theme setting
 
 ## Technology Stack
 
@@ -55,7 +68,7 @@ A modern, cloud-based Society Maintenance Billing System built as a Progressive 
 ```
 eSociety/
 ├── index.html                    # Login page (multi-society)
-├── login.html                    # Alternative login
+├── demo.html                     # Demo mode login (no backend required)
 ├── manifest.json                 # PWA manifest
 ├── service-worker.js             # Offline support
 ├── google-apps-script.js         # Backend script (deploy to Google, gitignored)
@@ -67,8 +80,9 @@ eSociety/
 │   ├── members.html              # Member/user management
 │   ├── billing.html              # Bill generation & viewing
 │   ├── payments.html             # Payment recording
+│   ├── expenses.html             # Expense tracking
 │   ├── master-data.html          # Buildings, types, charges, import
-│   └── reports.html              # Outstanding, collection, ledger
+│   └── reports.html              # Outstanding, collection, ledger, income/expense
 │
 ├── member/                       # Member Portal
 │   ├── dashboard.html            # Outstanding balance, stats
@@ -85,13 +99,16 @@ eSociety/
 │   ├── auth.js                   # Authentication & session management
 │   ├── utils.js                  # Utility functions
 │   ├── mobile.js                 # Mobile gestures & PWA enhancements
+│   ├── demo-data.js              # Demo mode sample data generator
 │   ├── admin/                    # Admin-specific scripts
 │   └── member/                   # Member-specific scripts
 │
 ├── css/
 │   ├── style.css                 # Global styles
 │   ├── admin.css                 # Admin-specific styles
+│   ├── admin-enhanced.css        # Enhanced admin UI styles
 │   ├── member.css                # Member-specific styles
+│   ├── themes.css                # Light/dark theme styles
 │   └── print.css                 # Print-optimized styles
 │
 ├── icons/                        # PWA icons (72px to 512px)
@@ -208,6 +225,7 @@ All data is stored in Google Sheets (automatically created):
 | Flats | All flat information |
 | Bills | Generated maintenance bills |
 | Payments | Payment records |
+| Expenses | Society expense records |
 
 You can view and edit the data directly in Google Sheets!
 

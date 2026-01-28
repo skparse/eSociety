@@ -453,7 +453,7 @@ html, body {
 
 .widget {
     border-radius: var(--radius-xl);
-    overflow: hidden;
+    overflow: visible;
     transition: all var(--transition-base);
 }
 
@@ -534,22 +534,26 @@ html, body {
 /* Outstanding Summary */
 .outstanding-summary {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: var(--space-4);
+    width: 100%;
 }
 
 .outstanding-item {
     text-align: center;
-    padding: var(--space-5);
+    padding: var(--space-4);
     border-radius: var(--radius-lg);
     transition: all var(--transition-fast);
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .outstanding-value {
     font-family: 'JetBrains Mono', monospace !important;
-    font-size: var(--text-2xl);
+    font-size: clamp(0.875rem, 3vw, 1.25rem);
     font-weight: 700;
     line-height: 1.2;
+    white-space: nowrap;
 }
 
 .outstanding-label {
@@ -740,10 +744,6 @@ html, body {
 @media (max-width: 1024px) {
     .widget-half {
         grid-column: span 12;
-    }
-
-    .outstanding-summary {
-        grid-template-columns: 1fr;
     }
 }
 

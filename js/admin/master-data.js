@@ -31,12 +31,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Setup tab navigation
     setupTabs();
 
-    // Show Demo Data tab only for DEMO society
-    const demoTab = document.getElementById('demo-data-tab');
-    if (demoTab && getCurrentSocietyId() === 'DEMO') {
-        demoTab.style.display = '';
-    }
-
     // Load data
     await loadMasterData();
 
