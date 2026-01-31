@@ -1,0 +1,8 @@
+name,defaultArea,bhkType,isActive
+Type A,580,1,true
+Type A (Balcony),576,1.5,true
+Type B,596,2,true
+Type C,640,1,true
+Type D,726,2,true
+Type E,766,2,true
+Type F,833,2,true

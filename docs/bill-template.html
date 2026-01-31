@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Society Maintenance Bill</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        .handwritten {
+            font-family: 'Kalam', cursive;
+            color: #1a3a8a;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            line-height: 1.3;
+            background: #e8e4df;
+            padding: 20px;
+        }
+
+        .bill-container {
+            max-width: 580px;
+            margin: 0 auto;
+            background: #fefefa;
+            border: 2px solid #1a1a1a;
+            padding: 0;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Header Section */
+        .bill-header {
+            text-align: center;
+            padding: 12px 15px 8px;
+        }
+
+        .society-name {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .reg-no {
+            font-size: 11px;
+            margin-bottom: 2px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 4px;
+        }
+
+        .address {
+            font-size: 12px;
+            border-bottom: 1px solid #000;
+            padding: 4px 0;
+        }
+
+        /* Member Info Section */
+        .member-info {
+            display: flex;
+            border-bottom: 1px solid #000;
+        }
+
+        .member-details {
+            flex: 1;
+            padding: 8px 12px;
+            border-right: 1px solid #000;
+        }
+
+        .bill-details {
+            width: 160px;
+            padding: 8px 12px;
+        }
+
+        .member-name {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .member-name-input {
+            flex: 1;
+            border: none;
+            border-bottom: 1px solid #000;
+            font-size: 18px;
+            font-family: 'Kalam', cursive;
+            color: #1a3a8a;
+            background: transparent;
+            padding: 2px 0;
+            letter-spacing: 0.5px;
+        }
+
+        .flat-no-input {
+            border: none;
+            border-bottom: 1px solid #000;
+            font-size: 20px;
+            font-family: 'Kalam', cursive;
+            font-weight: 700;
+            color: #1a3a8a;
+            background: transparent;
+            width: 120px;
+            padding: 2px 0;
+        }
+
+        .bill-no-row, .date-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .bill-no-value, .date-value {
+            font-size: 18px;
+            font-weight: bold;
+            font-family: 'Kalam', cursive;
+            color: #1a3a8a;
+        }
+
+        .bill-no-input, .date-input {
+            border: none;
+            border-bottom: 1px solid #000;
+            width: 90px;
+            font-size: 18px;
+            font-family: 'Kalam', cursive;
+            color: #1a3a8a;
+            background: transparent;
+            padding: 2px 0;
+            font-weight: 700;
+        }
+
+        /* Description Text */
+        .description {
+            padding: 8px 12px;
+            font-size: 12px;
+            border-bottom: 1px solid #000;
+            line-height: 1.5;
+        }
+
+        .description .dotted-line {
+            display: inline-block;
+            width: 80px;
+            border-bottom: 1px dotted #000;
+        }
+
+        .month-input, .year-input {
+            border: none;
+            border-bottom: 1px dotted #000;
+            width: 50px;
+            text-align: center;
+            font-family: 'Kalam', cursive;
+            font-size: 16px;
+            color: #1a3a8a;
+            background: transparent;
+            font-weight: 700;
+        }
+
+        .year-input {
+            width: 30px;
+        }
+
+        /* Charges Table */
+        .charges-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .charges-table th,
+        .charges-table td {
+            border: 1px solid #000;
+            padding: 4px 8px;
+            text-align: left;
+        }
+
+        .charges-table th {
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .charges-table .sr-no {
+            width: 45px;
+            text-align: center;
+        }
+
+        .charges-table .particulars {
+            font-size: 13px;
+        }
+
+        .charges-table .amount-col {
+            width: 70px;
+            text-align: right;
+            padding-right: 5px;
+        }
+
+        .charges-table .paise-col {
+            width: 35px;
+            text-align: center;
+        }
+
+        .charges-table .amount-header {
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .amount-input {
+            border: none;
+            width: 100%;
+            text-align: right;
+            font-family: 'Kalam', cursive;
+            font-size: 17px;
+            color: #1a3a8a;
+            background: transparent;
+            font-weight: 400;
+        }
+
+        .amount-input::-webkit-outer-spin-button,
+        .amount-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .amount-input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .paise-text {
+            font-family: 'Kalam', cursive;
+            color: #1a3a8a;
+            font-size: 16px;
+        }
+
+        .empty-cell {
+            color: #1a3a8a;
+            font-family: 'Kalam', cursive;
+        }
+
+        /* Sub-total row */
+        .sub-total-row td {
+            font-weight: bold;
+        }
+
+        .sub-total-row .label-cell {
+            text-align: right;
+            padding-right: 15px;
+        }
+
+        /* Arrears Section */
+        .arrears-row td {
+            font-size: 12px;
+        }
+
+        .arrears-row .arrears-label {
+            font-size: 11px;
+        }
+
+        .arrears-input {
+            border: none;
+            border-bottom: 1px solid #000;
+            width: 50px;
+            font-family: 'Kalam', cursive;
+            font-size: 15px;
+            color: #1a3a8a;
+            background: transparent;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        /* Grand Total */
+        .grand-total-row td {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .grand-total-value {
+            font-family: 'Kalam', cursive;
+            font-size: 20px;
+            color: #1a3a8a;
+            font-weight: 700;
+        }
+
+        /* Notes Section */
+        .notes-section {
+            display: flex;
+            border-top: 1px solid #000;
+        }
+
+        .notes {
+            flex: 1;
+            padding: 8px 10px;
+            font-size: 9px;
+            border-right: 1px solid #000;
+            line-height: 1.4;
+        }
+
+        .notes-title {
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .notes ol {
+            margin-left: 12px;
+            padding-left: 0;
+        }
+
+        .notes li {
+            margin-bottom: 2px;
+        }
+
+        .eoe-section {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .eoe-label {
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .amount-words-display {
+            font-family: 'Kalam', cursive;
+            font-size: 16px;
+            color: #1a3a8a;
+            font-weight: 700;
+        }
+
+        .signature-section {
+            width: 180px;
+            padding: 8px 10px;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        .society-stamp {
+            font-weight: bold;
+            font-size: 10px;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
+        .amount-display {
+            font-family: 'Kalam', cursive;
+            font-size: 18px;
+            color: #1a3a8a;
+            margin: 10px 0;
+            font-weight: 700;
+        }
+
+        .signature-line {
+            margin-top: 20px;
+            border-top: 1px solid #000;
+            padding-top: 5px;
+            font-size: 10px;
+        }
+
+        .signature-scribble {
+            font-family: 'Kalam', cursive;
+            font-size: 28px;
+            color: #1a3a8a;
+            margin-top: 5px;
+            transform: rotate(-5deg);
+        }
+
+        /* Print Styles */
+        @media print {
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+                font-size: 12px;
+            }
+
+            .bill-container {
+                box-shadow: none;
+                border: 1px solid #000;
+                max-width: 100%;
+                page-break-inside: avoid;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .bill-header {
+                padding: 8px 10px 5px;
+            }
+
+            .society-name {
+                font-size: 18px;
+            }
+
+            .reg-no {
+                font-size: 10px;
+            }
+
+            .address {
+                font-size: 11px;
+            }
+
+            .member-info {
+                padding: 0;
+            }
+
+            .member-details, .bill-details {
+                padding: 5px 10px;
+            }
+
+            .description {
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+
+            .charges-table th,
+            .charges-table td {
+                padding: 3px 6px;
+                font-size: 11px;
+            }
+
+            .amount-input {
+                font-size: 13px;
+            }
+
+            .notes {
+                padding: 5px 8px;
+                font-size: 8px;
+            }
+
+            .notes li {
+                margin-bottom: 1px;
+            }
+
+            .signature-section {
+                padding: 5px 8px;
+                font-size: 9px;
+            }
+
+            .society-stamp {
+                font-size: 9px;
+            }
+
+            .amount-display {
+                font-size: 14px;
+                margin: 5px 0;
+            }
+
+            .signature-line {
+                margin-top: 10px;
+            }
+
+            .eoe-section {
+                margin-top: 5px;
+            }
+        }
+
+        /* Controls */
+        .controls {
+            max-width: 580px;
+            margin: 0 auto 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .controls h3 {
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .controls-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .controls button {
+            padding: 10px 18px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .controls button:hover {
+            background: #1d4ed8;
+        }
+
+        .controls button.secondary {
+            background: #6b7280;
+        }
+
+        .controls button.secondary:hover {
+            background: #4b5563;
+        }
+
+        .controls button.success {
+            background: #059669;
+        }
+
+        .controls button.success:hover {
+            background: #047857;
+        }
+    </style>
+</head>
+<body>
+    <!-- Controls Section (not printed) -->
+    <div class="controls no-print">
+        <h3>Bill Controls</h3>
+        <div class="controls-buttons">
+            <button onclick="calculateTotal()" class="success">Calculate Total</button>
+            <button onclick="window.print()">Print Bill</button>
+            <button class="secondary" onclick="clearForm()">Clear Form</button>
+            <button class="secondary" onclick="loadSampleData()">Load Sample Data</button>
+        </div>
+    </div>
+
+    <!-- Bill Template -->
+    <div class="bill-container" id="billContainer">
+        <!-- Header -->
+        <div class="bill-header">
+            <div class="society-name">Shree Sai Gulmohar Co-op Hsg .Soc. Ltd.</div>
+            <div class="reg-no">Reg. No.: NBOM/CIDCO/HSG(TC)/5627/JTR/Year 2014-2015</div>
+            <div class="address">Plot No. 146/147/148, Sector - 10, New Panvel, Navi Mumbai - 410 206</div>
+        </div>
+
+        <!-- Member Info -->
+        <div class="member-info">
+            <div class="member-details">
+                <div class="member-name">
+                    <span>Shri / Smt.</span>
+                    <input type="text" id="memberName" class="member-name-input" placeholder="Member Name">
+                </div>
+                <div>
+                    <input type="text" id="flatNo" class="flat-no-input" placeholder="Flat No.">
+                </div>
+            </div>
+            <div class="bill-details">
+                <div class="bill-no-row">
+                    <span>Bill No.</span>
+                    <input type="text" id="billNo" class="bill-no-input" placeholder="0000">
+                </div>
+                <div class="date-row">
+                    <span>Date</span>
+                    <input type="text" id="billDate" class="date-input" placeholder="DD/MM/YYYY">
+                </div>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="description">
+            A sum of Rs.<span class="dotted-line"></span> has been debited to your account as per details given
+            for the month
+            <input type="text" id="billMonth" class="month-input" placeholder="MMM">
+            20<input type="text" id="billYear" class="year-input" placeholder="YY">
+            You are requested to remit the amount together with arrears, if any, as shown below.
+        </div>
+
+        <!-- Charges Table -->
+        <table class="charges-table">
+            <thead>
+                <tr>
+                    <th class="sr-no">Sr. No.</th>
+                    <th class="particulars">P A R T I C U L A R S</th>
+                    <th colspan="2" class="amount-header">Amount<br>Rs. &nbsp;&nbsp;&nbsp; P.</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="sr-no">1</td>
+                    <td class="particulars">Service Charges</td>
+                    <td class="amount-col"><input type="number" id="serviceCharges" class="amount-input" value="432"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr>
+                    <td class="sr-no">2</td>
+                    <td class="particulars">Property Tax</td>
+                    <td class="amount-col"><input type="number" id="propertyTax" class="amount-input" value="0"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr>
+                    <td class="sr-no">3</td>
+                    <td class="particulars">Sinking Fund</td>
+                    <td class="amount-col"><input type="number" id="sinkingFund" class="amount-input" value="77"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr>
+                    <td class="sr-no">4</td>
+                    <td class="particulars">Major Repairs Fund</td>
+                    <td class="amount-col"><input type="number" id="majorRepairs" class="amount-input" value="230"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr>
+                    <td class="sr-no">5</td>
+                    <td class="particulars">Electricity Charges</td>
+                    <td class="amount-col"><input type="number" id="electricity" class="amount-input" value="250"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr>
+                    <td class="sr-no">6</td>
+                    <td class="particulars">Water Charges</td>
+                    <td class="amount-col"><input type="number" id="water" class="amount-input" value="480"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr>
+                    <td class="sr-no">7</td>
+                    <td class="particulars">Parking Charges</td>
+                    <td class="amount-col"><input type="number" id="parking" class="amount-input" value="0"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr>
+                    <td class="sr-no">8</td>
+                    <td class="particulars">Non Occupancy Charges</td>
+                    <td class="amount-col"><input type="number" id="nonOccupancy" class="amount-input" value="0"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr>
+                    <td class="sr-no">9</td>
+                    <td class="particulars">Education and Training Fund</td>
+                    <td class="amount-col"><input type="number" id="education" class="amount-input" value="10"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr>
+                    <td class="sr-no">10</td>
+                    <td class="particulars">Legal Charges</td>
+                    <td class="amount-col"><input type="number" id="legal" class="amount-input" value="0"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr>
+                    <td class="sr-no">11</td>
+                    <td class="particulars">Other Charges</td>
+                    <td class="amount-col"><input type="number" id="other" class="amount-input" value="100"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr>
+                    <td class="sr-no">12</td>
+                    <td class="particulars">Insurance</td>
+                    <td class="amount-col"><input type="number" id="insurance" class="amount-input" value="69"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr class="sub-total-row">
+                    <td class="sr-no"></td>
+                    <td class="label-cell">Sub-Total</td>
+                    <td class="amount-col"><span id="subTotal" class="amount-input" style="display:block;">1748</span></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr class="arrears-row">
+                    <td class="sr-no"></td>
+                    <td class="arrears-label">
+                        Add.: Arrears, if any...(Arrears of Bill No.
+                        <input type="text" id="arrearsBillNo" class="arrears-input" placeholder="0000">
+                        Date
+                        <input type="text" id="arrearsDate" class="arrears-input" placeholder="MM/YY">)
+                    </td>
+                    <td class="amount-col"><input type="number" id="arrears" class="amount-input" value="0"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr class="arrears-row">
+                    <td class="sr-no"></td>
+                    <td class="particulars">Interest on Arrears</td>
+                    <td class="amount-col"><input type="number" id="interest" class="amount-input" value="0"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr class="arrears-row">
+                    <td class="sr-no"></td>
+                    <td class="particulars">Penalty</td>
+                    <td class="amount-col"><input type="number" id="penalty" class="amount-input" value="0"></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+                <tr class="grand-total-row">
+                    <td class="sr-no"></td>
+                    <td class="label-cell">Grand Total</td>
+                    <td class="amount-col"><span id="grandTotal" class="grand-total-value">1748</span></td>
+                    <td class="paise-col"><span class="paise-text">-</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Notes and Signature -->
+        <div class="notes-section">
+            <div class="notes">
+                <div class="notes-title">Note:</div>
+                <ol>
+                    <li>Interest of 21% per annum is applicable for the payments after due date.</li>
+                    <li>Any objection about this bill should be intimated immediately to the Secretary. No claim will be entertained after one Month.</li>
+                    <li>Please issue Crossed Cheque in favour of the Shree Sai Gulmohar Co-op.Hsg. Society Ltd.</li>
+                    <li>Please write Name & Flat No. on back side of cheque.</li>
+                </ol>
+                <div class="eoe-section">
+                    <span class="eoe-label">E.&O.E.</span>
+                    <span class="amount-words-display">Rs.<span id="amountInWords">1748</span>/-</span>
+                </div>
+            </div>
+            <div class="signature-section">
+                <div class="society-stamp">
+                    For Shree Sai Gulmohar Co-op.Hsg. Society Ltd.
+                </div>
+                <div class="amount-display">
+                    Rs. <span id="grandTotalDisplay">1748</span>/-
+                </div>
+                <div class="signature-scribble">&</div>
+                <div class="signature-line">
+                    Chairman/Secretary/Treasurer
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Calculate total function
+        function calculateTotal() {
+            const fields = [
+                'serviceCharges', 'propertyTax', 'sinkingFund', 'majorRepairs',
+                'electricity', 'water', 'parking', 'nonOccupancy',
+                'education', 'legal', 'other', 'insurance'
+            ];
+
+            let subTotal = 0;
+            fields.forEach(field => {
+                const value = parseFloat(document.getElementById(field).value) || 0;
+                subTotal += value;
+            });
+
+            document.getElementById('subTotal').textContent = subTotal;
+
+            const arrears = parseFloat(document.getElementById('arrears').value) || 0;
+            const interest = parseFloat(document.getElementById('interest').value) || 0;
+            const penalty = parseFloat(document.getElementById('penalty').value) || 0;
+
+            const grandTotal = subTotal + arrears + interest + penalty;
+            document.getElementById('grandTotal').textContent = grandTotal;
+            document.getElementById('grandTotalDisplay').textContent = grandTotal;
+            document.getElementById('amountInWords').textContent = grandTotal;
+        }
+
+        // Clear form
+        function clearForm() {
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.value = 0;
+            });
+            document.querySelectorAll('input[type="text"]').forEach(input => {
+                input.value = '';
+            });
+            calculateTotal();
+        }
+
+        // Load sample data (B202 - Santosh Parse from the image)
+        function loadSampleData() {
+            document.getElementById('memberName').value = 'Santosh Parse';
+            document.getElementById('flatNo').value = 'B202';
+            document.getElementById('billNo').value = '2121';
+            document.getElementById('billDate').value = '01/12/2025';
+            document.getElementById('billMonth').value = 'Dec';
+            document.getElementById('billYear').value = '25';
+
+            document.getElementById('serviceCharges').value = 432;
+            document.getElementById('propertyTax').value = 0;
+            document.getElementById('sinkingFund').value = 77;
+            document.getElementById('majorRepairs').value = 230;
+            document.getElementById('electricity').value = 250;
+            document.getElementById('water').value = 480;
+            document.getElementById('parking').value = 0;
+            document.getElementById('nonOccupancy').value = 100;
+            document.getElementById('education').value = 10;
+            document.getElementById('legal').value = 0;
+            document.getElementById('other').value = 100;
+            document.getElementById('insurance').value = 69;
+
+            document.getElementById('arrearsBillNo').value = '2100';
+            document.getElementById('arrearsDate').value = '11/25';
+            document.getElementById('arrears').value = 1920;
+            document.getElementById('interest').value = 34;
+            document.getElementById('penalty').value = 0;
+
+            calculateTotal();
+        }
+
+        // Auto-calculate on input change
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('change', calculateTotal);
+            input.addEventListener('input', calculateTotal);
+        });
+
+        // Initialize
+        calculateTotal();
+    </script>
+</body>
+</html>

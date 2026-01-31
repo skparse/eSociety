@@ -1,0 +1,11 @@
+flatNo,building,flatType,area,ownerName,ownerPhone,ownerEmail,twoWheelerCount,fourWheelerCount,occupancyType
+B001,B-Wing,Type B,596,Mr. Kiran Kapse,,,1,1,owner
+B002,B-Wing,Type A (Balcony),576,Manoj Chavan,,,1,1,owner
+B101,B-Wing,Type A,580,Mr. Tanvir Malik,,,2,1,owner
+B102,B-Wing,Type E,766,Mrs. Sujata Kashinath Jadhav,,,0,0,owner
+B103,B-Wing,Type F,833,Mr. P. Haridas,,,0,0,owner
+B201,B-Wing,Type A,580,Mr. Chandran Nair,,,1,0,tenant
+B202,B-Wing,Type E,766,Mr. Santosh Parse,,,0,0,tenant
+B203,B-Wing,Type F,833,Mr. N. C. Singh,,,0,0,owner
+B301,B-Wing,Type C,640,Mr. Atul Khare,,,1,0,owner
+B302,B-Wing,Type D,726,Mr. Atmaram Thakur,,,1,0,owner

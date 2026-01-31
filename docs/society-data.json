@@ -1,0 +1,576 @@
+{
+  "society": {
+    "name": "Shree Sai Gulmohar Co-op Hsg. Soc. Ltd.",
+    "regNo": "NBOM/CIDCO/HSG(TC)/5627/JTR/Year 2014-2015",
+    "address": "Plot No. 146/147/148, Sector - 10, New Panvel, Navi Mumbai - 410 206",
+    "interestRate": 21,
+    "dataAsOn": "2025-12-01"
+  },
+  "chargeTypes": {
+    "fixed": {
+      "serviceCharges": { "amount": 432, "description": "Monthly society management" },
+      "propertyTax": { "amount": 0, "description": "Currently not collected" },
+      "electricityCharges": { "amount": 250, "description": "Common area electricity" },
+      "educationFund": { "amount": 10, "description": "Statutory education fund" },
+      "legalCharges": { "amount": 0, "description": "Billed when incurred" },
+      "otherCharges": { "amount": 100, "description": "Miscellaneous expenses" }
+    },
+    "areaBased": {
+      "sinkingFund": { "ratePerSqFt": 0.11, "description": "Building depreciation reserve" },
+      "majorRepairFund": { "ratePerSqFt": 0.33, "description": "Major repairs reserve" },
+      "insurance": { "ratePerSqFt": 0.10, "description": "Building insurance" }
+    },
+    "usageBased": {
+      "waterCharges": {
+        "slabs": [
+          { "code": "SLAB1", "amount": 300, "description": "Lower consumption" },
+          { "code": "SLAB2", "amount": 480, "description": "Higher consumption" }
+        ]
+      },
+      "parkingCharges": {
+        "ratePerSlot": 40,
+        "description": "Per parking slot"
+      }
+    },
+    "conditional": {
+      "nonOccupancyCharges": {
+        "amount": 100,
+        "condition": "Applied when flat is rented/vacant",
+        "description": "Non-owner occupied"
+      }
+    }
+  },
+  "flatTypes": [
+    { "type": "A", "carpetArea": 525, "sinkingFund": 58, "majorRepair": 173, "insurance": 52 },
+    { "type": "B", "carpetArea": 565, "sinkingFund": 60, "majorRepair": 179, "insurance": 54 },
+    { "type": "C", "carpetArea": 610, "sinkingFund": 64, "majorRepair": 192, "insurance": 58 },
+    { "type": "D", "carpetArea": 665, "sinkingFund": 73, "majorRepair": 218, "insurance": 66 },
+    { "type": "E", "carpetArea": 710, "sinkingFund": 77, "majorRepair": 230, "insurance": 69 },
+    { "type": "F", "carpetArea": 775, "sinkingFund": 83, "majorRepair": 250, "insurance": 76 }
+  ],
+  "members": {
+    "A-Wing": [
+      {
+        "srNo": 1,
+        "flatNo": "A001",
+        "ownerName": "Dr. Balwant Mane",
+        "flatType": "B",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 60,
+          "majorRepairFund": 179,
+          "electricityCharges": 250,
+          "waterCharges": 480,
+          "parkingCharges": 140,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 54
+        },
+        "monthlyTotal": 1705,
+        "interest": 0,
+        "penalty": 0,
+        "previousBalance": 0,
+        "finalBalance": 1705
+      },
+      {
+        "srNo": 2,
+        "flatNo": "A002",
+        "ownerName": "Mr. Harish Patil",
+        "flatType": "A",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 58,
+          "majorRepairFund": 173,
+          "electricityCharges": 250,
+          "waterCharges": 480,
+          "parkingCharges": 140,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 52
+        },
+        "monthlyTotal": 1695,
+        "interest": 30,
+        "penalty": 0,
+        "previousBalance": 1695,
+        "finalBalance": 1695
+      },
+      {
+        "srNo": 3,
+        "flatNo": "A101",
+        "ownerName": "Mrs. Julie Varghese",
+        "flatType": "F",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 83,
+          "majorRepairFund": 250,
+          "electricityCharges": 250,
+          "waterCharges": 480,
+          "parkingCharges": 0,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 76
+        },
+        "monthlyTotal": 1681,
+        "interest": 0,
+        "penalty": 0,
+        "previousBalance": 0,
+        "finalBalance": 1681
+      },
+      {
+        "srNo": 4,
+        "flatNo": "A102",
+        "ownerName": "Mr. Sapale",
+        "flatType": "E",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 77,
+          "majorRepairFund": 230,
+          "electricityCharges": 250,
+          "waterCharges": 480,
+          "parkingCharges": 40,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 69
+        },
+        "monthlyTotal": 1688,
+        "interest": 28,
+        "penalty": 0,
+        "previousBalance": 1612,
+        "finalBalance": 3328
+      },
+      {
+        "srNo": 5,
+        "flatNo": "A103",
+        "ownerName": "Mr. Dinesh Bole",
+        "flatType": "A",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 58,
+          "majorRepairFund": 174,
+          "electricityCharges": 250,
+          "waterCharges": 300,
+          "parkingCharges": 40,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 53
+        },
+        "monthlyTotal": 1417,
+        "interest": 0,
+        "penalty": 0,
+        "previousBalance": -206,
+        "finalBalance": 1211
+      },
+      {
+        "srNo": 6,
+        "flatNo": "A201",
+        "ownerName": "Mr. B. S. Patil",
+        "flatType": "F",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 83,
+          "majorRepairFund": 250,
+          "electricityCharges": 250,
+          "waterCharges": 480,
+          "parkingCharges": 40,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 76
+        },
+        "monthlyTotal": 1721,
+        "interest": 0,
+        "penalty": 0,
+        "previousBalance": 0,
+        "finalBalance": 1721
+      },
+      {
+        "srNo": 7,
+        "flatNo": "A202",
+        "ownerName": "Mr. R. K. Singh",
+        "flatType": "E",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 77,
+          "majorRepairFund": 230,
+          "electricityCharges": 250,
+          "waterCharges": 480,
+          "parkingCharges": 0,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 69
+        },
+        "monthlyTotal": 1648,
+        "interest": 207,
+        "penalty": 0,
+        "previousBalance": 12181,
+        "finalBalance": 14036
+      },
+      {
+        "srNo": 8,
+        "flatNo": "A203",
+        "ownerName": "Mr. Satyajeet Ingle",
+        "flatType": "A",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 58,
+          "majorRepairFund": 174,
+          "electricityCharges": 250,
+          "waterCharges": 300,
+          "parkingCharges": 40,
+          "nonOccupancyCharges": 100,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 53
+        },
+        "monthlyTotal": 1517,
+        "interest": 224,
+        "penalty": 0,
+        "previousBalance": 13156,
+        "finalBalance": 14897
+      },
+      {
+        "srNo": 9,
+        "flatNo": "A301",
+        "ownerName": "Mr. Suresh Jadhav",
+        "flatType": "D",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 73,
+          "majorRepairFund": 218,
+          "electricityCharges": 250,
+          "waterCharges": 480,
+          "parkingCharges": 80,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 66
+        },
+        "monthlyTotal": 1709,
+        "interest": 34,
+        "penalty": 0,
+        "previousBalance": 1957,
+        "finalBalance": 3700
+      },
+      {
+        "srNo": 10,
+        "flatNo": "A302",
+        "ownerName": "Mr. Akbar Sheikh",
+        "flatType": "C",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 64,
+          "majorRepairFund": 192,
+          "electricityCharges": 250,
+          "waterCharges": 300,
+          "parkingCharges": 40,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 58
+        },
+        "monthlyTotal": 1446,
+        "interest": 0,
+        "penalty": 0,
+        "previousBalance": 0,
+        "finalBalance": 1446
+      }
+    ],
+    "B-Wing": [
+      {
+        "srNo": 1,
+        "flatNo": "B001",
+        "ownerName": "Mr. Kiran Kapse",
+        "flatType": "B",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 60,
+          "majorRepairFund": 179,
+          "electricityCharges": 250,
+          "waterCharges": 480,
+          "parkingCharges": 140,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 54
+        },
+        "monthlyTotal": 1705,
+        "interest": 63,
+        "penalty": 0,
+        "previousBalance": 3656,
+        "finalBalance": 5424
+      },
+      {
+        "srNo": 2,
+        "flatNo": "B002",
+        "ownerName": "Manoj Chavan",
+        "flatType": "A",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 58,
+          "majorRepairFund": 173,
+          "electricityCharges": 250,
+          "waterCharges": 480,
+          "parkingCharges": 140,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 52
+        },
+        "monthlyTotal": 1695,
+        "interest": 0,
+        "penalty": 0,
+        "previousBalance": 0,
+        "finalBalance": 1695
+      },
+      {
+        "srNo": 3,
+        "flatNo": "B101",
+        "ownerName": "Mr. Tanvir Malik",
+        "flatType": "A",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 58,
+          "majorRepairFund": 174,
+          "electricityCharges": 250,
+          "waterCharges": 300,
+          "parkingCharges": 180,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 53
+        },
+        "monthlyTotal": 1557,
+        "interest": 0,
+        "penalty": 0,
+        "previousBalance": -300,
+        "finalBalance": 1257
+      },
+      {
+        "srNo": 4,
+        "flatNo": "B102",
+        "ownerName": "Mrs. Sujata Kashinath Jadhav",
+        "flatType": "E",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 77,
+          "majorRepairFund": 230,
+          "electricityCharges": 250,
+          "waterCharges": 480,
+          "parkingCharges": 0,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 69
+        },
+        "monthlyTotal": 1648,
+        "interest": 0,
+        "penalty": 0,
+        "previousBalance": 0,
+        "finalBalance": 1648
+      },
+      {
+        "srNo": 5,
+        "flatNo": "B103",
+        "ownerName": "Mr. P. Haridas",
+        "flatType": "F",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 83,
+          "majorRepairFund": 250,
+          "electricityCharges": 250,
+          "waterCharges": 480,
+          "parkingCharges": 0,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 76
+        },
+        "monthlyTotal": 1681,
+        "interest": 0,
+        "penalty": 0,
+        "previousBalance": 0,
+        "finalBalance": 1681
+      },
+      {
+        "srNo": 6,
+        "flatNo": "B201",
+        "ownerName": "Mr. Chandran Nair",
+        "flatType": "A",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 58,
+          "majorRepairFund": 174,
+          "electricityCharges": 250,
+          "waterCharges": 300,
+          "parkingCharges": 40,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 53
+        },
+        "monthlyTotal": 1517,
+        "interest": 51,
+        "penalty": 0,
+        "previousBalance": 3201,
+        "finalBalance": 4769
+      },
+      {
+        "srNo": 7,
+        "flatNo": "B202",
+        "ownerName": "Mr. Santosh Parse",
+        "flatType": "E",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 77,
+          "majorRepairFund": 230,
+          "electricityCharges": 250,
+          "waterCharges": 480,
+          "parkingCharges": 0,
+          "nonOccupancyCharges": 100,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 69
+        },
+        "monthlyTotal": 1748,
+        "interest": 34,
+        "penalty": 0,
+        "previousBalance": 1920,
+        "finalBalance": 3702
+      },
+      {
+        "srNo": 8,
+        "flatNo": "B203",
+        "ownerName": "Mr. N. C. Singh",
+        "flatType": "F",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 83,
+          "majorRepairFund": 250,
+          "electricityCharges": 250,
+          "waterCharges": 480,
+          "parkingCharges": 0,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 76
+        },
+        "monthlyTotal": 1681,
+        "interest": 0,
+        "penalty": 0,
+        "previousBalance": 273,
+        "finalBalance": 1954
+      },
+      {
+        "srNo": 9,
+        "flatNo": "B301",
+        "ownerName": "Mr. Atul Khare",
+        "flatType": "C",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 64,
+          "majorRepairFund": 192,
+          "electricityCharges": 250,
+          "waterCharges": 300,
+          "parkingCharges": 40,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 58
+        },
+        "monthlyTotal": 1446,
+        "interest": 645,
+        "penalty": 0,
+        "previousBalance": 44744,
+        "finalBalance": 46835
+      },
+      {
+        "srNo": 10,
+        "flatNo": "B302",
+        "ownerName": "Member Name (Partial)",
+        "flatType": "D",
+        "charges": {
+          "serviceCharges": 432,
+          "propertyTax": 0,
+          "sinkingFund": 73,
+          "majorRepairFund": 218,
+          "electricityCharges": 250,
+          "waterCharges": 480,
+          "parkingCharges": 40,
+          "nonOccupancyCharges": 0,
+          "educationFund": 10,
+          "legalCharges": 0,
+          "otherCharges": 100,
+          "insurance": 66
+        },
+        "monthlyTotal": 1669,
+        "interest": null,
+        "penalty": null,
+        "previousBalance": null,
+        "finalBalance": null
+      }
+    ]
+  },
+  "summary": {
+    "aWing": {
+      "totalFlats": 10,
+      "monthlyCollection": 16227,
+      "totalOutstanding": 45420,
+      "sinkingFundTotal": 691,
+      "majorRepairFundTotal": 2070
+    },
+    "bWing": {
+      "totalFlats": 10,
+      "monthlyCollection": 16347,
+      "totalOutstanding": 70634
+    },
+    "overall": {
+      "totalFlats": 20,
+      "monthlyCollection": 32574,
+      "totalOutstanding": 116054
+    }
+  }
+}

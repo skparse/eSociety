@@ -1,0 +1,11 @@
+flatNo,building,flatType,area,ownerName,ownerPhone,ownerEmail,twoWheelerCount,fourWheelerCount,occupancyType
+A001,A-Wing,Type B,596,Dr. Balwant Mane,,,1,1,owner
+A002,A-Wing,Type A (Balcony),576,Mr. Harish Patil,,,1,1,owner
+A101,A-Wing,Type F,833,Mrs. Julie Varghese,,,0,0,owner
+A102,A-Wing,Type E,766,Mr. Sapale,,,1,0,owner
+A103,A-Wing,Type A,580,Mr. Dinesh Bole,,,1,0,owner
+A201,A-Wing,Type F,833,Mr. B. S. Patil,,,1,0,owner
+A202,A-Wing,Type E,766,Mr. R. K. Singh,,,0,0,owner
+A203,A-Wing,Type A,580,Mr. Satyajeet Ingle,,,1,0,tenant
+A301,A-Wing,Type D,726,Mr. Suresh Jadhav,,,2,0,owner
+A302,A-Wing,Type C,640,Mr. Akbar Sheikh,,,1,0,owner

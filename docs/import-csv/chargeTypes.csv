@@ -1,0 +1,11 @@
+name,calculationType,defaultAmount,isMonthly,isActive,vehicleType
+Service Charges,fixed,432,true,true,
+Sinking Fund,per_sqft,0.10,true,true,
+Major Repairs Fund,per_sqft,0.30,true,true,
+Electricity Charges,fixed,250,true,true,
+Water Charges,fixed,480,true,true,
+Parking - 2 Wheeler,per_vehicle,40,true,true,2wheeler
+Parking - 4 Wheeler,per_vehicle,100,true,true,4wheeler
+Education & Training Fund,fixed,10,true,true,
+Other Charges,fixed,100,true,true,
+Insurance,per_sqft,0.0907,true,true,
